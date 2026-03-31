@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Luxury Travel Service</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  :root {
+    --gold: #b8922a;
+    --gold-light: #d4aa4a;
+    --gold-pale: #f5ead0;
+    --white: #ffffff;
+    --off-white: #faf8f4;
+    --light: #f2ede4;
+    --light2: #ebe4d8;
+    --dark: #1a1408;
+    --dark2: #2c2410;
+    --text: #3a3020;
+    --text2: #5a5040;
+    --muted: #9a9080;
+    --border: rgba(184,146,42,0.18);
+    --border2: rgba(184,146,42,0.08);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Josefin Sans',sans-serif;background:var(--white);color:var(--text);overflow-x:hidden;}
+
+  /* NAVBAR */
+  nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 56px;height:80px;background:rgba(255,255,255,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s;}
+  nav.scrolled{height:68px;background:rgba(255,255,255,0.98);box-shadow:0 2px 24px rgba(184,146,42,0.08);}
+  .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;color:var(--gold);letter-spacing:2px;text-decoration:none;display:flex;align-items:center;gap:10px;}
+  .nav-logo span{color:var(--dark);font-weight:300;}
+  .nav-links{display:flex;align-items:center;gap:40px;list-style:none;}
+  .nav-links a{color:var(--text2);font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;transition:color .2s;position:relative;padding-bottom:4px;}
+  .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .3s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{background:var(--gold)!important;color:var(--white)!important;padding:10px 24px!important;font-size:.68rem!important;letter-spacing:2.5px!important;transition:all .3s!important;border:none!important;}
+  .nav-cta:hover{background:var(--gold-light)!important;}
+  .nav-cta::after{display:none!important;}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+  .hamburger span{width:26px;height:1.5px;background:var(--gold);transition:all .3s;}
+  .mobile-menu{display:none;position:fixed;top:80px;left:0;right:0;bottom:0;background:rgba(255,255,255,.98);z-index:999;padding:40px;flex-direction:column;gap:32px;align-items:center;justify-content:center;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{color:var(--text);font-size:1.1rem;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
+
+  /* HERO */
+  #hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--light);}
+  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.22;}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(250,248,244,.25) 0%,rgba(250,248,244,.55) 100%);}
+  .hero-content{position:relative;text-align:center;max-width:860px;padding:0 24px;animation:fadeUp 1.1s ease both;}
+  .hero-tag{display:inline-block;font-size:.62rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:28px;border:1px solid rgba(184,146,42,.35);padding:8px 22px;background:rgba(255,255,255,.7);}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,7vw,5.8rem);font-weight:300;line-height:1.1;color:var(--dark);margin-bottom:24px;}
+  .hero-title em{color:var(--gold);font-style:italic;}
+  .hero-subtitle{font-size:.82rem;letter-spacing:1px;color:var(--text2);max-width:540px;margin:0 auto 48px;line-height:2;}
+  .hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+  .btn-gold{background:var(--gold);color:var(--white);padding:16px 44px;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;text-decoration:none;transition:all .3s;font-family:'Josefin Sans',sans-serif;font-weight:600;border:none;cursor:pointer;display:inline-block;}
+  .btn-gold:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,146,42,.22);}
+  .btn-outline{background:transparent;color:var(--dark);padding:15px 44px;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:1px solid rgba(26,20,8,.22);font-family:'Josefin Sans',sans-serif;cursor:pointer;display:inline-block;transition:all .3s;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+  .scroll-indicator{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:.58rem;letter-spacing:3px;animation:pulse 2s ease infinite;}
+  .scroll-indicator i{font-size:.9rem;color:var(--gold);}
+
+  /* STATS */
+  .stats-bar{background:var(--dark);display:flex;justify-content:center;gap:80px;padding:44px 48px;flex-wrap:wrap;}
+  .stat-item{text-align:center;}
+  .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:400;color:var(--gold);line-height:1;}
+  .stat-label{font-size:.58rem;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:6px;}
+
+  /* SECTIONS */
+  section{padding:100px 56px;}
+  .section-label{font-size:.6rem;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:14px;display:block;}
+  .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:300;color:var(--dark);line-height:1.2;margin-bottom:16px;}
+  .section-title em{color:var(--gold);font-style:italic;}
+  .section-sub{font-size:.82rem;color:var(--muted);line-height:1.9;max-width:520px;letter-spacing:.3px;}
+  .section-header{margin-bottom:60px;}
+  .divider{width:40px;height:1.5px;background:var(--gold);margin:20px 0;}
+
+  /* TOURS */
+  #tours{background:var(--off-white);}
+  .tours-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
+  .tour-card{background:var(--white);overflow:hidden;border:1px solid var(--border2);cursor:pointer;transition:all .35s;box-shadow:0 2px 12px rgba(184,146,42,.05);}
+  .tour-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(184,146,42,.13);border-color:var(--border);}
+  .tour-img{width:100%;height:220px;object-fit:cover;display:block;transition:transform .5s;}
+  .tour-card:hover .tour-img{transform:scale(1.04);}
+  .tour-img-placeholder{width:100%;height:220px;background:var(--light);display:flex;align-items:center;justify-content:center;}
+  .tour-img-placeholder i{font-size:2rem;color:rgba(184,146,42,.25);}
+  .tour-body{padding:28px;}
+  .tour-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .tour-duration{font-size:.6rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase;}
+  .tour-badge{background:var(--gold-pale);color:var(--gold);font-size:.58rem;letter-spacing:2px;padding:4px 10px;text-transform:uppercase;}
+  .tour-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--dark);line-height:1.4;margin-bottom:10px;}
+  .tour-desc{font-size:.78rem;color:var(--muted);line-height:1.8;margin-bottom:20px;}
+  .tour-footer{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border2);}
+  .tour-price{display:flex;flex-direction:column;}
+  .tour-price-from{font-size:.55rem;letter-spacing:2px;color:var(--muted);}
+  .tour-price-val{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--gold);line-height:1;}
+  .tour-price-old{font-size:.72rem;color:var(--muted);text-decoration:line-through;}
+  .btn-sm{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold);padding:10px 20px;text-decoration:none;transition:all .3s;display:inline-block;}
+  .btn-sm:hover{background:var(--gold);color:var(--white);}
+  .no-data{text-align:center;padding:80px;color:var(--muted);font-size:.8rem;letter-spacing:2px;grid-column:1/-1;}
+
+  /* ABOUT */
+  #about{background:var(--white);}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  .about-image-wrap{position:relative;}
+  .about-image{width:100%;aspect-ratio:3/4;object-fit:cover;}
+  .about-image-placeholder{width:100%;aspect-ratio:3/4;background:var(--light);display:flex;align-items:center;justify-content:center;}
+  .about-image-placeholder i{font-size:4rem;color:rgba(184,146,42,.15);}
+  .about-accent{position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border:1.5px solid rgba(184,146,42,.22);z-index:-1;}
+  .about-features{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;}
+  .about-feature-item{display:flex;gap:14px;align-items:flex-start;}
+  .about-feature-icon{width:38px;height:38px;min-width:38px;border:1px solid rgba(184,146,42,.28);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.85rem;}
+  .about-feature-text h4{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--dark);margin-bottom:4px;}
+  .about-feature-text p{font-size:.74rem;color:var(--muted);line-height:1.7;}
+
+  /* MISSION */
+  #mission{background:var(--dark);padding:0;}
+  .mv-grid{display:grid;grid-template-columns:repeat(3,1fr);}
+  .mv-card{padding:56px 44px;border-right:1px solid rgba(255,255,255,.06);border-bottom:3px solid transparent;transition:border-color .3s;}
+  .mv-card:last-child{border-right:none;}
+  .mv-card:hover{border-bottom-color:var(--gold);}
+  .mv-card h3{font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+  .mv-card p{font-size:.8rem;color:rgba(255,255,255,.42);line-height:1.9;}
+  .mv-card .mv-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;color:rgba(184,146,42,.07);line-height:1;margin-bottom:12px;}
+
+  /* DESTINATIONS */
+  #destinations{background:var(--light);}
+  .dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3px;}
+  .dest-card{position:relative;overflow:hidden;cursor:pointer;aspect-ratio:3/4;background:var(--light2);display:flex;align-items:flex-end;}
+  .dest-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72;transition:all .5s;}
+  .dest-card:hover .dest-img{opacity:1;transform:scale(1.05);}
+  .dest-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,20,8,.88) 0%,transparent 55%);}
+  .dest-body{position:relative;padding:24px;}
+  .dest-name{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:#fff;}
+  .dest-desc{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:5px;line-height:1.6;}
+  .dest-placeholder{position:absolute;inset:0;background:var(--light2);display:flex;align-items:center;justify-content:center;}
+  .dest-placeholder i{font-size:2rem;color:rgba(184,146,42,.2);}
+
+  /* BLOG */
+  #blog{background:var(--white);}
+  .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:40px;}
+  .blog-card{border-bottom:1px solid var(--border);padding-bottom:32px;}
+  .blog-cat{font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:block;}
+  .blog-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--dark);line-height:1.4;margin-bottom:10px;}
+  .blog-date{font-size:.62rem;color:var(--muted);letter-spacing:1px;}
+  .blog-excerpt{font-size:.78rem;color:var(--muted);line-height:1.8;margin:10px 0;}
+
+  /* FOOTER */
+  footer{background:var(--dark);border-top:1px solid rgba(184,146,42,.1);padding:80px 56px 40px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:60px;margin-bottom:60px;}
+  .footer-brand h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:400;margin-bottom:16px;}
+  .footer-brand p{font-size:.78rem;color:rgba(255,255,255,.32);line-height:1.9;max-width:280px;}
+  .footer-col h4{font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:20px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .footer-col ul a{font-size:.78rem;color:rgba(255,255,255,.28);text-decoration:none;transition:color .2s;}
+  .footer-col ul a:hover{color:var(--gold);}
+  .footer-contact-item{display:flex;gap:12px;align-items:flex-start;font-size:.78rem;color:rgba(255,255,255,.32);margin-bottom:12px;}
+  .footer-contact-item i{color:var(--gold);min-width:16px;margin-top:2px;}
+  .footer-contact-item a{color:rgba(255,255,255,.32);text-decoration:none;transition:color .2s;}
+  .footer-contact-item a:hover{color:var(--gold);}
+  .social-links{display:flex;gap:10px;margin-top:24px;}
+  .social-link{width:36px;height:36px;border:1px solid rgba(184,146,42,.22);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.28);font-size:.85rem;transition:all .3s;text-decoration:none;}
+  .social-link:hover{border-color:var(--gold);color:var(--gold);}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:32px;display:flex;justify-content:space-between;align-items:center;font-size:.67rem;color:rgba(255,255,255,.18);letter-spacing:1px;flex-wrap:wrap;gap:12px;}
+  .footer-bottom em{color:var(--gold);font-style:normal;}
+
+  /* ANIMATIONS */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(36px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pulse{0%,100%{opacity:.5;transform:translateX(-50%) translateY(0);}50%{opacity:1;transform:translateX(-50%) translateY(6px);}}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:1024px){.about-grid{grid-template-columns:1fr;}.about-image-wrap{display:none;}.mv-grid{grid-template-columns:1fr;}.footer-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:768px){nav{padding:0 24px;}.nav-links{display:none;}.hamburger{display:flex;}section{padding:70px 24px;}.stats-bar{gap:36px;padding:36px 24px;}.footer-grid{grid-template-columns:1fr;gap:36px;}footer{padding:56px 24px 32px;}.footer-bottom{flex-direction:column;text-align:center;}.about-features{grid-template-columns:1fr;}.mv-grid{grid-template-columns:1fr;}.mv-card{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);}}
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo" id="site-name-nav">Luxury<span> Travel Service</span></a>
+  <ul class="nav-links">
+    <li><a href="#tours">Tours</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#destinations">Destinations</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#contact" class="nav-cta">Book Now</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#tours" onclick="toggleMobile()">Tours</a>
+  <a href="#about" onclick="toggleMobile()">About</a>
+  <a href="#destinations" onclick="toggleMobile()">Destinations</a>
+  <a href="#blog" onclick="toggleMobile()">Blog</a>
+  <a href="#contact" onclick="toggleMobile()" style="color:var(--gold)">Book Now</a>
+</div>
+
+<section id="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-tag" id="hero-tag">Premium Travel Experiences</span>
+    <h1 class="hero-title" id="hero-title">Private Luxury Tours,<br><em>Designed Around You</em></h1>
+    <p class="hero-subtitle" id="hero-subtitle">Concierge-style planning, expert guides, premium logistics — so you can focus on the magic, not the moving parts.</p>
+    <div class="hero-actions">
+      <a href="#tours" class="btn-gold" id="hero-cta1">Explore Tours</a>
+      <a href="#contact" class="btn-outline" id="hero-cta2">Tailor a Journey</a>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span>SCROLL</span><i class="fa fa-chevron-down"></i></div>
+</section>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<section id="tours">
+  <div class="section-header reveal">
+    <span class="section-label">Featured Experiences</span>
+    <h2 class="section-title">Our Curated <em>Tours</em></h2>
+    <div class="divider"></div>
+    <p class="section-sub" id="tours-subtitle">Private, premium tours designed to deliver the highlights.</p>
+  </div>
+  <div class="tours-grid" id="tours-grid">
+    <div class="no-data"><i class="fa fa-compass" style="font-size:2rem;color:rgba(184,146,42,.2);display:block;margin-bottom:16px"></i>Tours will appear here once added from the admin panel.</div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about-grid">
+    <div class="about-image-wrap reveal">
+      <img src="" id="about-img" class="about-image" style="display:none" onerror="this.style.display='none';document.getElementById('about-img-ph').style.display='flex'" />
+      <div id="about-img-ph" class="about-image-placeholder"><i class="fa fa-mountain-sun"></i></div>
+      <div class="about-accent"></div>
+    </div>
+    <div class="reveal">
+      <span class="section-label">Our Story</span>
+      <h2 class="section-title" id="about-title">Expertise in <em>Every Moment</em></h2>
+      <div class="divider"></div>
+      <p class="section-sub" id="about-text">We present an impressive array of meticulously curated tours.</p>
+      <div class="about-features" id="about-features"></div>
+    </div>
+  </div>
+</section>
+
+<section id="mission" style="padding:0">
+  <div class="mv-grid" id="mv-grid"></div>
+</section>
+
+<section id="destinations">
+  <div class="section-header reveal">
+    <span class="section-label">Where We Go</span>
+    <h2 class="section-title">Our <em>Destinations</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="dest-grid" id="dest-grid"></div>
+</section>
+
+<section id="blog">
+  <div class="section-header reveal">
+    <span class="section-label">Travel Guides</span>
+    <h2 class="section-title">Stories & <em>Insights</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="blog-grid" id="blog-grid"><div class="no-data" style="grid-column:1/-1">No blog posts yet.</div></div>
+</section>
+
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2 id="footer-brand-name">Luxury Travel Service</h2>
+      <p id="footer-tagline">Your journey becomes a masterpiece with us.</p>
+      <div class="social-links" id="social-links"></div>
+    </div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#tours">Tours</a></li><li><a href="#about">About Us</a></li><li><a href="#destinations">Destinations</a></li><li><a href="#blog">Blog</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms & Conditions</a></li><li><a href="#">Legal Notice</a></li></ul></div>
+    <div class="footer-col"><h4>Contact Us</h4><div id="footer-contact"></div></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <em id="footer-copy-name">Luxury Travel Service</em> — All rights reserved.</span>
+    <span id="footer-year"></span>
+  </div>
+</footer>
+
+<script>
+const DEFS={siteName:'Luxury Travel Service',heroTag:'Premium Travel Experiences',heroTitle:'Private Luxury Tours, Designed Around You',heroSubtitle:'Concierge-style planning, expert guides, premium logistics — so you can focus on the magic, not the moving parts.',heroCta1:'Explore Tours',heroCta2:'Tailor a Journey',heroBg:'',toursSubtitle:'Private, premium tours designed to deliver the highlights.',aboutTitle:'Expertise in Every Moment',aboutText:'We present an impressive array of meticulously curated tours tailored to ensure both your comfort and a deeply enriching travel experience.',aboutImage:'',footerTagline:'Your journey becomes a masterpiece with us.',address:'',email:'',phone:'',facebook:'',instagram:'',youtube:'',linkedin:'',tripadvisor:'',mission:'Our mission is to inspire and empower travelers from around the globe to uncover the magic of every destination.',vision:'We envision every traveler experiencing the world\'s wonders and leaving with unforgettable memories.',aboutLong:'We present an impressive array of meticulously curated tours, tailored to ensure both your comfort and a deeply enriching travel experience. Our tours strike the perfect balance between relaxation and adventure.',stats:[{num:'12+',label:'Years Experience'},{num:'5K+',label:'Happy Travelers'},{num:'200+',label:'Destinations'},{num:'98%',label:'Satisfaction Rate'}],features:[{icon:'fa-user-tie',title:'Expert Guides',desc:'Highly qualified professional tour guides'},{icon:'fa-utensils',title:'Premium Dining',desc:'Curated restaurant selections'},{icon:'fa-route',title:'Smart Logistics',desc:'Routing and pacing built to protect your day'},{icon:'fa-headset',title:'24/7 Support',desc:'Dedicated representatives at every step'}],tours:[],destinations:[],blogs:[]};
+function gd(k){try{const v=localStorage.getItem('lts_'+k);return v?JSON.parse(v):DEFS[k];}catch{return DEFS[k];}}
+function renderSite(){
+  const D={};Object.keys(DEFS).forEach(k=>D[k]=gd(k));
+  document.title=D.siteName;
+  const parts=D.siteName.split(' '),first=parts.slice(0,-1).join(' '),last=parts.slice(-1);
+  document.getElementById('site-name-nav').innerHTML=`${first}<span> ${last}</span>`;
+  document.getElementById('hero-tag').textContent=D.heroTag;
+  const t=D.heroTitle.split(',');
+  document.getElementById('hero-title').innerHTML=t.length>1?`${t[0]},<br><em>${t.slice(1).join(',').trim()}</em>`:D.heroTitle;
+  document.getElementById('hero-subtitle').textContent=D.heroSubtitle;
+  document.getElementById('hero-cta1').textContent=D.heroCta1;
+  document.getElementById('hero-cta2').textContent=D.heroCta2;
+  if(D.heroBg)document.getElementById('hero-bg').style.backgroundImage=`url('${D.heroBg}')`;
+  document.getElementById('stats-bar').innerHTML=D.stats.map(s=>`<div class="stat-item reveal"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  document.getElementById('tours-subtitle').textContent=D.toursSubtitle;
+  const tg=document.getElementById('tours-grid');
+  tg.innerHTML=D.tours.length?D.tours.map(t=>`<div class="tour-card reveal">${t.image?`<img src="${t.image}" class="tour-img" alt="${t.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />`:''}  <div class="tour-img-placeholder" ${t.image?'style="display:none"':''}><i class="fa fa-compass"></i></div><div class="tour-body"><div class="tour-meta"><span class="tour-duration"><i class="fa fa-clock" style="margin-right:4px"></i>${t.duration||'—'}</span>${t.badge?`<span class="tour-badge">${t.badge}</span>`:''}</div><div class="tour-name">${t.name}</div><p class="tour-desc">${t.desc||''}</p><div class="tour-footer"><div class="tour-price"><span class="tour-price-from">FROM</span><span class="tour-price-val">$${t.price||'0'}</span>${t.oldPrice?`<span class="tour-price-old">$${t.oldPrice}</span>`:''}</div><a href="${t.link||'#'}" class="btn-sm">Book Now</a></div></div></div>`).join(''):`<div class="no-data"><i class="fa fa-compass" style="font-size:2rem;color:rgba(184,146,42,.2);display:block;margin-bottom:16px"></i>Tours will appear here once added from the admin panel.</div>`;
+  document.getElementById('about-title').textContent=D.aboutTitle;
+  document.getElementById('about-text').textContent=D.aboutText;
+  if(D.aboutImage){document.getElementById('about-img').src=D.aboutImage;document.getElementById('about-img').style.display='block';document.getElementById('about-img-ph').style.display='none';}
+  document.getElementById('about-features').innerHTML=(D.features||[]).map(f=>`<div class="about-feature-item"><div class="about-feature-icon"><i class="fa ${f.icon}"></i></div><div class="about-feature-text"><h4>${f.title}</h4><p>${f.desc}</p></div></div>`).join('');
+  document.getElementById('mv-grid').innerHTML=`<div class="mv-card reveal"><div class="mv-num">01</div><h3>Mission</h3><p>${D.mission}</p></div><div class="mv-card reveal"><div class="mv-num">02</div><h3>Vision</h3><p>${D.vision}</p></div><div class="mv-card reveal"><div class="mv-num">03</div><h3>About Us</h3><p>${D.aboutLong}</p></div>`;
+  document.getElementById('dest-grid').innerHTML=D.destinations.length?D.destinations.map(d=>`<div class="dest-card">${d.image?`<img src="${d.image}" class="dest-img" alt="${d.name}" onerror="this.style.display='none'" />`:''}  <div class="dest-placeholder" ${d.image?'style="display:none"':''}><i class="fa fa-map-pin"></i></div><div class="dest-overlay"></div><div class="dest-body"><div class="dest-name">${d.name}</div><div class="dest-desc">${d.desc||''}</div></div></div>`).join(''):`<div class="no-data" style="grid-column:1/-1;padding:60px">Add destinations from admin panel.</div>`;
+  document.getElementById('blog-grid').innerHTML=D.blogs.length?D.blogs.map(b=>`<div class="blog-card reveal"><span class="blog-cat">${b.category||'Travel'}</span><div class="blog-title">${b.title}</div><p class="blog-excerpt">${b.excerpt||''}</p><span class="blog-date">${b.date||''}</span></div>`).join(''):`<div class="no-data" style="grid-column:1/-1">No blog posts yet.</div>`;
+  document.getElementById('footer-brand-name').textContent=D.siteName;
+  document.getElementById('footer-copy-name').textContent=D.siteName;
+  document.getElementById('footer-tagline').textContent=D.footerTagline;
+  document.getElementById('footer-year').textContent=new Date().getFullYear();
+  document.getElementById('footer-contact').innerHTML=[D.address?`<div class="footer-contact-item"><i class="fa fa-location-dot"></i><span>${D.address}</span></div>`:'',D.email?`<div class="footer-contact-item"><i class="fa fa-envelope"></i><a href="mailto:${D.email}">${D.email}</a></div>`:'',D.phone?`<div class="footer-contact-item"><i class="fa fa-phone"></i><span>${D.phone}</span></div>`:''  ].join('')||'<div class="footer-contact-item">Contact info coming soon.</div>';
+  document.getElementById('social-links').innerHTML=[{k:'facebook',i:'fa-brands fa-facebook-f'},{k:'instagram',i:'fa-brands fa-instagram'},{k:'youtube',i:'fa-brands fa-youtube'},{k:'linkedin',i:'fa-brands fa-linkedin-in'},{k:'tripadvisor',i:'fa-brands fa-tripadvisor'}].filter(s=>D[s.k]).map(s=>`<a href="${D[s.k]}" class="social-link" target="_blank"><i class="${s.i}"></i></a>`).join('');
+  setTimeout(()=>{const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));},100);
+}
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>60));
+function toggleMobile(){document.getElementById('mobile-menu').classList.toggle('open');}
+renderSite();
+</script>
+</body>
+</html>
