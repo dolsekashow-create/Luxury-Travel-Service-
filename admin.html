@@ -1149,6 +1149,9 @@ async function savePackage(id) {
     overview_ar: document.getElementById('m-pkg-ov-ar').value,
     image_url: document.getElementById('m-pkg-img').value || null,
     sort_order: parseInt(document.getElementById('m-pkg-sort').value) || 0,
+    // BUG FIX: is_active was missing — index.html fetches with .eq('is_active', true)
+    // so new packages would never appear on the site
+    is_active: true,
     updated_at: new Date().toISOString()
   };
 
@@ -1358,7 +1361,16 @@ function openBlogModal(b) {
     </div>
     <div class="form-row">
       <div class="field"><label>Slug</label><input type="text" id="m-blog-slug" value="${escapeAttr(b?.slug || '')}" /></div>
+      <div class="field" style="justify-content:flex-end;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:22px;font-size:.65rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">
+          <input type="checkbox" id="m-blog-published" ${b ? (b.is_published !== false ? 'checked' : '') : 'checked'} style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer;" />
+          Published (visible on site)
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
       <div class="field"><label>Category (EN)</label><input type="text" id="m-blog-cat-en" value="${escapeAttr(b?.category_en || 'Guides')}" /></div>
+      <div class="field"><label>Category (AR)</label><input type="text" id="m-blog-cat-ar" dir="rtl" value="${escapeAttr(b?.category_ar || 'أدلة')}" /></div>
     </div>
     <div class="form-row">
       <div class="field"><label>Title (EN)</label><input type="text" id="m-blog-title-en" value="${escapeAttr(b?.title_en || '')}" /></div>
@@ -1394,6 +1406,7 @@ function openBlogModal(b) {
 }
 
 async function saveBlog(id) {
+  const isPublished = document.getElementById('m-blog-published').checked;
   const data = {
     slug: document.getElementById('m-blog-slug').value || ('post-' + Date.now()),
     title_en: document.getElementById('m-blog-title-en').value,
@@ -1403,14 +1416,23 @@ async function saveBlog(id) {
     content_en: document.getElementById('m-blog-content-en').value,
     content_ar: document.getElementById('m-blog-content-ar').value,
     category_en: document.getElementById('m-blog-cat-en').value,
-    image_url: document.getElementById('m-blog-img').value || null
+    // BUG FIX: category_ar was missing — index.html reads p.category_ar in Arabic mode
+    category_ar: document.getElementById('m-blog-cat-ar').value,
+    image_url: document.getElementById('m-blog-img').value || null,
+    // BUG FIX: is_published was missing — index.html filters .eq('is_published', true)
+    is_published: isPublished
   };
 
-  const { error } = id
-    ? await sb.from('blog_posts').update(data).eq('id', id)
-    : await sb.from('blog_posts').insert(data);
+  let result;
+  if (id) {
+    result = await sb.from('blog_posts').update(data).eq('id', id);
+  } else {
+    // BUG FIX: published_at must be set on insert so ordering works
+    data.published_at = new Date().toISOString();
+    result = await sb.from('blog_posts').insert(data);
+  }
 
-  if (error) return showError(error.message);
+  if (result.error) return showError(result.error.message);
   closeModal();
   showSaved();
   renderBlog();
