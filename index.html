@@ -2117,21 +2117,30 @@
         // 2. Tours
         if (toursResult.data && toursResult.data.length > 0) {
           translations.en.featuredTours.items = toursResult.data.map(t => ({
+            id: t.id,
             slug: t.slug,
             title: t.title_en,
             duration: t.duration_en,
             excerpt: t.excerpt_en,
+            overview: t.overview_en || '',
             image: t.image_url,
+            price: t.price,
             href: `#tour-${t.slug}`
           }));
           translations.ar.featuredTours.items = toursResult.data.map(t => ({
+            id: t.id,
             slug: t.slug,
             title: t.title_ar,
             duration: t.duration_ar,
             excerpt: t.excerpt_ar,
+            overview: t.overview_ar || '',
             image: t.image_url,
+            price: t.price,
             href: `#tour-${t.slug}`
           }));
+
+          // Store raw tours for detail modal (with days/inclusions/gallery loaded on demand)
+          window._rawTours = toursResult.data;
         }
 
         // 3. Destinations
@@ -2307,12 +2316,11 @@
     function renderTours() {
       const t = translations[currentLang];
       const grid = document.getElementById('featuredTours');
-      // Use Supabase data if available, otherwise fall back to default t.tours
       const toursData = (t.featuredTours && t.featuredTours.items && t.featuredTours.items.length > 0)
         ? t.featuredTours.items
         : t.tours;
       grid.innerHTML = toursData.map((tour, i) => `
-        <div class="tour-card">
+        <div class="tour-card" onclick="openTourDetailModal('${tour.id || ''}', ${i})" style="cursor:pointer;">
           <div class="tour-image">
             <div class="placeholder-img" ${tour.image ? `style="background-image:url(${tour.image});background-size:cover;background-position:center;"` : ''}>
               <span class="placeholder-label" ${tour.image ? 'style="display:none"' : ''}>Tour Image ${i + 1}</span>
@@ -2326,7 +2334,7 @@
             <h3 class="tour-title">${tour.title}</h3>
             <p class="tour-excerpt">${tour.excerpt}</p>
             <div class="tour-footer">
-              <span class="tour-from">${t.featured ? t.featured.from : ''}</span>
+              <span class="tour-from">${t.featured ? t.featured.from : ''} <strong>${tour.price || ''}</strong></span>
               <span class="tour-cta">${t.featured ? t.featured.checkAvail : ''} <span class="arrow">→</span></span>
             </div>
           </div>
@@ -2591,6 +2599,115 @@
 
       // Scroll modal to top
       document.getElementById('modal').scrollTop = 0;
+    }
+
+    async function openTourDetailModal(tourId, fallbackIdx) {
+      const t = translations[currentLang];
+      const lang = currentLang;
+
+      // Get tour data from translations
+      const toursData = (t.featuredTours && t.featuredTours.items) ? t.featuredTours.items : t.tours;
+      const tour = tourId ? toursData.find(x => String(x.id) === String(tourId)) : toursData[fallbackIdx];
+      if (!tour) return;
+
+      // Show modal with loading state
+      const content = document.getElementById('modalContent');
+      content.innerHTML = `
+        <div class="modal-hero">
+          <div class="placeholder-img" ${tour.image ? `style="background-image:url(${tour.image});background-size:cover;background-position:center;"` : ''}>
+            <span class="placeholder-label" ${tour.image ? 'style="display:none"' : ''}>${tour.title}</span>
+          </div>
+          <div class="modal-hero-title">
+            <h2>${tour.title}</h2>
+            <p><i data-lucide="clock" style="width:14px;height:14px;vertical-align:middle;"></i> ${tour.duration}</p>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="price-banner">
+            <div class="price-banner-text">
+              <span class="price-banner-label">${t.packages ? t.packages.startingFrom : 'Starting from'}</span>
+              <span class="price-banner-amount">${tour.price || ''}</span>
+              <span class="price-banner-note">${t.packages ? t.packages.perPerson : 'per person'}</span>
+            </div>
+            <a href="#contact" class="btn-book" onclick="closeModal()">${t.packages ? t.packages.bookNow : 'Book Now'}</a>
+          </div>
+          ${tour.overview ? `
+          <div class="modal-section">
+            <h3 class="modal-section-title">${t.packages ? t.packages.overview : 'Overview'}</h3>
+            <p class="modal-intro">${tour.overview}</p>
+          </div>` : ''}
+          <div id="tour-modal-details" style="text-align:center;padding:2rem;color:var(--color-ink-muted);font-size:.85rem;letter-spacing:1px;">Loading details...</div>
+        </div>
+      `;
+
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.classList.add('modal-open');
+      if (window.lucide) lucide.createIcons();
+      document.getElementById('modal').scrollTop = 0;
+
+      // Load related data if we have a real id
+      if (!tourId) {
+        document.getElementById('tour-modal-details').innerHTML = '';
+        return;
+      }
+
+      const [dRes, iRes, gRes] = await Promise.all([
+        sb.from('tour_days').select('*').eq('tour_id', tourId).order('sort_order'),
+        sb.from('tour_inclusions').select('*').eq('tour_id', tourId),
+        sb.from('tour_gallery').select('*').eq('tour_id', tourId).order('sort_order')
+      ]);
+
+      const days = dRes.data || [];
+      const included = (iRes.data || []).filter(x => x.is_included);
+      const excluded = (iRes.data || []).filter(x => !x.is_included);
+      const gallery = gRes.data || [];
+
+      const isAr = lang === 'ar';
+
+      let html = '';
+
+      if (days.length) {
+        html += `
+          <div class="modal-section">
+            <h3 class="modal-section-title">${t.packages ? t.packages.itinerary : 'Itinerary'}</h3>
+            ${days.map(d => `
+              <div class="day-card">
+                <div class="day-card-header">
+                  <span class="day-number">${isAr ? d.day_number_ar : d.day_number_en}</span>
+                  <span class="day-title">${isAr ? d.title_ar : d.title_en}</span>
+                </div>
+                <p class="day-desc">${isAr ? d.description_ar : d.description_en}</p>
+              </div>
+            `).join('')}
+          </div>`;
+      }
+
+      if (included.length || excluded.length) {
+        html += `
+          <div class="info-grid">
+            <div class="info-box">
+              <h4 class="info-box-title"><i data-lucide="check-circle"></i> ${t.packages ? t.packages.included : 'Included'}</h4>
+              <ul class="info-list">${included.map(x => `<li>${isAr ? x.text_ar : x.text_en}</li>`).join('')}</ul>
+            </div>
+            <div class="info-box">
+              <h4 class="info-box-title"><i data-lucide="x-circle"></i> ${t.packages ? t.packages.excluded : 'Not Included'}</h4>
+              <ul class="info-list excluded">${excluded.map(x => `<li>${isAr ? x.text_ar : x.text_en}</li>`).join('')}</ul>
+            </div>
+          </div>`;
+      }
+
+      if (gallery.length) {
+        html += `
+          <div class="modal-section">
+            <h3 class="modal-section-title">Gallery</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">
+              ${gallery.map(g => `<img src="${g.image_url}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:2px;" />`).join('')}
+            </div>
+          </div>`;
+      }
+
+      document.getElementById('tour-modal-details').innerHTML = html || '';
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeModal() {
