@@ -277,6 +277,16 @@
             <input type="hidden" id="h-img-url" />
           </div>
 
+          <div class="field" style="margin-top:8px;">
+            <label><i class="fa fa-film" style="color:var(--gold);margin-inline-end:6px;"></i> Hero Background Video URL</label>
+            <input type="text" id="h-video-url" placeholder="https://example.com/video.mp4  or  https://example.com/video.webm" />
+            <span style="font-size:.6rem;color:var(--muted);margin-top:4px;display:block;">الصق رابط الفيديو مباشرة (mp4 أو webm). لو في فيديو، هيشتغل بدل الصورة كـ background.</span>
+            <div id="hero-video-preview" style="display:none;margin-top:12px;position:relative;">
+              <video id="hero-preview-video" src="" autoplay muted loop playsinline style="width:100%;max-height:200px;object-fit:cover;display:block;"></video>
+              <button onclick="removeHeroVideo()" style="position:absolute;top:8px;right:8px;background:rgba(10,10,15,.8);border:1px solid rgba(224,82,82,.4);color:var(--danger);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;"><i class="fa fa-xmark"></i></button>
+            </div>
+          </div>
+
           <button class="btn btn-primary" onclick="saveHero()" data-i18n-text="hero.save">Save Hero Section</button>
         </div>
       </div>
@@ -656,6 +666,20 @@ async function loadHero() {
     document.getElementById('hero-img-preview').style.display = 'block';
     document.getElementById('hero-preview-img').src = data.hero_image_url;
   }
+
+  // Load video URL
+  const videoUrl = data.hero_video_url || '';
+  document.getElementById('h-video-url').value = videoUrl;
+  if (videoUrl) {
+    document.getElementById('hero-video-preview').style.display = 'block';
+    document.getElementById('hero-preview-video').src = videoUrl;
+  }
+}
+
+function removeHeroVideo() {
+  document.getElementById('h-video-url').value = '';
+  document.getElementById('hero-preview-video').src = '';
+  document.getElementById('hero-video-preview').style.display = 'none';
 }
 
 async function saveHero() {
@@ -667,6 +691,7 @@ async function saveHero() {
     hero_highlight_en: document.getElementById('h-highlight-en').value,
     hero_highlight_ar: document.getElementById('h-highlight-ar').value,
     hero_image_url: document.getElementById('h-img-url').value || null,
+    hero_video_url: document.getElementById('h-video-url').value.trim() || null,
     updated_at: new Date().toISOString()
   };
 
@@ -674,6 +699,25 @@ async function saveHero() {
   if (error) return showError(error.message);
   showSaved();
 }
+
+// Live preview for video URL input
+document.addEventListener('DOMContentLoaded', () => {
+  const videoInput = document.getElementById('h-video-url');
+  if (videoInput) {
+    videoInput.addEventListener('input', () => {
+      const val = videoInput.value.trim();
+      const previewWrap = document.getElementById('hero-video-preview');
+      const previewVideo = document.getElementById('hero-preview-video');
+      if (val) {
+        previewVideo.src = val;
+        previewWrap.style.display = 'block';
+      } else {
+        previewVideo.src = '';
+        previewWrap.style.display = 'none';
+      }
+    });
+  }
+});
 
 // =============================================
 // ABOUT
