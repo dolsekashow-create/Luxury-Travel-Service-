@@ -847,6 +847,385 @@
     }
 
     /* ================================
+       PACKAGES (Tour Programs)
+       ================================ */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 768px) { .packages-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .packages-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .package-card {
+      background: white;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.5s;
+      cursor: pointer;
+      position: relative;
+    }
+    .package-card:hover {
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+      transform: translateY(-6px);
+    }
+    .package-image {
+      aspect-ratio: 16/10;
+      overflow: hidden;
+      position: relative;
+    }
+    .package-image .placeholder-img {
+      width: 100%; height: 100%;
+      transition: transform 0.7s;
+    }
+    .package-card:hover .package-image .placeholder-img { transform: scale(1.1); }
+    .package-badge {
+      position: absolute;
+      top: 1rem;
+      inset-inline-start: 1rem;
+      background: var(--color-accent);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 500;
+      z-index: 2;
+    }
+    .package-body { padding: 2rem; }
+    .package-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      color: var(--color-ink-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .package-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .package-title {
+      font-size: 1.6rem;
+      color: var(--color-ink);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+    .package-card:hover .package-title { color: var(--color-accent); }
+    .package-excerpt {
+      font-size: 0.9rem;
+      color: var(--color-ink-soft);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .package-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--color-sand-100);
+    }
+    .package-price {
+      display: flex;
+      flex-direction: column;
+    }
+    .package-price-label {
+      font-size: 0.7rem;
+      color: var(--color-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .package-price-amount {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+    .package-cta {
+      color: var(--color-accent);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+    }
+
+    /* ================================
+       MODAL
+       ================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 20, 16, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-y: auto;
+    }
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: var(--color-sand-50);
+      max-width: 900px;
+      width: 100%;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      animation: slideUp 0.4s ease-out;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      inset-inline-end: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: rgba(255,255,255,0.95);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s;
+      color: var(--color-ink);
+    }
+    .modal-close:hover {
+      background: var(--color-accent);
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .modal-hero {
+      aspect-ratio: 16/7;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-hero .placeholder-img { width: 100%; height: 100%; }
+    .modal-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, var(--color-sand-50) 0%, transparent 70%);
+    }
+    .modal-hero-title {
+      position: absolute;
+      bottom: 2rem;
+      inset-inline-start: 2rem;
+      inset-inline-end: 2rem;
+      z-index: 2;
+    }
+    .modal-hero-title h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--color-ink);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .modal-hero-title p {
+      color: var(--color-ink-soft);
+      font-size: 0.9rem;
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+    @media (min-width: 768px) { .modal-body { padding: 3rem; } }
+
+    .modal-section {
+      margin-bottom: 2.5rem;
+    }
+    .modal-section:last-child { margin-bottom: 0; }
+    .modal-section-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--color-ink);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--color-accent);
+      display: inline-block;
+    }
+    .modal-intro {
+      font-size: 1rem;
+      color: var(--color-ink-soft);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .day-card {
+      background: white;
+      border-inline-start: 3px solid var(--color-accent);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .day-card-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .day-number {
+      font-family: var(--font-display);
+      color: var(--color-accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .day-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--color-ink);
+      line-height: 1.3;
+    }
+    .day-desc {
+      font-size: 0.9rem;
+      color: var(--color-ink-soft);
+      line-height: 1.6;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    @media (min-width: 640px) { .info-grid { grid-template-columns: 1fr 1fr; } }
+
+    .info-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .info-box-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--color-ink);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .info-box-title svg { color: var(--color-accent); }
+    .info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .info-list li {
+      font-size: 0.85rem;
+      color: var(--color-ink-soft);
+      padding-inline-start: 1.25rem;
+      position: relative;
+      line-height: 1.5;
+    }
+    .info-list li::before {
+      content: '✓';
+      position: absolute;
+      inset-inline-start: 0;
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+    .info-list.excluded li::before { content: '✗'; color: #c44; }
+
+    .price-banner {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+      color: white;
+      padding: 1.5rem 2rem;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .price-banner-text { display: flex; flex-direction: column; gap: 0.25rem; }
+    .price-banner-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.9;
+    }
+    .price-banner-amount {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .price-banner-note {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+    .price-banner .btn-book {
+      background: white;
+      color: var(--color-accent);
+      padding: 0.85rem 1.75rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .price-banner .btn-book:hover {
+      background: var(--color-ink);
+      color: white;
+    }
+
+    .hotel-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    @media (min-width: 640px) { .hotel-list { grid-template-columns: 1fr 1fr; } }
+    .hotel-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      font-size: 0.85rem;
+    }
+    .hotel-city {
+      font-family: var(--font-display);
+      color: var(--color-accent);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .hotel-name { color: var(--color-ink-soft); }
+
+    body.modal-open { overflow: hidden; }
+
+    /* ================================
        UTILITY
        ================================ */
     .icon-sm { width: 14px; height: 14px; }
@@ -955,6 +1334,28 @@
       <div class="types-grid" id="typesGrid"></div>
     </div>
   </section>
+
+  <!-- ============= TOUR PACKAGES ============= -->
+  <section class="section section-bg-light" id="packages">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">✦ <span data-i18n="packages.eyebrow">Tour Packages</span> ✦</span>
+        <h2 class="section-title" data-i18n="packages.title">Curated multi-day journeys across Egypt</h2>
+        <p class="section-subtitle" data-i18n="packages.subtitle">Spiritual journeys, biblical trails, and travel services — designed for unforgettable experiences.</p>
+      </div>
+      <div class="packages-grid" id="packagesGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============= MODAL ============= -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+    <div class="modal" id="modal">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">
+        <i data-lucide="x"></i>
+      </button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 
   <!-- ============= TRAVEL GUIDES ============= -->
   <section class="section section-bg-light">
@@ -1102,6 +1503,154 @@
             { category: "Guides", title: "Sample Blog Post Title Three", date: "November 12, 2025" }
           ]
         },
+        packages: {
+          eyebrow: "Tour Packages",
+          title: "Curated multi-day journeys across Egypt",
+          subtitle: "Spiritual journeys, biblical trails, and travel services — designed for unforgettable experiences.",
+          viewDetails: "View Details",
+          bookNow: "Book Now",
+          startingFrom: "Starting from",
+          perPerson: "per person",
+          duration: "Duration",
+          days: "Days",
+          itinerary: "Itinerary",
+          included: "What's Included",
+          excluded: "Not Included",
+          hotels: "Accommodation",
+          overview: "Overview",
+          items: [
+            {
+              id: "steps-of-jesus",
+              title: "In the Footsteps of Jesus",
+              badge: "Christian Pilgrimage",
+              duration: "9 Days",
+              price: "$2,500",
+              excerpt: "An elite Christian pilgrimage tour following the path of the Holy Family through Egypt — from Cairo's ancient Coptic churches to the monasteries of Wadi El Natrun, Alexandria, and Mount Sinai.",
+              overview: "The Holy Family's journey through Egypt lasted more than three and a half years. This pilgrimage takes you to the sacred sites where Jesus, Mary, and Joseph are believed to have stayed — blessing the country and drinking from the Nile. You'll see parts of Egypt few tourists visit, and meet Egyptian people in a way that's both inspiring and humbling.",
+              days: [
+                { num: "Day 1", title: "Arrive in Cairo", desc: "Met at the airport by our representative and transferred to your hotel. Settle in, get a brief orientation of the area, and review tomorrow's plan." },
+                { num: "Day 2", title: "Giza Pyramids & The Egyptian Museum", desc: "Visit the Giza Plateau — home of the Great Pyramids of Cheops, Chephren, and Mycerinus, the only surviving wonder of the Ancient World. Optional entry inside one pyramid (extra ticket). See the Sphinx, then lunch nearby. Afternoon at the Egyptian Museum with its Pharaonic collection of over 120,000 artifacts including treasures from Tutankhamun's tomb." },
+                { num: "Day 3", title: "Coptic Cairo, Virgin Mary Tree, Shadow of Jesus", desc: "Visit Old Cairo within the Roman fortress of Babylon, where Copts built their early churches. See the Hanging Church (El Muallaqa), Saint Sergius Church (where the Holy Family sheltered during their flight to Egypt), and Ben Ezra Synagogue. Then to Matareya to visit the Virgin Mary Tree, a famous pilgrimage site associated with the Holy Family's rest in Egypt." },
+                { num: "Day 4", title: "Desert Monks at Wadi El Natrun", desc: "Travel to Wadi El-Natrun, the Valley of Natrun Salt, 100 km from Cairo — one of the most renowned ancient Coptic monastic sites. Visit the Monastery of Saint Bishoy, El-Sourian (Syrian) Monastery, and Saint Mary (Al-Baramos) Monastery, founded around 335 AD. Continue to Alexandria for overnight." },
+                { num: "Day 5", title: "Alexandria — Birthplace of Christianity in Egypt", desc: "Explore Alexandria, where Saint Mark introduced Christianity during the Roman era. Visit Saint Mark's Coptic Orthodox Cathedral and the Catacomb Tomb — the largest underground tomb in Egypt and the historical residence of the Pope of Alexandria." },
+                { num: "Day 6", title: "Mount Sinai, Saint Catherine Monastery & Moses Springs", desc: "Six-hour drive to the Sinai Peninsula. Stop at Moses Springs (Oyun Musa), where Moses is said to have made the brackish water drinkable. Arrive at Saint Catherine's, dinner and overnight at The Holy Valley Hotel." },
+                { num: "Day 7", title: "Sinai Mountain & Saint Catherine's Monastery", desc: "Early morning ascent of Mount Sinai (Jabal Musa) — believed to be where Moses received the Ten Commandments. Return to hotel for breakfast and rest, then visit Saint Catherine's Monastery — the oldest continuously inhabited Christian monastery, with over seventeen centuries of history." },
+                { num: "Day 8", title: "Return to Cairo", desc: "After breakfast, check out and drive back to Cairo (about six hours). Check into your Cairo hotel for overnight." },
+                { num: "Day 9", title: "Departure", desc: "After breakfast, our representative will escort you to the airport according to your flight time. Wish to see you again in Egypt." }
+              ],
+              included: [
+                "5 nights in 5-star hotels in Cairo with breakfast",
+                "1 night in luxury 5-star hotel in Alexandria",
+                "2 nights at Saint Catherine hotel on full-board basis",
+                "Meet & assist at the airport upon arrival & departure",
+                "All transport and transfers in air-conditioned vehicle",
+                "Professional Egyptologist guide for sightseeing tours",
+                "Meals as indicated in the itinerary",
+                "Entrance fees for all mentioned sightseeing",
+                "All taxes"
+              ],
+              excluded: [
+                "International flight tickets",
+                "Visa fees",
+                "Tips",
+                "Any service not mentioned"
+              ],
+              hotels: [
+                { city: "Cairo", name: "Crown Plaza West Cairo 5★ or Steigenberger Cairo 5★" },
+                { city: "Alexandria", name: "Hilton Corniche 5★ or similar" },
+                { city: "Saint Catherine", name: "Morgenland Holy Village 3★ or similar" }
+              ]
+            },
+            {
+              id: "spiritual-egypt",
+              title: "Explore Spiritual Egypt",
+              badge: "Spiritual Journey",
+              duration: "10 Days",
+              price: "$3,500",
+              excerpt: "A 10-day sacred journey to the Land of the Pharaohs — healing, meditation, sacred music, and yoga. Connect with the seven chakras of the Nile and awaken higher consciousness.",
+              overview: "Ancient Egyptians saw the Nile as the earthly mirror of the Milky Way and their land as a sacred reflection of heaven. This journey aligns you with Divine mother energy, awakens your inner power, and connects you with the higher consciousness of ancient Egypt. Through ten days, we link with the seven chakras of the Nile and awaken the higher chakras.",
+              days: [
+                { num: "Day 1", title: "Welcome to the Land of Pharaohs — Cairo", desc: "Met at the airport by our representative and transferred to your hotel in an air-conditioned vehicle. Settle in and review tomorrow's plan." },
+                { num: "Day 2", title: "Aswan & Philae Island", desc: "Breakfast then transfer to the airport for your flight to Aswan. Aswan was the birthplace of Khnum, the ram-headed god of creation — many experience a 'new birth' here. Visit the temple dedicated to Isis, goddess of love, peace, and motherhood, then begin your Nile cruise." },
+                { num: "Day 3", title: "Kom Ombo & Edfu — Navel Chakra", desc: "Morning private opening at the Mother Isis temple, then two private hours at Philae Temple immersed in goddess energy. Cruise from Aswan to Kom Ombo (dedicated to Sobek the Crocodile and Ra-Hor-Akhty) and Edfu, working with the Navel Chakra to release fear and negativity." },
+                { num: "Day 4", title: "Solar Plexus Chakra Healing — Sekhmet Meeting", desc: "After breakfast onboard, visit Karnak — a miniature representation of the cosmos. Enter Sekhmet's chapel through her seven doors to receive the Lioness Goddess's healing and activation energies. Continue to Luxor Temple, connected to the Third Chakra." },
+                { num: "Day 5", title: "Luxor — Valley of the Kings & Queen Hatshepsut", desc: "Disembark cruise. Adventure to the Valley of the Kings where the Pharaohs were buried, then to the Memnon Statues and Queen Hatshepsut's temple. Lunch at a nearby restaurant, then check into your Luxor hotel." },
+                { num: "Day 6", title: "Abydos & Dendera — Heart Chakra", desc: "Private vehicle tour with your Egyptologist. Abydos houses Seti I's magnificent temple honoring Osiris, with vivid wall and ceiling paintings. Continue to Dendera Temple, dedicated to Hathor — goddess of fertility, healing, and music. See the famous relief of Cleopatra VII and her son Caesarion. Return to Luxor for Nile cruise check-in." },
+                { num: "Day 7", title: "Cairo by Air", desc: "Breakfast then transfer to Luxor airport to fly back to Cairo. Met and assisted by our representative on arrival, transferred to your hotel." },
+                { num: "Day 8", title: "Saqqara & Khufu Pyramid — Throat & Third Eye Chakras", desc: "Early morning or late afternoon (subject to availability): the Great Pyramid of Khufu all to yourself, with two hours private access to the King's Chamber for healing meditation to open the Third Eye chakra. Continue to Saqqara, linked to the Throat Chakra and the Etheric world of Thoth, God of Wisdom. Visit the sacred Apis bulls in the Serapeum." },
+                { num: "Day 9", title: "Grand Egyptian Museum, Old Cairo & Khan El-Khalili", desc: "Visit the Grand Egyptian Museum (GEM) — the largest archaeological museum devoted to a single culture in the world, home to Tutankhamun's tomb treasures. After lunch, walking tour of Old Cairo through the Gate of El Nasr along El Moaezz Street, the largest Islamic open-air museum in the world. End at Khan El-Khalili bazaar." },
+                { num: "Day 10", title: "Departure", desc: "After breakfast, our representative will escort you to the airport for your flight home." }
+              ],
+              included: [
+                "3 nights' accommodation in 5-star luxury Nile cruise",
+                "4 nights' accommodation in 5-star hotel in Cairo",
+                "2 nights bed & breakfast in 5★ hotel in Luxor",
+                "All transport and transfers in air-conditioned vehicle",
+                "Private exclusive visit to Khufu Pyramid",
+                "Private exclusive visit to Philae Temple",
+                "Domestic flight Cairo–Luxor / Aswan–Cairo",
+                "Sightseeing tours as detailed in the itinerary",
+                "Entry fees for all mentioned sites",
+                "Professional Egyptologist guide",
+                "All airport arrivals & departure transfer service",
+                "Meals as indicated in the itinerary",
+                "All taxes"
+              ],
+              excluded: [
+                "International flight tickets",
+                "Visa fees",
+                "Tips",
+                "Any service not mentioned"
+              ],
+              hotels: [
+                { city: "Cairo", name: "Crown Plaza West Cairo 5★ or similar" },
+                { city: "Nile Cruise", name: "May Fair 5★ or similar" },
+                { city: "Luxor", name: "Hilton Luxor 4★ or similar" }
+              ]
+            },
+            {
+              id: "travel-services",
+              title: "LTS Travel Services",
+              badge: "Concierge Services",
+              duration: "On-Demand",
+              price: "Custom",
+              excerpt: "Complete travel services in Egypt — from airline tickets and visas to private transfers, hotel reservations, Nile cruises, and medical tourism packages. Everything you need before, during, and after your trip.",
+              overview: "Whether you're arriving in Egypt or planning your trip, LTS provides every travel service you might need. With our deluxe vehicle fleet across Cairo, Hurghada, Sharm El Sheikh, Aswan, Luxor, and Alexandria, plus 100+ full-time employees, we handle every detail of your journey.",
+              days: [
+                { num: "Service", title: "Airline Ticket Service", desc: "Tell us your destinations and travel dates. We'll reserve the right flight ticket on your chosen airline." },
+                { num: "Service", title: "Visa Service", desc: "Skip the airport queue — provide your passport details in advance and we'll issue your Egyptian tourist visa, ready upon arrival or before your trip." },
+                { num: "Service", title: "Meet & Assist & Transfers", desc: "Private transfers from any Egyptian airport (Cairo, Giza, Hurghada, Sharm El Sheikh, Luxor, Aswan, Alexandria) to your hotel. Our representative meets you at arrivals with a name placard and drives you directly to your destination — no shared rides, no extra stops." },
+                { num: "Service", title: "Hotel Reservations", desc: "We've negotiated the best rates with all Egyptian hotels. Tell us your destination, dates, and budget — we'll find you the best lodging deals for your stay." },
+                { num: "Service", title: "Excursions", desc: "Cultural, adventure, beach & sun, night tours, safari, snorkeling, diving — every kind of trip you'd want during your stay. Just email us your preferred days, times, and group size." },
+                { num: "Service", title: "Medical & Therapeutic Packages", desc: "Full medical tourism: ambulance from airport to hospital, treatment plans with leading Middle East physicians, full radiology and laboratory services, and competitive pricing across all specialties." },
+                { num: "Service", title: "Nile Cruises", desc: "A dedicated cruise division managing all ground operations — transfers, pre/post itineraries, and shore excursions. Choose from ultra-luxury Nile cruises, traditional Dahabiya sailing boats (4 nights Luxor–Aswan or 3 nights Aswan–Luxor), or Lake Nasser trips." },
+                { num: "Service", title: "Group Tour Series", desc: "Tour groups operated to precise specifications — and, if needed, under specific corporate identities. Wide product range with guaranteed accommodations at competitive prices." }
+              ],
+              included: [
+                "24/7 customer support",
+                "English & Arabic speaking representatives",
+                "Professional drivers and tour guides",
+                "Air-conditioned modern vehicle fleet",
+                "Coverage across all major Egyptian cities",
+                "Competitive negotiated rates",
+                "Personalized custom itineraries",
+                "Visa assistance and processing"
+              ],
+              excluded: [
+                "International flight tickets (unless requested)",
+                "Personal expenses",
+                "Optional activities not pre-booked",
+                "Tips and gratuities"
+              ],
+              hotels: [
+                { city: "Cairo", name: "Premium 4★ and 5★ partner hotels" },
+                { city: "Red Sea", name: "Hurghada & Sharm El Sheikh resorts" },
+                { city: "Upper Egypt", name: "Luxor & Aswan luxury accommodations" },
+                { city: "Mediterranean", name: "Alexandria coastal hotels" }
+              ]
+            }
+          ]
+        },
         footer: {
           tagline: "Egypt Tours Agency",
           linksTitle: "Useful Links",
@@ -1192,6 +1741,154 @@
             { category: "أدلة", title: "عنوان المقال الأول للمدونة", date: "9 ديسمبر 2025" },
             { category: "أدلة", title: "عنوان المقال الثاني للمدونة", date: "18 نوفمبر 2025" },
             { category: "أدلة", title: "عنوان المقال الثالث للمدونة", date: "12 نوفمبر 2025" }
+          ]
+        },
+        packages: {
+          eyebrow: "البرامج السياحية",
+          title: "رحلات متعددة الأيام مصممة بعناية في جميع أنحاء مصر",
+          subtitle: "رحلات روحانية، مسارات دينية، وخدمات سفر — مصممة لتجارب لا تُنسى.",
+          viewDetails: "عرض التفاصيل",
+          bookNow: "احجز الآن",
+          startingFrom: "ابتداءً من",
+          perPerson: "للشخص الواحد",
+          duration: "المدة",
+          days: "أيام",
+          itinerary: "البرنامج اليومي",
+          included: "شامل",
+          excluded: "غير شامل",
+          hotels: "الإقامة",
+          overview: "نظرة عامة",
+          items: [
+            {
+              id: "steps-of-jesus",
+              title: "على خطى السيد المسيح",
+              badge: "حج مسيحي",
+              duration: "9 أيام",
+              price: "$2,500",
+              excerpt: "رحلة حج مسيحية مميزة تتبع مسار العائلة المقدسة في مصر — من كنائس القاهرة القبطية القديمة إلى أديرة وادي النطرون، الإسكندرية، وجبل سيناء.",
+              overview: "استمرت رحلة العائلة المقدسة في مصر أكثر من ثلاث سنوات ونصف. تأخذك هذه الرحلة إلى المواقع المقدسة التي يُعتقد أن السيد المسيح ومريم العذراء ويوسف أقاموا فيها — حيث باركوا البلاد وشربوا من النيل. ستزور أجزاء من مصر قلما يراها السائحون، وتلتقي بالمصريين بطريقة تبعث على الإلهام والتواضع.",
+              days: [
+                { num: "اليوم الأول", title: "الوصول إلى القاهرة", desc: "يستقبلك مندوبنا في المطار وينقلك إلى الفندق. الاستقرار، تعريفك بالمنطقة المحيطة، ومراجعة برنامج الغد." },
+                { num: "اليوم الثاني", title: "أهرامات الجيزة والمتحف المصري", desc: "زيارة هضبة الجيزة — موطن أهرامات خوفو وخفرع ومنقرع، الأعجوبة الوحيدة المتبقية من عجائب الدنيا السبع. إمكانية دخول داخل أحد الأهرامات (تذكرة إضافية). مشاهدة أبو الهول، ثم الغداء بمطعم قريب. بعد الظهر زيارة المتحف المصري بمجموعته الفرعونية التي تضم أكثر من 120,000 قطعة أثرية بما فيها كنوز مقبرة توت عنخ آمون." },
+                { num: "اليوم الثالث", title: "القاهرة القبطية وشجرة مريم العذراء", desc: "زيارة القاهرة القديمة داخل أسوار حصن بابليون الروماني، حيث بنى الأقباط كنائسهم الأولى. الكنيسة المعلقة، كنيسة القديس سرجيوس (حيث لجأت العائلة المقدسة في رحلتها إلى مصر)، وكنيس بن عزرا. ثم إلى منطقة المطرية لزيارة شجرة مريم العذراء، الموقع الشهير المرتبط براحة العائلة المقدسة في مصر." },
+                { num: "اليوم الرابع", title: "رهبان الصحراء في وادي النطرون", desc: "السفر إلى وادي النطرون على بُعد 100 كم من القاهرة — أحد أشهر مواقع الأديرة القبطية القديمة. زيارة دير الأنبا بيشوي، الدير السرياني، ودير الأنبا براموس الذي تأسس حوالي عام 335 ميلادي. ثم الانتقال إلى الإسكندرية للمبيت." },
+                { num: "اليوم الخامس", title: "الإسكندرية — مهد المسيحية في مصر", desc: "استكشاف الإسكندرية حيث أدخل القديس مرقس المسيحية في العصر الروماني. زيارة كاتدرائية القديس مرقس القبطية الأرثوذكسية، ومقابر الكتاكومب — أكبر مقبرة تحت الأرض في مصر والمقر التاريخي لبابا الإسكندرية." },
+                { num: "اليوم السادس", title: "جبل سيناء، دير سانت كاترين، وعيون موسى", desc: "رحلة لمدة 6 ساعات إلى شبه جزيرة سيناء. التوقف عند عيون موسى، حيث يُقال إن النبي موسى جعل المياه المالحة صالحة للشرب. الوصول إلى سانت كاترين، العشاء والمبيت في فندق الوادي المقدس." },
+                { num: "اليوم السابع", title: "جبل سيناء ودير سانت كاترين", desc: "الصعود المبكر إلى جبل سيناء (جبل موسى) — حيث يُعتقد أن النبي موسى تلقى الوصايا العشر. العودة للفندق للإفطار والراحة، ثم زيارة دير سانت كاترين — أقدم دير مسيحي مأهول باستمرار، بتاريخ يمتد لأكثر من 17 قرنًا." },
+                { num: "اليوم الثامن", title: "العودة إلى القاهرة", desc: "بعد الإفطار، تسجيل المغادرة والعودة إلى القاهرة (حوالي 6 ساعات). تسجيل الدخول في فندق القاهرة للمبيت." },
+                { num: "اليوم التاسع", title: "المغادرة", desc: "بعد الإفطار، يصطحبك مندوبنا إلى المطار حسب موعد رحلتك. نتمنى أن نراك مرة أخرى في مصر." }
+              ],
+              included: [
+                "5 ليالٍ في فنادق 5 نجوم بالقاهرة مع الإفطار",
+                "ليلة في فندق فاخر 5 نجوم بالإسكندرية",
+                "ليلتان في فندق سانت كاترين مع وجبات كاملة",
+                "الاستقبال والمساعدة في المطار عند الوصول والمغادرة",
+                "جميع وسائل النقل بسيارة مكيفة",
+                "مرشد متخصص في علم المصريات للجولات السياحية",
+                "الوجبات المذكورة في البرنامج",
+                "رسوم الدخول لجميع المواقع المذكورة",
+                "جميع الضرائب"
+              ],
+              excluded: [
+                "تذاكر الطيران الدولية",
+                "رسوم التأشيرة",
+                "البقشيش",
+                "أي خدمة غير مذكورة"
+              ],
+              hotels: [
+                { city: "القاهرة", name: "كراون بلازا غرب القاهرة 5★ أو شتايجنبرجر القاهرة 5★" },
+                { city: "الإسكندرية", name: "هيلتون كورنيش 5★ أو ما يماثله" },
+                { city: "سانت كاترين", name: "مورجنلاند الوادي المقدس 3★ أو ما يماثله" }
+              ]
+            },
+            {
+              id: "spiritual-egypt",
+              title: "استكشف مصر الروحانية",
+              badge: "رحلة روحانية",
+              duration: "10 أيام",
+              price: "$3,500",
+              excerpt: "رحلة مقدسة لمدة 10 أيام إلى أرض الفراعنة — شفاء، تأمل، موسيقى مقدسة، ويوغا. تواصل مع شاكرات النيل السبعة وأيقظ وعيك الأعلى.",
+              overview: "رأى المصريون القدماء النيل كمرآة أرضية لمجرة درب التبانة، وأرضهم كانعكاس مقدس للسماء. تتيح لك هذه الرحلة الانسجام مع طاقة الأم الإلهية، إيقاظ قوتك الداخلية، والتواصل مع الوعي الأعلى لمصر القديمة. على مدار عشرة أيام، نتواصل مع شاكرات النيل السبعة ونوقظ الشاكرات العليا.",
+              days: [
+                { num: "اليوم الأول", title: "أهلاً بك في أرض الفراعنة — القاهرة", desc: "يستقبلك مندوبنا في المطار وينقلك إلى الفندق بسيارة مكيفة. الاستقرار ومراجعة برنامج الغد." },
+                { num: "اليوم الثاني", title: "أسوان وجزيرة فيلة", desc: "إفطار ثم انتقال إلى المطار للسفر إلى أسوان. أسوان هي مسقط رأس خنوم، الإله ذو رأس الكبش وإله الخلق — يختبر الكثيرون 'ولادة جديدة' هنا. زيارة المعبد المخصص لإيزيس، إلهة الحب والسلام والأمومة، ثم بداية رحلة النيل." },
+                { num: "اليوم الثالث", title: "كوم أمبو وإدفو — شاكرا السرة", desc: "افتتاح خاص في معبد الأم إيزيس، ثم ساعتان خاصتان في معبد فيلة. رحلة من أسوان إلى كوم أمبو (المخصص لسوبك التمساح ورع حور آختي) وإدفو، مع العمل على شاكرا السرة لتحرير الخوف والسلبية." },
+                { num: "اليوم الرابع", title: "شفاء شاكرا الضفيرة الشمسية — لقاء سخمت", desc: "بعد الإفطار على متن السفينة، زيارة الكرنك — التمثيل المصغر للكون. الدخول إلى مصلى سخمت عبر أبوابها السبعة لتلقي طاقات الشفاء والتفعيل من ربة الأسود. الاستمرار إلى معبد الأقصر، المرتبط بالشاكرا الثالثة." },
+                { num: "اليوم الخامس", title: "الأقصر — وادي الملوك والملكة حتشبسوت", desc: "النزول من السفينة. مغامرة في وادي الملوك حيث دُفن الفراعنة، ثم تماثيل ممنون ومعبد الملكة حتشبسوت. الغداء في مطعم قريب، ثم تسجيل الدخول في فندق الأقصر." },
+                { num: "اليوم السادس", title: "أبيدوس ودندرة — شاكرا القلب", desc: "جولة بسيارة خاصة مع عالم المصريات. أبيدوس بمعبد سيتي الأول الفخم تكريماً لأوزوريس، بنقوشه الجدارية الزاهية. الاستمرار إلى معبد دندرة المخصص لحتحور — إلهة الخصوبة والشفاء والموسيقى. مشاهدة النقش الشهير لكليوباترا السابعة وابنها قيصرون. العودة للأقصر للسفينة النيلية." },
+                { num: "اليوم السابع", title: "القاهرة بالطيران", desc: "إفطار ثم انتقال لمطار الأقصر للعودة للقاهرة. استقبال من مندوبنا والانتقال إلى الفندق." },
+                { num: "اليوم الثامن", title: "سقارة وهرم خوفو — شاكرا الحلق والعين الثالثة", desc: "في الصباح الباكر أو فترة الظهيرة (حسب التوفر): الهرم الأكبر لخوفو لك وحدك، مع ساعتين دخول خاص لغرفة الملك للتأمل العلاجي وفتح شاكرا العين الثالثة. الاستمرار إلى سقارة، المرتبطة بشاكرا الحلق وعالم تحوت إله الحكمة. زيارة عجول أبيس المقدسة في السرابيوم." },
+                { num: "اليوم التاسع", title: "المتحف المصري الكبير، القاهرة القديمة، وخان الخليلي", desc: "زيارة المتحف المصري الكبير (GEM) — أكبر متحف أثري مكرس لحضارة واحدة في العالم، موطن كنوز مقبرة توت عنخ آمون. بعد الغداء، جولة سيراً على الأقدام في القاهرة القديمة عبر باب النصر وشارع المعز، أكبر متحف إسلامي مفتوح في العالم. الانتهاء في خان الخليلي." },
+                { num: "اليوم العاشر", title: "المغادرة", desc: "بعد الإفطار، يصطحبك مندوبنا إلى المطار حسب موعد رحلتك." }
+              ],
+              included: [
+                "3 ليالٍ في رحلة نيلية فاخرة 5 نجوم",
+                "4 ليالٍ في فندق 5 نجوم بالقاهرة",
+                "ليلتان مع الإفطار في فندق 5★ بالأقصر",
+                "جميع وسائل النقل بسيارة مكيفة",
+                "زيارة خاصة حصرية لهرم خوفو",
+                "زيارة خاصة حصرية لمعبد فيلة",
+                "رحلة داخلية القاهرة–الأقصر / أسوان–القاهرة",
+                "الجولات السياحية المذكورة في البرنامج",
+                "رسوم الدخول لجميع المواقع المذكورة",
+                "مرشد متخصص في علم المصريات",
+                "خدمة الاستقبال والمغادرة من المطار",
+                "الوجبات المذكورة في البرنامج",
+                "جميع الضرائب"
+              ],
+              excluded: [
+                "تذاكر الطيران الدولية",
+                "رسوم التأشيرة",
+                "البقشيش",
+                "أي خدمة غير مذكورة"
+              ],
+              hotels: [
+                { city: "القاهرة", name: "كراون بلازا غرب القاهرة 5★ أو ما يماثله" },
+                { city: "الرحلة النيلية", name: "ماي فير 5★ أو ما يماثله" },
+                { city: "الأقصر", name: "هيلتون الأقصر 4★ أو ما يماثله" }
+              ]
+            },
+            {
+              id: "travel-services",
+              title: "خدمات لاكشري ترافل سيرفيس",
+              badge: "خدمات متكاملة",
+              duration: "حسب الطلب",
+              price: "مخصص",
+              excerpt: "خدمات سفر متكاملة في مصر — من تذاكر الطيران والتأشيرات إلى التنقلات الخاصة، حجوزات الفنادق، الرحلات النيلية، وباقات السياحة العلاجية. كل ما تحتاجه قبل وأثناء وبعد رحلتك.",
+              overview: "سواء كنت قادماً إلى مصر أو تخطط لرحلتك، لاكشري ترافل سيرفيس توفر كل خدمة سفر قد تحتاجها. مع أسطولنا من السيارات الفاخرة في القاهرة والغردقة وشرم الشيخ وأسوان والأقصر والإسكندرية، بالإضافة إلى أكثر من 100 موظف بدوام كامل، نتولى كل تفاصيل رحلتك.",
+              days: [
+                { num: "خدمة", title: "حجز تذاكر الطيران", desc: "أخبرنا بوجهتك ومواعيد سفرك. سنحجز لك التذكرة المناسبة على شركة الطيران التي تختارها." },
+                { num: "خدمة", title: "خدمة التأشيرة", desc: "تجنب طوابير المطار — قدّم بيانات جواز سفرك مسبقاً وسنُصدر لك تأشيرة مصر السياحية، جاهزة عند وصولك أو قبل رحلتك." },
+                { num: "خدمة", title: "الاستقبال والتنقلات", desc: "تنقلات خاصة من أي مطار مصري (القاهرة، الجيزة، الغردقة، شرم الشيخ، الأقصر، أسوان، الإسكندرية) إلى فندقك. يستقبلك مندوبنا عند البوابة بلوحة باسمك ويوصلك مباشرة إلى وجهتك — بدون رحلات مشتركة أو توقفات إضافية." },
+                { num: "خدمة", title: "حجوزات الفنادق", desc: "تفاوضنا على أفضل الأسعار مع جميع الفنادق المصرية. أخبرنا بوجهتك ومواعيدك وميزانيتك — وسنجد لك أفضل العروض لإقامتك." },
+                { num: "خدمة", title: "الرحلات والجولات", desc: "ثقافية، مغامرة، شاطئ وشمس، جولات ليلية، سفاري، غطس، غوص — كل نوع رحلة قد ترغبه أثناء إقامتك. أرسل لنا بريداً إلكترونياً بالأيام والمواعيد وحجم المجموعة." },
+                { num: "خدمة", title: "السياحة العلاجية", desc: "سياحة طبية متكاملة: سيارات إسعاف من المطار للمستشفى، خطط علاجية مع كبار أطباء الشرق الأوسط، خدمات أشعة وتحاليل كاملة، وأسعار تنافسية في جميع التخصصات." },
+                { num: "خدمة", title: "الرحلات النيلية", desc: "قسم متخصص يدير جميع العمليات الأرضية — التنقلات، البرامج قبل وبعد، والرحلات الشاطئية. اختر من بين الرحلات النيلية الفاخرة، الذهبيات الشراعية التقليدية (4 ليالٍ الأقصر-أسوان أو 3 ليالٍ أسوان-الأقصر)، أو رحلات بحيرة ناصر." },
+                { num: "خدمة", title: "رحلات المجموعات", desc: "مجموعات سياحية تُدار بمواصفات دقيقة — وعند الحاجة تحت هويات شركات محددة. مجموعة منتجات واسعة مع ضمان الإقامة بأسعار تنافسية." }
+              ],
+              included: [
+                "دعم العملاء على مدار الساعة",
+                "مندوبون يتحدثون العربية والإنجليزية",
+                "سائقون ومرشدون سياحيون محترفون",
+                "أسطول سيارات حديث ومكيف",
+                "تغطية جميع المدن المصرية الرئيسية",
+                "أسعار تنافسية تفاوضية",
+                "برامج مخصصة حسب رغبتك",
+                "المساعدة في الحصول على التأشيرة"
+              ],
+              excluded: [
+                "تذاكر الطيران الدولية (إلا عند الطلب)",
+                "المصاريف الشخصية",
+                "الأنشطة الاختيارية غير المحجوزة مسبقاً",
+                "البقشيش والإكراميات"
+              ],
+              hotels: [
+                { city: "القاهرة", name: "فنادق شريكة 4★ و 5★ متميزة" },
+                { city: "البحر الأحمر", name: "منتجعات الغردقة وشرم الشيخ" },
+                { city: "صعيد مصر", name: "إقامات فاخرة بالأقصر وأسوان" },
+                { city: "البحر المتوسط", name: "فنادق الإسكندرية الساحلية" }
+              ]
+            }
           ]
         },
         footer: {
@@ -1391,6 +2088,141 @@
       `;
     }
 
+    function renderPackages() {
+      const t = translations[currentLang];
+      const grid = document.getElementById('packagesGrid');
+      grid.innerHTML = t.packages.items.map((pkg, i) => `
+        <div class="package-card" onclick="openPackageModal('${pkg.id}')">
+          <div class="package-image">
+            <span class="package-badge">${pkg.badge}</span>
+            <div class="placeholder-img">
+              <span class="placeholder-label">Package Image ${i + 1}</span>
+            </div>
+          </div>
+          <div class="package-body">
+            <div class="package-meta">
+              <div class="package-meta-item">
+                <i data-lucide="calendar" class="icon-sm"></i>
+                <span>${pkg.duration}</span>
+              </div>
+            </div>
+            <h3 class="package-title">${pkg.title}</h3>
+            <p class="package-excerpt">${pkg.excerpt}</p>
+            <div class="package-footer">
+              <div class="package-price">
+                <span class="package-price-label">${t.packages.startingFrom}</span>
+                <span class="package-price-amount">${pkg.price}</span>
+              </div>
+              <span class="package-cta">${t.packages.viewDetails} <span class="arrow">→</span></span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openPackageModal(id) {
+      const t = translations[currentLang];
+      const pkg = t.packages.items.find(p => p.id === id);
+      if (!pkg) return;
+
+      const content = document.getElementById('modalContent');
+      content.innerHTML = `
+        <div class="modal-hero">
+          <div class="placeholder-img">
+            <span class="placeholder-label">${pkg.title}</span>
+          </div>
+          <div class="modal-hero-title">
+            <h2>${pkg.title}</h2>
+            <p>${pkg.badge} • ${pkg.duration}</p>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="price-banner">
+            <div class="price-banner-text">
+              <span class="price-banner-label">${t.packages.startingFrom}</span>
+              <span class="price-banner-amount">${pkg.price}</span>
+              <span class="price-banner-note">${t.packages.perPerson}</span>
+            </div>
+            <a href="#contact" class="btn-book" onclick="closeModal()">${t.packages.bookNow}</a>
+          </div>
+
+          <div class="modal-section">
+            <h3 class="modal-section-title">${t.packages.overview}</h3>
+            <p class="modal-intro">${pkg.overview}</p>
+          </div>
+
+          <div class="modal-section">
+            <h3 class="modal-section-title">${t.packages.itinerary}</h3>
+            ${pkg.days.map(day => `
+              <div class="day-card">
+                <div class="day-card-header">
+                  <span class="day-number">${day.num}</span>
+                  <span class="day-title">${day.title}</span>
+                </div>
+                <p class="day-desc">${day.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="modal-section">
+            <h3 class="modal-section-title">${t.packages.hotels}</h3>
+            <ul class="hotel-list">
+              ${pkg.hotels.map(h => `
+                <li class="hotel-item">
+                  <span class="hotel-city">${h.city}</span>
+                  <span class="hotel-name">${h.name}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-box">
+              <h4 class="info-box-title">
+                <i data-lucide="check-circle"></i>
+                ${t.packages.included}
+              </h4>
+              <ul class="info-list">
+                ${pkg.included.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="info-box">
+              <h4 class="info-box-title">
+                <i data-lucide="x-circle"></i>
+                ${t.packages.excluded}
+              </h4>
+              <ul class="info-list excluded">
+                ${pkg.excluded.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.classList.add('modal-open');
+
+      // Re-init icons
+      if (window.lucide) lucide.createIcons();
+
+      // Scroll modal to top
+      document.getElementById('modal').scrollTop = 0;
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      document.body.classList.remove('modal-open');
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target.id === 'modalOverlay') closeModal();
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
     function applyTranslations() {
       const t = translations[currentLang];
       document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1421,6 +2253,7 @@
       renderAboutFeatures();
       renderDestinations();
       renderTypes();
+      renderPackages();
       renderGuides();
       renderFooter();
 
