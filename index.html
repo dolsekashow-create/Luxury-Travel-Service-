@@ -2177,11 +2177,15 @@
     function renderTours() {
       const t = translations[currentLang];
       const grid = document.getElementById('featuredTours');
-      grid.innerHTML = t.tours.map((tour, i) => `
+      // Use Supabase data if available, otherwise fall back to default t.tours
+      const toursData = (t.featuredTours && t.featuredTours.items && t.featuredTours.items.length > 0)
+        ? t.featuredTours.items
+        : t.tours;
+      grid.innerHTML = toursData.map((tour, i) => `
         <div class="tour-card">
           <div class="tour-image">
-            <div class="placeholder-img">
-              <span class="placeholder-label">Tour Image ${i + 1}</span>
+            <div class="placeholder-img" ${tour.image ? `style="background-image:url(${tour.image});background-size:cover;background-position:center;"` : ''}>
+              <span class="placeholder-label" ${tour.image ? 'style="display:none"' : ''}>Tour Image ${i + 1}</span>
             </div>
           </div>
           <div class="tour-body">
@@ -2192,8 +2196,8 @@
             <h3 class="tour-title">${tour.title}</h3>
             <p class="tour-excerpt">${tour.excerpt}</p>
             <div class="tour-footer">
-              <span class="tour-from">${t.featured.from}</span>
-              <span class="tour-cta">${t.featured.checkAvail} <span class="arrow">→</span></span>
+              <span class="tour-from">${t.featured ? t.featured.from : ''}</span>
+              <span class="tour-cta">${t.featured ? t.featured.checkAvail : ''} <span class="arrow">→</span></span>
             </div>
           </div>
         </div>
@@ -2217,8 +2221,8 @@
       const grid = document.getElementById('destinationsGrid');
       grid.innerHTML = t.destinations.items.map((d, i) => `
         <div class="destination-card">
-          <div class="placeholder-img">
-            <span class="placeholder-label">Destination ${i + 1}</span>
+          <div class="placeholder-img" ${d.image ? `style="background-image:url(${d.image});background-size:cover;background-position:center;"` : ''}>
+            <span class="placeholder-label" ${d.image ? 'style="display:none"' : ''}>Destination ${i + 1}</span>
           </div>
           <div class="destination-overlay"></div>
           <div class="destination-content">
@@ -2252,8 +2256,8 @@
       grid.innerHTML = t.guides.posts.map((post, i) => `
         <div class="tour-card">
           <div class="tour-image">
-            <div class="placeholder-img">
-              <span class="placeholder-label">Blog ${i + 1}</span>
+            <div class="placeholder-img" ${post.image ? `style="background-image:url(${post.image});background-size:cover;background-position:center;"` : ''}>
+              <span class="placeholder-label" ${post.image ? 'style="display:none"' : ''}>Blog ${i + 1}</span>
             </div>
           </div>
           <div class="tour-body">
@@ -2304,8 +2308,8 @@
         <div class="package-card" onclick="openPackageModal('${pkg.id}')">
           <div class="package-image">
             <span class="package-badge">${pkg.badge}</span>
-            <div class="placeholder-img">
-              <span class="placeholder-label">Package Image ${i + 1}</span>
+            <div class="placeholder-img" ${pkg.image ? `style="background-image:url(${pkg.image});background-size:cover;background-position:center;"` : ''}>
+              <span class="placeholder-label" ${pkg.image ? 'style="display:none"' : ''}>Package Image ${i + 1}</span>
             </div>
           </div>
           <div class="package-body">
@@ -2337,8 +2341,8 @@
       const content = document.getElementById('modalContent');
       content.innerHTML = `
         <div class="modal-hero">
-          <div class="placeholder-img">
-            <span class="placeholder-label">${pkg.title}</span>
+          <div class="placeholder-img" ${pkg.image ? `style="background-image:url(${pkg.image});background-size:cover;background-position:center;"` : ''}>
+            <span class="placeholder-label" ${pkg.image ? 'style="display:none"' : ''}>${pkg.title}</span>
           </div>
           <div class="modal-hero-title">
             <h2>${pkg.title}</h2>
