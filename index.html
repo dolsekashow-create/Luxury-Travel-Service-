@@ -1921,16 +1921,27 @@
     let currentLang = localStorage.getItem('lang') || 'en';
 
     // ================================
-    // SUPABASE CLIENT
+    // SUPABASE CLIENT (safe init)
     // ================================
     const SUPABASE_URL = 'https://mlpinmpchvosvwepmfwx.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_R6KP3rxDkJJxYqZ5u42diA_qKtUu27B';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let supabase = null;
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) {
+      console.warn('Supabase init failed:', e);
+    }
 
     // ================================
     // LOAD DATA FROM SUPABASE
     // ================================
     async function loadFromSupabase() {
+      if (!supabase) {
+        console.warn('Supabase not available, skipping load');
+        return;
+      }
       try {
         // Load all data in parallel
         const [
@@ -2463,6 +2474,7 @@
       currentLang = currentLang === 'en' ? 'ar' : 'en';
       localStorage.setItem('lang', currentLang);
       renderAll();
+      if (typeof applyImages === 'function') applyImages();
     }
 
     function toggleMobileMenu() {
@@ -2483,17 +2495,23 @@
     // Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Initial render — load from Supabase first, then render
+    // Initial render — render with defaults FIRST so site is never blank
+    renderAll();
+    applyImages();
+
+    // Then try to load from Supabase (errors won't break the site)
     (async function init() {
-      // Render immediately with default content (so page isn't blank)
-      renderAll();
-
-      // Load from Supabase and re-render with live data
-      await loadFromSupabase();
-      renderAll();
-
-      // Apply images from Supabase to placeholders
-      applyImages();
+      try {
+        if (typeof supabase === 'undefined' || !window.supabase) {
+          console.warn('Supabase library not loaded, using default content');
+          return;
+        }
+        await loadFromSupabase();
+        renderAll();
+        applyImages();
+      } catch (e) {
+        console.error('Supabase load failed, using default content:', e);
+      }
     })();
 
     // Replace placeholders with real images from Supabase
@@ -2571,14 +2589,6 @@
         });
       }
     }
-
-    // Re-apply images when language changes
-    const originalRenderAll = renderAll;
-    renderAll = function() {
-      originalRenderAll();
-      // Apply images after render with a small delay
-      setTimeout(applyImages, 50);
-    };
   </script>
 </body>
 </html>
