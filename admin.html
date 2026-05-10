@@ -874,12 +874,31 @@ async function renderTours() {
   `).join('');
 }
 
-function openTourModal(t) {
+async function openTourModal(tourArg) {
+  // tourArg can be a full object (from edit) or undefined (new)
+  let t = typeof tourArg === 'string' ? JSON.parse(tourArg) : tourArg;
+  let days = [], inclusions = [], gallery = [];
+
+  if (t?.id) {
+    const [dRes, iRes, gRes] = await Promise.all([
+      sb.from('tour_days').select('*').eq('tour_id', t.id).order('sort_order'),
+      sb.from('tour_inclusions').select('*').eq('tour_id', t.id),
+      sb.from('tour_gallery').select('*').eq('tour_id', t.id).order('sort_order')
+    ]);
+    days = dRes.data || [];
+    inclusions = iRes.data || [];
+    gallery = gRes.data || [];
+  }
+
+  const included = inclusions.filter(i => i.is_included);
+  const excluded = inclusions.filter(i => !i.is_included);
+
   showModal(`
     <div class="modal-header">
       <h3>${t ? T().tours.editModal : T().tours.addModal}</h3>
       <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
     </div>
+
     <div class="form-row">
       <div class="field"><label>Slug (URL identifier)</label><input type="text" id="m-tour-slug" value="${escapeAttr(t?.slug || '')}" /></div>
       <div class="field"><label>Price</label><input type="text" id="m-tour-price" value="${escapeAttr(t?.price || '')}" /></div>
@@ -896,8 +915,13 @@ function openTourModal(t) {
       <div class="field"><label>Excerpt (EN)</label><textarea id="m-tour-exc-en">${escapeHtml(t?.excerpt_en || '')}</textarea></div>
       <div class="field"><label>Excerpt (AR)</label><textarea id="m-tour-exc-ar" dir="rtl">${escapeHtml(t?.excerpt_ar || '')}</textarea></div>
     </div>
+    <div class="form-row">
+      <div class="field"><label>Overview / Full Description (EN)</label><textarea id="m-tour-ov-en" style="min-height:120px">${escapeHtml(t?.overview_en || '')}</textarea></div>
+      <div class="field"><label>Overview / Full Description (AR)</label><textarea id="m-tour-ov-ar" dir="rtl" style="min-height:120px">${escapeHtml(t?.overview_ar || '')}</textarea></div>
+    </div>
+
     <div class="field">
-      <label>Tour Image</label>
+      <label>Tour Main Image</label>
       <div class="img-upload-box">
         <input type="file" accept="image/*" onchange="handleImgUpload(this,'tour','m-tour-img','tour-img-preview','tour-preview-img')" />
         <i class="fa fa-cloud-arrow-up"></i>
@@ -910,16 +934,97 @@ function openTourModal(t) {
       </div>
       <input type="hidden" id="m-tour-img" value="${escapeAttr(t?.image_url || '')}" />
     </div>
+
     <div class="field"><label>Sort Order</label><input type="number" id="m-tour-sort" value="${t?.sort_order || 0}" /></div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
+
+    <!-- ITINERARY DAYS -->
+    <div class="card-title" style="margin-top:30px;"><i class="fa fa-list"></i> Itinerary Days</div>
+    <div class="days-list" id="tour-days-list">
+      ${days.map((d, i) => renderTourDayItem(d, i)).join('')}
+    </div>
+    <button type="button" class="add-row-btn" onclick="addTourDay()">+ Add Day</button>
+
+    <!-- INCLUSIONS -->
+    <div class="card-title" style="margin-top:30px;"><i class="fa fa-check"></i> What's Included</div>
+    <div class="inc-list" id="tour-included-list">
+      ${included.map(i => renderIncItem(i, true)).join('')}
+    </div>
+    <button type="button" class="add-row-btn" onclick="addTourInc(true)">+ Add Included Item</button>
+
+    <div class="card-title" style="margin-top:30px;"><i class="fa fa-xmark"></i> Not Included</div>
+    <div class="inc-list" id="tour-excluded-list">
+      ${excluded.map(i => renderIncItem(i, false)).join('')}
+    </div>
+    <button type="button" class="add-row-btn" onclick="addTourInc(false)">+ Add Excluded Item</button>
+
+    <!-- GALLERY -->
+    <div class="card-title" style="margin-top:30px;"><i class="fa fa-images"></i> Gallery Images</div>
+    <div id="tour-gallery-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+      ${gallery.map((g, i) => renderTourGalleryItem(g, i)).join('')}
+    </div>
+    <button type="button" class="add-row-btn" onclick="addTourGalleryItem()">+ Add Gallery Image</button>
+
+    <div style="display:flex;gap:10px;margin-top:30px;">
       <button class="btn btn-primary" onclick="saveTour(${t?.id || 'null'})">${T().tours.save}</button>
       <button class="btn btn-secondary" onclick="closeModal()">${T().tours.cancel}</button>
     </div>
   `);
 }
 
+function renderTourDayItem(d = {}, idx = 0) {
+  return `
+    <div class="day-item" data-day-id="${d.id || ''}">
+      <div class="day-item-header">
+        <span class="day-item-num">Day ${idx + 1}</span>
+        <div class="day-item-actions">
+          <button type="button" class="btn-sm-icon del" onclick="this.closest('.day-item').remove()"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Day Number (EN)</label><input type="text" class="tday-num-en" value="${escapeAttr(d.day_number_en || `Day ${idx + 1}`)}" /></div>
+        <div class="field"><label>Day Number (AR)</label><input type="text" class="tday-num-ar" dir="rtl" value="${escapeAttr(d.day_number_ar || `اليوم ${idx + 1}`)}" /></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Title (EN)</label><input type="text" class="tday-title-en" value="${escapeAttr(d.title_en || '')}" /></div>
+        <div class="field"><label>Title (AR)</label><input type="text" class="tday-title-ar" dir="rtl" value="${escapeAttr(d.title_ar || '')}" /></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Description (EN)</label><textarea class="tday-desc-en">${escapeHtml(d.description_en || '')}</textarea></div>
+        <div class="field"><label>Description (AR)</label><textarea class="tday-desc-ar" dir="rtl">${escapeHtml(d.description_ar || '')}</textarea></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTourGalleryItem(g = {}, idx = 0) {
+  return `
+    <div class="inc-item tour-gallery-item" style="grid-template-columns:1fr auto auto;gap:10px;align-items:center;">
+      <input type="text" class="tgallery-url" placeholder="Image URL" value="${escapeAttr(g.image_url || '')}" style="background:var(--dark3);" />
+      ${g.image_url ? `<img src="${escapeAttr(g.image_url)}" style="width:48px;height:36px;object-fit:cover;" />` : '<span></span>'}
+      <button type="button" class="btn-sm-icon del" onclick="this.closest('.tour-gallery-item').remove()"><i class="fa fa-trash"></i></button>
+    </div>
+  `;
+}
+
+function addTourDay() {
+  const list = document.getElementById('tour-days-list');
+  const idx = list.children.length;
+  list.insertAdjacentHTML('beforeend', renderTourDayItem({}, idx));
+}
+
+function addTourInc(isIncluded) {
+  const list = document.getElementById(isIncluded ? 'tour-included-list' : 'tour-excluded-list');
+  list.insertAdjacentHTML('beforeend', renderIncItem({}, isIncluded));
+}
+
+function addTourGalleryItem() {
+  const list = document.getElementById('tour-gallery-list');
+  const idx = list.children.length;
+  list.insertAdjacentHTML('beforeend', renderTourGalleryItem({}, idx));
+}
+
 async function saveTour(id) {
-  const data = {
+  const tourData = {
     slug: document.getElementById('m-tour-slug').value || ('tour-' + Date.now()),
     title_en: document.getElementById('m-tour-title-en').value,
     title_ar: document.getElementById('m-tour-title-ar').value,
@@ -927,16 +1032,77 @@ async function saveTour(id) {
     duration_ar: document.getElementById('m-tour-dur-ar').value,
     excerpt_en: document.getElementById('m-tour-exc-en').value,
     excerpt_ar: document.getElementById('m-tour-exc-ar').value,
+    overview_en: document.getElementById('m-tour-ov-en').value,
+    overview_ar: document.getElementById('m-tour-ov-ar').value,
     price: document.getElementById('m-tour-price').value,
     image_url: document.getElementById('m-tour-img').value || null,
-    sort_order: parseInt(document.getElementById('m-tour-sort').value) || 0
+    sort_order: parseInt(document.getElementById('m-tour-sort').value) || 0,
+    is_active: true
   };
 
-  const { error } = id
-    ? await sb.from('tours').update(data).eq('id', id)
-    : await sb.from('tours').insert(data);
+  let tourId = id;
+  if (id) {
+    const { error } = await sb.from('tours').update(tourData).eq('id', id);
+    if (error) { alert('Error: ' + error.message); return showError(error.message); }
+  } else {
+    const { data, error } = await sb.from('tours').insert(tourData).select().single();
+    if (error) { alert('Error: ' + error.message); return showError(error.message); }
+    tourId = data.id;
+  }
 
-  if (error) return showError(error.message);
+  // Delete and re-insert related data
+  if (id) {
+    await Promise.all([
+      sb.from('tour_days').delete().eq('tour_id', id),
+      sb.from('tour_inclusions').delete().eq('tour_id', id),
+      sb.from('tour_gallery').delete().eq('tour_id', id)
+    ]);
+  }
+
+  // Days
+  const dayItems = Array.from(document.querySelectorAll('#tour-days-list .day-item')).map((el, i) => ({
+    tour_id: tourId,
+    day_number_en: el.querySelector('.tday-num-en').value,
+    day_number_ar: el.querySelector('.tday-num-ar').value,
+    title_en: el.querySelector('.tday-title-en').value,
+    title_ar: el.querySelector('.tday-title-ar').value,
+    description_en: el.querySelector('.tday-desc-en').value,
+    description_ar: el.querySelector('.tday-desc-ar').value,
+    sort_order: i
+  })).filter(d => d.title_en || d.title_ar);
+  if (dayItems.length) {
+    const { error } = await sb.from('tour_days').insert(dayItems);
+    if (error) { alert('Days error: ' + error.message); return showError(error.message); }
+  }
+
+  // Inclusions
+  const incItems = [];
+  document.querySelectorAll('#tour-included-list .inc-item').forEach((el, i) => {
+    const en = el.querySelector('.inc-en').value;
+    const ar = el.querySelector('.inc-ar').value;
+    if (en || ar) incItems.push({ tour_id: tourId, text_en: en, text_ar: ar, is_included: true, sort_order: i });
+  });
+  document.querySelectorAll('#tour-excluded-list .inc-item').forEach((el, i) => {
+    const en = el.querySelector('.inc-en').value;
+    const ar = el.querySelector('.inc-ar').value;
+    if (en || ar) incItems.push({ tour_id: tourId, text_en: en, text_ar: ar, is_included: false, sort_order: i });
+  });
+  if (incItems.length) {
+    const { error } = await sb.from('tour_inclusions').insert(incItems);
+    if (error) { alert('Inclusions error: ' + error.message); return showError(error.message); }
+  }
+
+  // Gallery
+  const galleryItems = Array.from(document.querySelectorAll('#tour-gallery-list .tour-gallery-item')).map((el, i) => ({
+    tour_id: tourId,
+    image_url: el.querySelector('.tgallery-url').value.trim(),
+    sort_order: i
+  })).filter(g => g.image_url);
+  if (galleryItems.length) {
+    const { error } = await sb.from('tour_gallery').insert(galleryItems);
+    if (error) { alert('Gallery error: ' + error.message); return showError(error.message); }
+  }
+
   closeModal();
   showSaved();
   renderTours();
