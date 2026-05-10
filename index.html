@@ -14,6 +14,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* ================================
        RESET & BASE
@@ -1918,6 +1921,201 @@
     let currentLang = localStorage.getItem('lang') || 'en';
 
     // ================================
+    // SUPABASE CLIENT
+    // ================================
+    const SUPABASE_URL = 'https://mlpinmpchvosvwepmfwx.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_R6KP3rxDkJJxYqZ5u42diA_qKtUu27B';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ================================
+    // LOAD DATA FROM SUPABASE
+    // ================================
+    async function loadFromSupabase() {
+      try {
+        // Load all data in parallel
+        const [
+          settingsResult,
+          toursResult,
+          destinationsResult,
+          featuresResult,
+          packagesResult,
+          packageDaysResult,
+          packageInclusionsResult,
+          packageHotelsResult,
+          blogResult
+        ] = await Promise.all([
+          supabase.from('site_settings').select('*').eq('id', 1).single(),
+          supabase.from('tours').select('*').order('sort_order'),
+          supabase.from('destinations').select('*').order('sort_order'),
+          supabase.from('features').select('*').order('sort_order'),
+          supabase.from('packages').select('*').eq('is_active', true).order('sort_order'),
+          supabase.from('package_days').select('*').order('sort_order'),
+          supabase.from('package_inclusions').select('*').order('sort_order'),
+          supabase.from('package_hotels').select('*').order('sort_order'),
+          supabase.from('blog_posts').select('*').eq('is_published', true).order('published_at', { ascending: false }).limit(3)
+        ]);
+
+        // 1. Site Settings (Hero, About, Contact)
+        const settings = settingsResult.data;
+        if (settings) {
+          // Update Hero in both languages
+          ['en', 'ar'].forEach(lang => {
+            if (settings[`hero_title_${lang}`]) translations[lang].hero.title = settings[`hero_title_${lang}`];
+            if (settings[`hero_subtitle_${lang}`]) translations[lang].hero.subtitle = settings[`hero_subtitle_${lang}`];
+            if (settings[`hero_highlight_${lang}`]) translations[lang].hero.highlight = settings[`hero_highlight_${lang}`];
+            if (settings[`about_title_${lang}`]) translations[lang].about.intro = settings[`about_title_${lang}`];
+            if (settings[`about_text_${lang}`]) translations[lang].about.description = settings[`about_text_${lang}`];
+          });
+
+          // Hero image
+          if (settings.hero_image_url) {
+            const heroBg = document.querySelector('.hero-bg');
+            if (heroBg) {
+              heroBg.style.backgroundImage = `url(${settings.hero_image_url})`;
+              heroBg.style.backgroundSize = 'cover';
+              heroBg.style.backgroundPosition = 'center';
+            }
+          }
+
+          // About image
+          if (settings.about_image_url) {
+            window._aboutImageUrl = settings.about_image_url;
+          }
+
+          // Contact info
+          ['en', 'ar'].forEach(lang => {
+            if (settings[`contact_address_${lang}`]) translations[lang].footer.contact.address1 = settings[`contact_address_${lang}`];
+            if (settings[`contact_address2_${lang}`]) translations[lang].footer.contact.address2 = settings[`contact_address2_${lang}`];
+          });
+          if (settings.contact_email) {
+            translations.en.footer.contact.email = settings.contact_email;
+            translations.ar.footer.contact.email = settings.contact_email;
+          }
+
+          // Social links
+          window._socialLinks = {
+            facebook: settings.social_facebook,
+            instagram: settings.social_instagram,
+            youtube: settings.social_youtube,
+            linkedin: settings.social_linkedin,
+            tripadvisor: settings.social_tripadvisor
+          };
+        }
+
+        // 2. Tours
+        if (toursResult.data && toursResult.data.length > 0) {
+          translations.en.featuredTours.items = toursResult.data.map(t => ({
+            slug: t.slug,
+            title: t.title_en,
+            duration: t.duration_en,
+            excerpt: t.excerpt_en,
+            image: t.image_url,
+            href: `#tour-${t.slug}`
+          }));
+          translations.ar.featuredTours.items = toursResult.data.map(t => ({
+            slug: t.slug,
+            title: t.title_ar,
+            duration: t.duration_ar,
+            excerpt: t.excerpt_ar,
+            image: t.image_url,
+            href: `#tour-${t.slug}`
+          }));
+        }
+
+        // 3. Destinations
+        if (destinationsResult.data && destinationsResult.data.length > 0) {
+          translations.en.destinations.items = destinationsResult.data.map(d => ({
+            name: d.name_en,
+            desc: d.description_en,
+            image: d.image_url,
+            href: `#dest-${d.slug}`
+          }));
+          translations.ar.destinations.items = destinationsResult.data.map(d => ({
+            name: d.name_ar,
+            desc: d.description_ar,
+            image: d.image_url,
+            href: `#dest-${d.slug}`
+          }));
+        }
+
+        // 4. Features
+        if (featuresResult.data && featuresResult.data.length > 0) {
+          translations.en.about.features = featuresResult.data.map(f => ({
+            title: f.title_en,
+            desc: f.description_en
+          }));
+          translations.ar.about.features = featuresResult.data.map(f => ({
+            title: f.title_ar,
+            desc: f.description_ar
+          }));
+        }
+
+        // 5. Packages with their related data
+        if (packagesResult.data && packagesResult.data.length > 0) {
+          const buildPackages = (lang) => packagesResult.data.map(pkg => {
+            const days = (packageDaysResult.data || [])
+              .filter(d => d.package_id === pkg.id)
+              .map(d => ({
+                num: d[`day_number_${lang}`],
+                title: d[`title_${lang}`],
+                desc: d[`description_${lang}`]
+              }));
+
+            const inclusions = packageInclusionsResult.data || [];
+            const included = inclusions.filter(i => i.package_id === pkg.id && i.is_included).map(i => i[`text_${lang}`]);
+            const excluded = inclusions.filter(i => i.package_id === pkg.id && !i.is_included).map(i => i[`text_${lang}`]);
+
+            const hotels = (packageHotelsResult.data || [])
+              .filter(h => h.package_id === pkg.id)
+              .map(h => ({
+                city: h[`city_${lang}`],
+                name: h[`hotel_name_${lang}`]
+              }));
+
+            return {
+              id: pkg.slug,
+              title: pkg[`title_${lang}`],
+              badge: pkg[`badge_${lang}`],
+              duration: pkg[`duration_${lang}`],
+              price: pkg.price,
+              excerpt: pkg[`excerpt_${lang}`],
+              overview: pkg[`overview_${lang}`],
+              image: pkg.image_url,
+              days, included, excluded, hotels
+            };
+          });
+
+          translations.en.packages.items = buildPackages('en');
+          translations.ar.packages.items = buildPackages('ar');
+        }
+
+        // 6. Blog posts
+        if (blogResult.data && blogResult.data.length > 0) {
+          translations.en.guides.posts = blogResult.data.map(p => ({
+            category: p.category_en,
+            title: p.title_en,
+            date: new Date(p.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            slug: p.slug,
+            image: p.image_url
+          }));
+          translations.ar.guides.posts = blogResult.data.map(p => ({
+            category: p.category_ar,
+            title: p.title_ar,
+            date: new Date(p.published_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }),
+            slug: p.slug,
+            image: p.image_url
+          }));
+        }
+
+        console.log('✓ Data loaded from Supabase');
+      } catch (error) {
+        console.error('Failed to load from Supabase:', error);
+        console.log('→ Using default content');
+      }
+    }
+
+
+    // ================================
     // RENDER FUNCTIONS
     // ================================
     function renderNavigation() {
@@ -2285,8 +2483,102 @@
     // Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Initial render
-    renderAll();
+    // Initial render — load from Supabase first, then render
+    (async function init() {
+      // Render immediately with default content (so page isn't blank)
+      renderAll();
+
+      // Load from Supabase and re-render with live data
+      await loadFromSupabase();
+      renderAll();
+
+      // Apply images from Supabase to placeholders
+      applyImages();
+    })();
+
+    // Replace placeholders with real images from Supabase
+    function applyImages() {
+      const t = translations[currentLang];
+
+      // About image
+      if (window._aboutImageUrl) {
+        const aboutImg = document.querySelector('.about-image');
+        if (aboutImg) {
+          aboutImg.style.backgroundImage = `url(${window._aboutImageUrl})`;
+          aboutImg.style.backgroundSize = 'cover';
+          aboutImg.style.backgroundPosition = 'center';
+          aboutImg.querySelector('.placeholder-label').style.display = 'none';
+        }
+      }
+
+      // Tour images
+      document.querySelectorAll('.tour-card').forEach((card, i) => {
+        const tour = t.featuredTours.items[i];
+        if (tour && tour.image) {
+          const img = card.querySelector('.placeholder-img');
+          if (img) {
+            img.style.backgroundImage = `url(${tour.image})`;
+            img.style.backgroundSize = 'cover';
+            img.style.backgroundPosition = 'center';
+            const label = img.querySelector('.placeholder-label');
+            if (label) label.style.display = 'none';
+          }
+        }
+      });
+
+      // Package images
+      document.querySelectorAll('.package-card').forEach((card, i) => {
+        const pkg = t.packages.items[i];
+        if (pkg && pkg.image) {
+          const img = card.querySelector('.placeholder-img');
+          if (img) {
+            img.style.backgroundImage = `url(${pkg.image})`;
+            img.style.backgroundSize = 'cover';
+            img.style.backgroundPosition = 'center';
+            const label = img.querySelector('.placeholder-label');
+            if (label) label.style.display = 'none';
+          }
+        }
+      });
+
+      // Destination images
+      document.querySelectorAll('.destination-card').forEach((card, i) => {
+        const dest = t.destinations.items[i];
+        if (dest && dest.image) {
+          const img = card.querySelector('.placeholder-img');
+          if (img) {
+            img.style.backgroundImage = `url(${dest.image})`;
+            img.style.backgroundSize = 'cover';
+            img.style.backgroundPosition = 'center';
+            const label = img.querySelector('.placeholder-label');
+            if (label) label.style.display = 'none';
+          }
+        }
+      });
+
+      // Social links
+      if (window._socialLinks) {
+        const socialMap = {
+          'Facebook': window._socialLinks.facebook,
+          'Instagram': window._socialLinks.instagram,
+          'YouTube': window._socialLinks.youtube,
+          'LinkedIn': window._socialLinks.linkedin,
+          'TripAdvisor': window._socialLinks.tripadvisor
+        };
+        document.querySelectorAll('.social-link').forEach(link => {
+          const label = link.getAttribute('aria-label');
+          if (socialMap[label]) link.href = socialMap[label];
+        });
+      }
+    }
+
+    // Re-apply images when language changes
+    const originalRenderAll = renderAll;
+    renderAll = function() {
+      originalRenderAll();
+      // Apply images after render with a small delay
+      setTimeout(applyImages, 50);
+    };
   </script>
 </body>
 </html>
