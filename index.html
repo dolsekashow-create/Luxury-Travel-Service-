@@ -706,6 +706,71 @@
     .accent-italic { color: var(--color-accent); font-style: italic; }
 
     /* ================================
+       PROGRAMS
+       ================================ */
+    .programs-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      justify-content: center;
+    }
+    .program-tab {
+      background: none;
+      border: 1px solid var(--color-sand-300);
+      color: var(--color-ink-soft);
+      padding: 0.5rem 1.25rem;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 2px;
+    }
+    .program-tab:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .program-tab.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: white;
+    }
+    .program-card {
+      background: white;
+      border: 1px solid var(--color-sand-100);
+      transition: box-shadow 0.25s, transform 0.25s;
+      cursor: default;
+    }
+    .program-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.10); transform: translateY(-3px); }
+    .program-card-body { padding: 1.5rem; }
+    .program-category-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 0.5rem;
+    }
+    .program-title { font-size: 1.1rem; color: var(--color-ink); margin-bottom: 0.5rem; font-family: var(--font-display); }
+    .program-duration { font-size: 0.75rem; color: var(--color-ink-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .program-excerpt { font-size: 0.9rem; color: var(--color-ink-soft); line-height: 1.6; margin-bottom: 1.25rem; }
+    .program-footer { border-top: 1px solid var(--color-sand-100); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .program-price { font-size: 0.85rem; color: var(--color-ink); font-weight: 600; }
+    .btn-program-book {
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: var(--font-body);
+    }
+    .btn-program-book:hover { background: var(--color-accent-dark); }
+    .programs-empty { text-align: center; color: var(--color-ink-muted); padding: 3rem; width: 100%; grid-column: 1/-1; }
+
+       /* ================================
        FOOTER
        ================================ */
     footer {
@@ -1272,7 +1337,7 @@
   </header>
 
   <!-- ============= HERO ============= -->
-  <section class="hero">
+  <section class="hero" id="hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
       <h1 data-i18n="hero.title">Private Luxury Egypt Tours, Designed Around You</h1>
@@ -1283,7 +1348,7 @@
   </section>
 
   <!-- ============= FEATURED TOURS ============= -->
-  <section class="section section-bg-light">
+  <section class="section section-bg-light" id="featured-tours">
     <div class="container">
       <div class="section-header">
         <span class="section-eyebrow">✦ <span data-i18n="featured.eyebrow">Featured Tours</span> ✦</span>
@@ -1294,7 +1359,7 @@
   </section>
 
   <!-- ============= ABOUT ============= -->
-  <section class="section section-bg-white">
+  <section class="section section-bg-white" id="about">
     <div class="container">
       <div class="about-grid">
         <div class="about-text">
@@ -1315,7 +1380,7 @@
   </section>
 
   <!-- ============= DESTINATIONS ============= -->
-  <section class="section section-bg-light">
+  <section class="section section-bg-light" id="destinations">
     <div class="container">
       <div class="section-header">
         <span class="section-eyebrow">✦ <span data-i18n="destinations.eyebrow">Destinations</span> ✦</span>
@@ -1326,7 +1391,7 @@
   </section>
 
   <!-- ============= TOUR TYPES ============= -->
-  <section class="section section-bg-white">
+  <section class="section section-bg-white" id="tour-types">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">
@@ -1360,19 +1425,23 @@
     </div>
   </div>
 
-  <!-- ============= TRAVEL GUIDES ============= -->
-  <section class="section section-bg-light">
+  <!-- ============= RELIGIOUS PROGRAMS ============= -->
+  <section class="section section-bg-light" id="programs">
     <div class="container">
       <div class="section-header">
-        <span class="section-eyebrow">✦ <span data-i18n="guides.eyebrow">Travel Guides</span> ✦</span>
-        <h2 class="section-title" data-i18n="guides.subtitle">Straight answers on timing, itineraries, and what to expect.</h2>
+        <span class="section-eyebrow">✦ <span data-i18n="programs.eyebrow">Religious Programs</span> ✦</span>
+        <h2 class="section-title" data-i18n="programs.title">Sacred Journeys &amp; Religious Programs</h2>
+        <p class="section-subtitle" data-i18n="programs.subtitle">Curated spiritual experiences across Egypt's holiest sites.</p>
       </div>
-      <div class="tours-grid" id="guidesGrid"></div>
+      <!-- Category filter tabs -->
+      <div class="programs-tabs" id="programsTabs"></div>
+      <!-- Programs grid -->
+      <div class="tours-grid" id="programsGrid"></div>
     </div>
   </section>
 
   <!-- ============= FOOTER ============= -->
-  <footer>
+  <footer id="contact">
     <div class="footer-top-line"></div>
 
     <div class="footer-partners">
@@ -1442,7 +1511,7 @@
           luxor: "Luxor Day Trips",
           aswan: "Aswan Excursions",
           about: "About us",
-          blog: "Blog",
+          programs: "Religious Programs",
           contact: "Contact Us"
         },
         hero: {
@@ -1658,6 +1727,15 @@
             }
           ]
         },
+        programs: {
+          eyebrow: "Religious Programs",
+          title: "Sacred Journeys & Religious Programs",
+          subtitle: "Curated spiritual experiences across Egypt's holiest sites.",
+          allCategories: "All Programs",
+          bookNow: "Book Now",
+          duration: "Duration",
+          noPrograms: "No programs available yet."
+        },
         footer: {
           tagline: "Egypt Tours Agency",
           linksTitle: "Useful Links",
@@ -1686,7 +1764,7 @@
           luxor: "رحلات الأقصر",
           aswan: "جولات أسوان",
           about: "من نحن",
-          blog: "المدونة",
+          programs: "البرامج الدينية",
           contact: "تواصل معنا"
         },
         hero: {
@@ -1900,6 +1978,15 @@
             }
           ]
         },
+        programs: {
+          eyebrow: "البرامج الدينية",
+          title: "رحلات روحانية وبرامج دينية",
+          subtitle: "تجارب روحانية مميزة في أقدس المواقع المصرية.",
+          allCategories: "كل البرامج",
+          bookNow: "احجز الآن",
+          duration: "المدة",
+          noPrograms: "لا توجد برامج متاحة حالياً."
+        },
         footer: {
           tagline: "وكالة جولات سياحية في مصر",
           linksTitle: "روابط مفيدة",
@@ -1958,8 +2045,7 @@
           packagesResult,
           packageDaysResult,
           packageInclusionsResult,
-          packageHotelsResult,
-          blogResult
+          packageHotelsResult
         ] = await Promise.all([
           sb.from('site_settings').select('*').eq('id', 1).single(),
           sb.from('tours').select('*').order('sort_order'),
@@ -1968,8 +2054,7 @@
           sb.from('packages').select('*').eq('is_active', true).order('sort_order'),
           sb.from('package_days').select('*').order('sort_order'),
           sb.from('package_inclusions').select('*').order('sort_order'),
-          sb.from('package_hotels').select('*').order('sort_order'),
-          sb.from('blog_posts').select('*').eq('is_published', true).order('published_at', { ascending: false }).limit(3)
+          sb.from('package_hotels').select('*').order('sort_order')
         ]);
 
         // 1. Site Settings (Hero, About, Contact)
@@ -2106,23 +2191,13 @@
           translations.ar.packages.items = buildPackages('ar');
         }
 
-        // 6. Blog posts
-        if (blogResult.data && blogResult.data.length > 0) {
-          translations.en.guides.posts = blogResult.data.map(p => ({
-            category: p.category_en,
-            title: p.title_en,
-            date: new Date(p.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-            slug: p.slug,
-            image: p.image_url
-          }));
-          translations.ar.guides.posts = blogResult.data.map(p => ({
-            category: p.category_ar,
-            title: p.title_ar,
-            date: new Date(p.published_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }),
-            slug: p.slug,
-            image: p.image_url
-          }));
-        }
+        // 6. Programs and Categories
+        const [categoriesResult, programsResult] = await Promise.all([
+          sb.from('program_categories').select('*').order('sort_order'),
+          sb.from('programs').select('*').eq('is_active', true).order('sort_order')
+        ]);
+        if (categoriesResult.data) categoriesData = categoriesResult.data;
+        if (programsResult.data) programsData = programsResult.data;
 
         console.log('✓ Data loaded from Supabase');
       } catch (error) {
@@ -2135,49 +2210,88 @@
     // ================================
     // RENDER FUNCTIONS
     // ================================
+    function scrollToSection(id) {
+      if (id === 'top') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      const el = document.getElementById(id);
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      // close mobile menu if open
+      const menu = document.getElementById('mobileMenu');
+      if (menu && menu.classList.contains('open')) toggleMobileMenu();
+    }
+
+    function scrollToDestination(cityName) {
+      scrollToSection('destinations');
+      // highlight the matching destination card after scroll settles
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.destination-card');
+        cards.forEach(card => {
+          const nameEl = card.querySelector('.destination-name');
+          if (nameEl) {
+            const match = nameEl.textContent.toLowerCase().includes(cityName.toLowerCase());
+            card.style.outline = match ? '2px solid var(--color-accent)' : '';
+            card.style.transform = match ? 'scale(1.03)' : '';
+          }
+        });
+        setTimeout(() => {
+          document.querySelectorAll('.destination-card').forEach(c => {
+            c.style.outline = '';
+            c.style.transform = '';
+          });
+        }, 2500);
+      }, 800);
+    }
+
     function renderNavigation() {
       const t = translations[currentLang];
       const navItems = [
-        { label: t.nav.home, href: '#' },
+        { label: t.nav.home, action: () => scrollToSection('top') },
         {
-          label: t.nav.tours, href: '#',
+          label: t.nav.tours, action: () => scrollToSection('destinations'),
           children: [
-            { label: t.nav.cairo, href: '#' },
-            { label: t.nav.luxor, href: '#' },
-            { label: t.nav.aswan, href: '#' }
+            { label: t.nav.cairo,  action: () => scrollToDestination('Cairo') },
+            { label: t.nav.luxor,  action: () => scrollToDestination('Luxor') },
+            { label: t.nav.aswan,  action: () => scrollToDestination('Aswan') }
           ]
         },
-        { label: t.nav.about, href: '#about' },
-        { label: t.nav.blog, href: '#blog' },
-        { label: t.nav.contact, href: '#contact' }
+        { label: t.nav.about,    action: () => scrollToSection('about') },
+        { label: t.nav.programs, action: () => scrollToSection('programs') },
+        { label: t.nav.contact,  action: () => scrollToSection('contact') }
       ];
 
       const navLinks = document.getElementById('navLinks');
-      navLinks.innerHTML = navItems.map(item => `
+      navLinks.innerHTML = navItems.map((item, i) => `
         <li class="nav-item">
-          <a href="${item.href}" class="nav-link">
+          <a href="javascript:void(0)" class="nav-link" onclick="navActions[${i}]()">
             ${item.label}
             ${item.children ? '<i data-lucide="chevron-down" class="icon-sm"></i>' : ''}
           </a>
           ${item.children ? `
             <div class="nav-dropdown">
-              ${item.children.map(c => `<a href="${c.href}">${c.label}</a>`).join('')}
+              ${item.children.map((c, j) => `<a href="javascript:void(0)" onclick="navChildActions[${i}][${j}]()">${c.label}</a>`).join('')}
             </div>
           ` : ''}
         </li>
       `).join('');
 
+      // store actions on window so onclick strings can call them
+      window.navActions = navItems.map(item => item.action);
+      window.navChildActions = navItems.map(item =>
+        item.children ? item.children.map(c => c.action) : []
+      );
+
       const mobileNavLinks = document.getElementById('mobileNavLinks');
-      mobileNavLinks.innerHTML = navItems.map(item => `
+      mobileNavLinks.innerHTML = navItems.map((item, i) => `
         <li>
-          <a href="${item.href}" class="nav-link">${item.label}</a>
+          <a href="javascript:void(0)" class="nav-link" onclick="navActions[${i}]()">${item.label}</a>
           ${item.children ? `
             <div class="submenu">
-              ${item.children.map(c => `<a href="${c.href}" class="nav-link" style="font-size:0.8rem;">${c.label}</a>`).join('')}
+              ${item.children.map((c, j) => `<a href="javascript:void(0)" class="nav-link" style="font-size:0.8rem;" onclick="navChildActions[${i}][${j}]()">${c.label}</a>`).join('')}
             </div>
           ` : ''}
         </li>
       `).join('');
+
+      if (window.lucide) lucide.createIcons();
     }
 
     function renderTours() {
@@ -2256,33 +2370,74 @@
       `).join('');
     }
 
-    function renderGuides() {
+    // ── Programs data (loaded from Supabase or empty fallback) ──
+    let programsData = [];      // array of programs
+    let categoriesData = [];    // array of categories
+    let activeCategory = 'all'; // current filter
+
+    function renderPrograms() {
       const t = translations[currentLang];
-      const grid = document.getElementById('guidesGrid');
-      grid.innerHTML = t.guides.posts.map((post, i) => `
-        <div class="tour-card">
-          <div class="tour-image">
-            <div class="placeholder-img" ${post.image ? `style="background-image:url(${post.image});background-size:cover;background-position:center;"` : ''}>
-              <span class="placeholder-label" ${post.image ? 'style="display:none"' : ''}>Blog ${i + 1}</span>
-            </div>
-          </div>
-          <div class="tour-body">
-            <div class="tour-meta">
-              <i data-lucide="tag" class="icon-sm"></i>
-              <span>${post.category}</span>
-            </div>
-            <h3 class="tour-title">${post.title}</h3>
-            <div class="tour-footer">
-              <div class="tour-from" style="display:flex;align-items:center;gap:0.4rem;">
-                <i data-lucide="calendar" class="icon-sm"></i>
-                ${post.date}
-              </div>
-              <span class="tour-cta">${t.guides.read} <span class="arrow">→</span></span>
-            </div>
-          </div>
-        </div>
+      const tabsEl = document.getElementById('programsTabs');
+      const gridEl = document.getElementById('programsGrid');
+      if (!tabsEl || !gridEl) return;
+
+      // Build tabs
+      const tabs = [{ id: 'all', name: t.programs.allCategories }, ...categoriesData.map(c => ({
+        id: c.id,
+        name: currentLang === 'ar' ? (c.name_ar || c.name_en) : (c.name_en || c.name_ar)
+      }))];
+
+      tabsEl.innerHTML = tabs.map(tab => `
+        <button class="program-tab ${activeCategory === tab.id ? 'active' : ''}"
+          onclick="filterPrograms('${tab.id}')">
+          ${tab.name}
+        </button>
       `).join('');
+
+      // Filter programs
+      const filtered = activeCategory === 'all'
+        ? programsData
+        : programsData.filter(p => p.category_id == activeCategory);
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = `<div class="programs-empty">${t.programs.noPrograms}</div>`;
+        return;
+      }
+
+      gridEl.innerHTML = filtered.map(prog => {
+        const catName = categoriesData.find(c => c.id == prog.category_id);
+        const cat = catName ? (currentLang === 'ar' ? catName.name_ar : catName.name_en) : '';
+        const title = currentLang === 'ar' ? (prog.title_ar || prog.title_en) : (prog.title_en || prog.title_ar);
+        const excerpt = currentLang === 'ar' ? (prog.description_ar || prog.description_en) : (prog.description_en || prog.description_ar);
+        return `
+          <div class="program-card">
+            <div class="tour-image">
+              <div class="placeholder-img" ${prog.image_url ? `style="background-image:url(${prog.image_url});background-size:cover;background-position:center;"` : ''}>
+                <span class="placeholder-label" ${prog.image_url ? 'style="display:none"' : ''}>${title}</span>
+              </div>
+            </div>
+            <div class="program-card-body">
+              ${cat ? `<div class="program-category-badge">${cat}</div>` : ''}
+              <h3 class="program-title">${title}</h3>
+              ${prog.duration ? `<div class="program-duration"><i data-lucide="clock" class="icon-sm"></i> ${prog.duration}</div>` : ''}
+              <p class="program-excerpt">${excerpt || ''}</p>
+            </div>
+            <div class="program-footer">
+              <span class="program-price">${prog.price || ''}</span>
+              <a href="#contact" class="btn-program-book" onclick="scrollToSection('contact')">${t.programs.bookNow}</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
     }
+
+    function filterPrograms(catId) {
+      activeCategory = catId;
+      renderPrograms();
+    }
+
 
     function renderFooter() {
       const t = translations[currentLang];
@@ -2473,7 +2628,7 @@
       renderDestinations();
       renderTypes();
       renderPackages();
-      renderGuides();
+      renderPrograms();
       renderFooter();
 
       // Re-init Lucide icons
