@@ -1465,6 +1465,10 @@
           { title: "Tour Title Five", duration: "2 Hours", excerpt: "Short description of the fifth tour goes here." },
           { title: "Tour Title Six", duration: "8 Hours", excerpt: "Short description of the sixth tour goes here." }
         ],
+        // BUG FIX: featuredTours must exist before loadFromSupabase() runs
+        // otherwise translations.en.featuredTours.items = ... throws TypeError
+        // which kills the ENTIRE loadFromSupabase() silently via catch
+        featuredTours: { items: [] },
         about: {
           eyebrow: "About Us",
           intro: "Luxury Travel Service offers premium tours across Egypt.",
@@ -1705,6 +1709,8 @@
           { title: "اسم الجولة الخامسة", duration: "ساعتان", excerpt: "وصف قصير للجولة الخامسة يكتب هنا." },
           { title: "اسم الجولة السادسة", duration: "8 ساعات", excerpt: "وصف قصير للجولة السادسة يكتب هنا." }
         ],
+        // BUG FIX: must exist before loadFromSupabase() runs
+        featuredTours: { items: [] },
         about: {
           eyebrow: "من نحن",
           intro: "لاكشري ترافل سيرفيس تقدم جولات سياحية فاخرة في جميع أنحاء مصر.",
@@ -2533,9 +2539,10 @@
         }
       }
 
-      // Tour images
+      // Tour images — BUG FIX: guard against undefined featuredTours
+      const tourItems = (t.featuredTours && t.featuredTours.items) ? t.featuredTours.items : [];
       document.querySelectorAll('.tour-card').forEach((card, i) => {
-        const tour = t.featuredTours.items[i];
+        const tour = tourItems[i];
         if (tour && tour.image) {
           const img = card.querySelector('.placeholder-img');
           if (img) {
