@@ -152,6 +152,21 @@
   .hotel-item-edit{background:var(--dark4);padding:10px 14px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:center;}
   .hotel-item-edit input{background:var(--dark3);}
 
+  /* MULTI IMAGE UPLOAD */
+  .multi-img-section{margin-top:8px;}
+  .multi-img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:10px;}
+  .multi-img-item{position:relative;background:var(--dark4);border:1px solid var(--border);}
+  .multi-img-item img{width:100%;height:90px;object-fit:cover;display:block;}
+  .multi-img-item .remove-img-multi{position:absolute;top:4px;right:4px;background:rgba(10,10,15,.85);border:1px solid rgba(224,82,82,.4);color:var(--danger);width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;}
+  .multi-img-item .remove-img-multi:hover{background:rgba(224,82,82,.2);}
+  .multi-img-item .img-sort-badge{position:absolute;bottom:4px;left:4px;background:rgba(201,168,76,.85);color:var(--dark);font-size:.55rem;padding:2px 6px;letter-spacing:1px;}
+  .multi-img-add-btn{border:1.5px dashed rgba(201,168,76,.25);background:var(--dark4);height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;}
+  .multi-img-add-btn:hover{border-color:var(--gold);background:rgba(201,168,76,.04);}
+  .multi-img-add-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .multi-img-add-btn i{font-size:1.2rem;color:rgba(201,168,76,.4);margin-bottom:4px;}
+  .multi-img-add-btn span{font-size:.55rem;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+  .multi-img-uploading{font-size:.6rem;color:var(--gold);letter-spacing:1px;margin-top:6px;min-height:16px;}
+
   /* LOADING */
   .loading{text-align:center;padding:40px;color:var(--muted);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;}
 
@@ -620,6 +635,115 @@ async function loadOverview() {
 }
 
 // =============================================
+// MULTI-IMAGE UPLOAD HELPERS
+// =============================================
+
+// Render the multi-image upload widget inside a container element
+// containerId: id of the div to render into
+// existingUrls: array of URL strings already saved
+// contextKey: unique string per modal instance (e.g. 'tour-123', 'pkg-new')
+function renderMultiImgWidget(containerId, existingUrls = [], contextKey = 'item') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  // Store URLs in a data attribute as JSON
+  const urls = existingUrls.filter(Boolean);
+  container.dataset.imgs = JSON.stringify(urls);
+  container.dataset.key = contextKey;
+  _refreshMultiImgGrid(container);
+}
+
+function _refreshMultiImgGrid(container) {
+  const urls = JSON.parse(container.dataset.imgs || '[]');
+  const key = container.dataset.key || 'item';
+  const progressId = container.id + '-progress';
+
+  container.innerHTML = `
+    <div class="multi-img-grid" id="${container.id}-grid">
+      ${urls.map((url, i) => `
+        <div class="multi-img-item">
+          <img src="${escapeAttr(url)}" />
+          <div class="remove-img-multi" onclick="_removeMultiImg('${container.id}',${i})"><i class="fa fa-xmark"></i></div>
+          ${i === 0 ? '<span class="img-sort-badge">Cover</span>' : ''}
+        </div>
+      `).join('')}
+      <label class="multi-img-add-btn" title="Add image">
+        <input type="file" accept="image/*" multiple onchange="_handleMultiImgUpload(this,'${container.id}','${key}')" />
+        <i class="fa fa-plus"></i>
+        <span>Add</span>
+      </label>
+    </div>
+    <div class="multi-img-uploading" id="${progressId}"></div>
+  `;
+}
+
+function _removeMultiImg(containerId, idx) {
+  const container = document.getElementById(containerId);
+  const urls = JSON.parse(container.dataset.imgs || '[]');
+  urls.splice(idx, 1);
+  container.dataset.imgs = JSON.stringify(urls);
+  _refreshMultiImgGrid(container);
+}
+
+async function _handleMultiImgUpload(input, containerId, contextKey) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const container = document.getElementById(containerId);
+  const progressEl = document.getElementById(containerId + '-progress');
+  if (progressEl) progressEl.textContent = `Uploading ${files.length} image(s)...`;
+
+  const uploaded = [];
+  for (const file of files) {
+    const ext = file.name.split('.').pop();
+    const filename = `${contextKey}-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+    const { error } = await sb.storage.from('site-images').upload(filename, file, { upsert: true });
+    if (error) { showError(error.message); continue; }
+    const { data: { publicUrl } } = sb.storage.from('site-images').getPublicUrl(filename);
+    uploaded.push(publicUrl);
+  }
+
+  const existing = JSON.parse(container.dataset.imgs || '[]');
+  container.dataset.imgs = JSON.stringify([...existing, ...uploaded]);
+  _refreshMultiImgGrid(container);
+  if (progressEl) {
+    progressEl.textContent = `✓ ${uploaded.length} uploaded`;
+    setTimeout(() => { progressEl.textContent = ''; }, 2000);
+  }
+}
+
+// Get current URLs from a multi-img widget (returns array)
+function getMultiImgUrls(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return [];
+  return JSON.parse(container.dataset.imgs || '[]');
+}
+
+// Save item images to item_images table (delete old, insert new)
+async function saveItemImages(itemType, itemId, urls) {
+  // Delete existing
+  await sb.from('item_images').delete().eq('item_type', itemType).eq('item_id', itemId);
+  if (!urls.length) return;
+  const rows = urls.map((url, i) => ({
+    item_type: itemType,
+    item_id: itemId,
+    image_url: url,
+    sort_order: i
+  }));
+  const { error } = await sb.from('item_images').insert(rows);
+  if (error) showError('Error saving images: ' + error.message);
+}
+
+// Load item images from item_images table (returns array of URLs)
+async function loadItemImages(itemType, itemId) {
+  const { data, error } = await sb.from('item_images')
+    .select('image_url')
+    .eq('item_type', itemType)
+    .eq('item_id', itemId)
+    .order('sort_order');
+  if (error || !data) return [];
+  return data.map(r => r.image_url);
+}
+
+// =============================================
 // IMAGE UPLOAD TO SUPABASE STORAGE
 // =============================================
 async function handleImgUpload(input, prefix, urlInputId, previewWrapId, previewImgId) {
@@ -946,11 +1070,35 @@ function openServiceModal(s) {
         <input type="number" id="m-svc-sort" value="${s?.sort_order || 0}" />
       </div>
     </div>
+    <div class="field">
+      <label>Service Image (optional)</label>
+      <div class="img-upload-box">
+        <input type="file" accept="image/*" onchange="handleImgUpload(this,'svc','m-svc-img','svc-img-preview','svc-preview-img')" />
+        <i class="fa fa-cloud-arrow-up"></i>
+        <p>Click to upload</p>
+      </div>
+      <div class="upload-progress" id="svc-upload-progress"></div>
+      <div class="img-preview-wrap" id="svc-img-preview" style="${s?.image_url ? 'display:block' : ''}">
+        <img id="svc-preview-img" src="${escapeAttr(s?.image_url || '')}" />
+        <div class="remove-img" onclick="removeImg('svc','m-svc-img','svc-img-preview','svc-preview-img')"><i class="fa fa-xmark"></i></div>
+      </div>
+      <input type="hidden" id="m-svc-img" value="${escapeAttr(s?.image_url || '')}" />
+    </div>
+    <div class="field">
+      <label><i class="fa fa-images" style="color:var(--gold);margin-inline-end:6px;"></i> Additional Images (Gallery)</label>
+      <div id="svc-multi-imgs" class="multi-img-section"></div>
+    </div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn btn-primary" onclick="saveService(${s?.id || 'null'})">Save Service</button>
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
     </div>
   `);
+
+  if (s?.id) {
+    loadItemImages('service', s.id).then(urls => renderMultiImgWidget('svc-multi-imgs', urls, 'svc'));
+  } else {
+    renderMultiImgWidget('svc-multi-imgs', [], 'svc');
+  }
 }
 
 async function saveService(id) {
@@ -958,14 +1106,17 @@ async function saveService(id) {
     title_en: document.getElementById('m-svc-title-en').value,
     description_en: document.getElementById('m-svc-desc-en').value,
     icon: document.getElementById('m-svc-icon').value || 'briefcase',
+    image_url: document.getElementById('m-svc-img')?.value || null,
     sort_order: parseInt(document.getElementById('m-svc-sort').value) || 0
   };
 
-  const { error } = id
-    ? await sb.from('services').update(data).eq('id', id)
-    : await sb.from('services').insert(data);
+  const { error, data: savedSvc } = id
+    ? await sb.from('services').update(data).eq('id', id).select().single()
+    : await sb.from('services').insert(data).select().single();
 
   if (error) { alert('Error: ' + error.message); return showError(error.message); }
+  const svcId = savedSvc?.id || id;
+  await saveItemImages('service', svcId, getMultiImgUrls('svc-multi-imgs'));
   closeModal();
   showSaved();
   renderServices();
@@ -1045,11 +1196,24 @@ function openTourModal(t) {
       <input type="hidden" id="m-tour-img" value="${escapeAttr(t?.image_url || '')}" />
     </div>
     <div class="field"><label>Sort Order</label><input type="number" id="m-tour-sort" value="${t?.sort_order || 0}" /></div>
+
+    <div class="field">
+      <label><i class="fa fa-images" style="color:var(--gold);margin-inline-end:6px;"></i> Additional Images (Gallery)</label>
+      <div id="tour-multi-imgs" class="multi-img-section"></div>
+    </div>
+
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn btn-primary" onclick="saveTour(${t?.id || 'null'})">${T().tours.save}</button>
       <button class="btn btn-secondary" onclick="closeModal()">${T().tours.cancel}</button>
     </div>
   `);
+
+  // Load extra images after modal renders
+  if (t?.id) {
+    loadItemImages('tour', t.id).then(urls => renderMultiImgWidget('tour-multi-imgs', urls, 'tour'));
+  } else {
+    renderMultiImgWidget('tour-multi-imgs', [], 'tour');
+  }
 }
 
 async function saveTour(id) {
@@ -1066,11 +1230,13 @@ async function saveTour(id) {
     sort_order: parseInt(document.getElementById('m-tour-sort').value) || 0
   };
 
-  const { error } = id
-    ? await sb.from('tours').update(data).eq('id', id)
-    : await sb.from('tours').insert(data);
+  const { error, data: savedData } = id
+    ? await sb.from('tours').update(data).eq('id', id).select().single()
+    : await sb.from('tours').insert(data).select().single();
 
   if (error) return showError(error.message);
+  const tourId = savedData?.id || id;
+  await saveItemImages('tour', tourId, getMultiImgUrls('tour-multi-imgs'));
   closeModal();
   showSaved();
   renderTours();
@@ -1184,6 +1350,11 @@ function openPackageModal(p, days = [], inclusions = [], hotels = []) {
 
     <div class="field"><label>Sort Order</label><input type="number" id="m-pkg-sort" value="${p?.sort_order || 0}" /></div>
 
+    <div class="field">
+      <label><i class="fa fa-images" style="color:var(--gold);margin-inline-end:6px;"></i> Additional Images (Gallery)</label>
+      <div id="pkg-multi-imgs" class="multi-img-section"></div>
+    </div>
+
     <!-- DAYS -->
     <div class="card-title" style="margin-top:30px;"><i class="fa fa-list"></i> Itinerary Days</div>
     <div class="days-list" id="days-list">
@@ -1216,6 +1387,13 @@ function openPackageModal(p, days = [], inclusions = [], hotels = []) {
       <button class="btn btn-secondary" onclick="closeModal()">${T().packages.cancel}</button>
     </div>
   `);
+
+  // Load extra images after modal renders
+  if (p?.id) {
+    loadItemImages('package', p.id).then(urls => renderMultiImgWidget('pkg-multi-imgs', urls, 'pkg'));
+  } else {
+    renderMultiImgWidget('pkg-multi-imgs', [], 'pkg');
+  }
 }
 
 function renderDayItem(d = {}, idx = 0) {
@@ -1371,6 +1549,8 @@ async function savePackage(id) {
     if (hotErr) { alert('Error saving hotels:\n' + hotErr.message); return showError(hotErr.message); }
   }
 
+  await saveItemImages('package', pkgId, getMultiImgUrls('pkg-multi-imgs'));
+
   closeModal();
   showSaved();
   renderPackages();
@@ -1445,11 +1625,21 @@ function openDestModal(d) {
       </div>
       <input type="hidden" id="m-dest-img" value="${escapeAttr(d?.image_url || '')}" />
     </div>
+    <div class="field">
+      <label><i class="fa fa-images" style="color:var(--gold);margin-inline-end:6px;"></i> Additional Images (Gallery)</label>
+      <div id="dest-multi-imgs" class="multi-img-section"></div>
+    </div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn btn-primary" onclick="saveDest(${d?.id || 'null'})">${T().destinations.save}</button>
       <button class="btn btn-secondary" onclick="closeModal()">${T().destinations.cancel}</button>
     </div>
   `);
+
+  if (d?.id) {
+    loadItemImages('destination', d.id).then(urls => renderMultiImgWidget('dest-multi-imgs', urls, 'dest'));
+  } else {
+    renderMultiImgWidget('dest-multi-imgs', [], 'dest');
+  }
 }
 
 async function saveDest(id) {
@@ -1463,11 +1653,13 @@ async function saveDest(id) {
     sort_order: parseInt(document.getElementById('m-dest-sort').value) || 0
   };
 
-  const { error } = id
-    ? await sb.from('destinations').update(data).eq('id', id)
-    : await sb.from('destinations').insert(data);
+  const { error, data: savedDest } = id
+    ? await sb.from('destinations').update(data).eq('id', id).select().single()
+    : await sb.from('destinations').insert(data).select().single();
 
   if (error) return showError(error.message);
+  const destId = savedDest?.id || id;
+  await saveItemImages('destination', destId, getMultiImgUrls('dest-multi-imgs'));
   closeModal();
   showSaved();
   renderDestinations();
@@ -1644,11 +1836,21 @@ async function openProgramModal(prog, catsArg) {
       </div>
       <input type="hidden" id="m-prog-img" value="${escapeAttr(prog?.image_url || '')}" />
     </div>
+    <div class="field">
+      <label><i class="fa fa-images" style="color:var(--gold);margin-inline-end:6px;"></i> Additional Images (Gallery)</label>
+      <div id="prog-multi-imgs" class="multi-img-section"></div>
+    </div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn btn-primary" onclick="saveProgram(${prog?.id || 'null'})">Save Program</button>
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
     </div>
   `);
+
+  if (prog?.id) {
+    loadItemImages('program', prog.id).then(urls => renderMultiImgWidget('prog-multi-imgs', urls, 'prog'));
+  } else {
+    renderMultiImgWidget('prog-multi-imgs', [], 'prog');
+  }
 }
 
 async function saveProgram(id) {
@@ -1665,9 +1867,11 @@ async function saveProgram(id) {
     is_active: document.getElementById('m-prog-active').checked
   };
   const result = id
-    ? await sb.from('programs').update(data).eq('id', id)
-    : await sb.from('programs').insert(data);
+    ? await sb.from('programs').update(data).eq('id', id).select().single()
+    : await sb.from('programs').insert(data).select().single();
   if (result.error) return showError(result.error.message);
+  const progId = result.data?.id || id;
+  await saveItemImages('program', progId, getMultiImgUrls('prog-multi-imgs'));
   closeModal(); showSaved(); renderPrograms();
 }
 
