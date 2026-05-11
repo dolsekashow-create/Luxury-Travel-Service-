@@ -1784,15 +1784,15 @@ const adminTranslations = {
   ar: {
     panelTitles: {
       overview: 'نظرة عامة', hero: 'القسم الرئيسي', about: 'من نحن',
-      features: 'المميزات', packages: 'باقات الجولات', tours: 'الجولات المميزة',
+      features: 'المميزات', services: 'الخدمات', packages: 'باقات الجولات', tours: 'الجولات المميزة',
       destinations: 'الوجهات', categories: 'أقسام البرامج', programs: 'البرامج الدينية', submissions: 'استفسارات العملاء',
       contact: 'التواصل والسوشيال'
     },
     sidebar: {
       dashboard: 'لوحة التحكم', overview: 'الرئيسية', siteContent: 'محتوى الموقع',
-      hero: 'القسم الرئيسي', about: 'من نحن', features: 'المميزات',
+      hero: 'القسم الرئيسي', about: 'من نحن', features: 'المميزات', services: 'الخدمات',
       toursPackages: 'الجولات والباقات', packages: 'الباقات', tours: 'الجولات المميزة',
-      destinations: 'الوجهات', religiousPrograms: 'البرامج الدينية', categories: 'أقسام البرامج', programs: 'البرامج', categories: 'أقسام البرامج', programs: 'البرامج', submissions: 'الاستفسارات', settings: 'الإعدادات', contact: 'التواصل والسوشيال',
+      destinations: 'الوجهات', religiousPrograms: 'البرامج الدينية', categories: 'أقسام البرامج', programs: 'البرامج', submissions: 'الاستفسارات', settings: 'الإعدادات', contact: 'التواصل والسوشيال',
       logout: 'تسجيل الخروج'
     },
     overview: { welcome: 'مرحباً', welcomeText: 'يمكنك إدارة محتوى الموقع من هنا. التغييرات تُحفظ مباشرة وتظهر على الموقع الحي.', tours: 'الجولات المميزة', packages: 'الباقات', destinations: 'الوجهات', programs: 'البرامج الدينية', categories: 'أقسام البرامج' },
@@ -1837,8 +1837,8 @@ function applyAdminLang() {
   navLabels.forEach((el, i) => { if (labelTexts[i]) el.textContent = labelTexts[i]; });
 
   const sidebarItems = document.querySelectorAll('.sidebar-item');
-  const itemKeys = ['overview','hero','about','features','tours','destinations','packages','categories','programs','submissions','contact'];
-  const itemIcons = ['fa-gauge','fa-image','fa-circle-info','fa-star','fa-compass','fa-map-pin','fa-suitcase','fa-folder-open','fa-mosque','fa-envelope','fa-address-book'];
+  const itemKeys = ['overview','hero','about','features','services','tours','destinations','packages','categories','programs','submissions','contact'];
+  const itemIcons = ['fa-gauge','fa-image','fa-circle-info','fa-star','fa-briefcase','fa-compass','fa-map-pin','fa-suitcase','fa-folder-open','fa-mosque','fa-envelope','fa-address-book'];
   sidebarItems.forEach((el, i) => {
     if (itemKeys[i]) el.innerHTML = `<i class="fa ${itemIcons[i]}"></i> ${t.sidebar[itemKeys[i]] || itemKeys[i]}`;
   });
