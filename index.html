@@ -550,6 +550,47 @@
     }
     @media (min-width: 640px) { .about-features { grid-template-columns: 1fr 1fr; } }
 
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    @media (min-width: 640px) { .services-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .services-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .service-card {
+      background: white;
+      border: 1px solid var(--color-sand-100, #e8e0d0);
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .75rem;
+      transition: box-shadow .3s, transform .3s;
+    }
+    .service-card:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+      transform: translateY(-3px);
+    }
+    .service-icon {
+      width: 2.5rem; height: 2.5rem;
+      background: rgba(193,154,91,.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent, #c19a5b);
+      font-size: 1rem;
+    }
+    .service-title {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--color-ink, #1a1a2e);
+      line-height: 1.4;
+    }
+    .service-desc {
+      font-size: .78rem;
+      color: var(--color-ink-soft, #666);
+      line-height: 1.5;
+    }
+
     .feature-num {
       width: 3rem; height: 3rem;
       background: rgba(193,154,91,0.1);
@@ -1374,6 +1415,17 @@
     </div>
   </section>
 
+  <!-- ============= SERVICES ============= -->
+  <section class="section section-bg-light" id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">✦ Our Services ✦</span>
+        <h2 class="section-title">What We Offer</h2>
+      </div>
+      <div class="services-grid" id="servicesGrid"></div>
+    </div>
+  </section>
+
   <!-- ============= DESTINATIONS ============= -->
   <section class="section section-bg-light" id="destinations">
     <div class="container">
@@ -2040,7 +2092,8 @@
           packagesResult,
           packageDaysResult,
           packageInclusionsResult,
-          packageHotelsResult
+          packageHotelsResult,
+          servicesResult
         ] = await Promise.all([
           sb.from('site_settings').select('*').eq('id', 1).single(),
           sb.from('tours').select('*').order('sort_order'),
@@ -2049,7 +2102,8 @@
           sb.from('packages').select('*').eq('is_active', true).order('sort_order'),
           sb.from('package_days').select('*').order('sort_order'),
           sb.from('package_inclusions').select('*').order('sort_order'),
-          sb.from('package_hotels').select('*').order('sort_order')
+          sb.from('package_hotels').select('*').order('sort_order'),
+          sb.from('services').select('*').order('sort_order')
         ]);
 
         // 1. Site Settings (Hero, About, Contact)
@@ -2169,6 +2223,12 @@
             title: f.title_ar,
             desc: f.description_ar
           }));
+        }
+
+        // 4b. Services
+        if (servicesResult.data && servicesResult.data.length > 0) {
+          window._servicesData = servicesResult.data;
+          renderServices();
         }
 
         // 5. Packages with their related data
@@ -2350,6 +2410,24 @@
           <div class="feature-num">${String(i + 1).padStart(2, '0')}</div>
           <h3 class="feature-title">${f.title}</h3>
           <p class="feature-desc">${f.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderServices() {
+      const grid = document.getElementById('servicesGrid');
+      if (!grid) return;
+      const services = window._servicesData || [];
+      if (!services.length) {
+        grid.closest('section').style.display = 'none';
+        return;
+      }
+      grid.closest('section').style.display = '';
+      grid.innerHTML = services.map(s => `
+        <div class="service-card">
+          <div class="service-icon"><i class="fa fa-${s.icon || 'briefcase'}"></i></div>
+          <div class="service-title">${s.title_en}</div>
+          ${s.description_en ? `<div class="service-desc">${s.description_en}</div>` : ''}
         </div>
       `).join('');
     }
