@@ -121,8 +121,8 @@
       font-size: 0.75rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
       transition: background 0.2s, transform 0.2s;
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1;
+      pointer-events: auto;
     }
     .img-carousel:hover .carousel-btn {
       opacity: 1;
@@ -141,7 +141,7 @@
       left: 50%; transform: translateX(-50%);
       display: flex; gap: 5px;
       z-index: 5;
-      opacity: 0;
+      opacity: 1;
       transition: opacity 0.2s;
     }
     .img-carousel:hover .carousel-dots { opacity: 1; }
@@ -2185,25 +2185,22 @@
     // mainImage: the primary image URL (from image_url column)
     // extraUrls: array of additional URLs from item_images
     function buildCarousel(mainImage, extraUrls) {
-      // Combine: main image first, then extras (skip duplicates)
       const all = [mainImage, ...extraUrls.filter(u => u !== mainImage)].filter(Boolean);
-      if (all.length <= 1) {
-        // No extras — just render the original placeholder-img
-        return `<div class="placeholder-img" ${mainImage ? `style="background-image:url(${mainImage});background-size:cover;background-position:center;"` : ''}>
-          <span class="placeholder-label" ${mainImage ? 'style="display:none"' : ''}></span>
-        </div>`;
-      }
       const uid = 'c' + Math.random().toString(36).slice(2, 8);
-      const slides = all.map((url, i) => `
+
+      // Always build carousel structure so arrows are always visible
+      const slides = all.length > 0 ? all.map((url, i) => `
         <div class="img-carousel-slide ${i === 0 ? 'active' : ''}"
           style="background-image:url(${url})"></div>
-      `).join('');
-      const dots = all.map((_, i) => `
+      `).join('') : `<div class="img-carousel-slide active" style="background:var(--color-sand-200);"></div>`;
+
+      const dots = all.length > 1 ? all.map((_, i) => `
         <button class="carousel-dot ${i === 0 ? 'active' : ''}"
           onclick="carouselGoTo('${uid}',${i});event.stopPropagation()"></button>
-      `).join('');
+      `).join('') : '';
+
       return `
-        <div class="img-carousel" id="${uid}" data-idx="0" data-total="${all.length}">
+        <div class="img-carousel" id="${uid}" data-idx="0" data-total="${Math.max(all.length,1)}">
           <div class="img-carousel-track">${slides}</div>
           <button class="carousel-btn prev" onclick="carouselPrev('${uid}');event.stopPropagation()">
             <i class="fa fa-chevron-left"></i>
@@ -2211,7 +2208,7 @@
           <button class="carousel-btn next" onclick="carouselNext('${uid}');event.stopPropagation()">
             <i class="fa fa-chevron-right"></i>
           </button>
-          <div class="carousel-dots">${dots}</div>
+          ${dots ? `<div class="carousel-dots">${dots}</div>` : ''}
         </div>`;
     }
 
@@ -2608,8 +2605,8 @@
         const hasExtra = d.image && extras.length > 0;
         const allImgs = [d.image, ...extras.filter(u => u !== d.image)].filter(Boolean);
         let imgInner;
-        if (allImgs.length > 1) {
-          const uid = 'c' + Math.random().toString(36).slice(2, 8);
+        const uid = 'c' + Math.random().toString(36).slice(2, 8);
+        if (allImgs.length > 0) {
           imgInner = `
             <div class="img-carousel" id="${uid}" data-idx="0" data-total="${allImgs.length}" style="position:absolute;inset:0;">
               <div class="img-carousel-track">
@@ -2617,12 +2614,15 @@
               </div>
               <button class="carousel-btn prev" onclick="carouselPrev('${uid}');event.stopPropagation()"><i class="fa fa-chevron-left"></i></button>
               <button class="carousel-btn next" onclick="carouselNext('${uid}');event.stopPropagation()"><i class="fa fa-chevron-right"></i></button>
-              <div class="carousel-dots">${allImgs.map((_,si)=>`<button class="carousel-dot ${si===0?'active':''}" onclick="carouselGoTo('${uid}',${si});event.stopPropagation()"></button>`).join('')}</div>
+              ${allImgs.length > 1 ? `<div class="carousel-dots">${allImgs.map((_,si)=>`<button class="carousel-dot ${si===0?'active':''}" onclick="carouselGoTo('${uid}',${si});event.stopPropagation()"></button>`).join('')}</div>` : ''}
             </div>`;
         } else {
-          imgInner = `<div class="placeholder-img" ${d.image ? `style="position:absolute;inset:0;background-image:url(${d.image});background-size:cover;background-position:center;"` : 'style="position:absolute;inset:0;"'}>
-            <span class="placeholder-label" ${d.image ? 'style="display:none"' : ''}>Destination ${i + 1}</span>
-          </div>`;
+          imgInner = `
+            <div class="img-carousel" id="${uid}" data-idx="0" data-total="1" style="position:absolute;inset:0;">
+              <div class="img-carousel-track"><div class="img-carousel-slide active" style="background:var(--color-sand-200);"></div></div>
+              <button class="carousel-btn prev" onclick="carouselPrev('${uid}');event.stopPropagation()"><i class="fa fa-chevron-left"></i></button>
+              <button class="carousel-btn next" onclick="carouselNext('${uid}');event.stopPropagation()"><i class="fa fa-chevron-right"></i></button>
+            </div>`;
         }
         return `
         <div class="destination-card">
