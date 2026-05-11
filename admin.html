@@ -200,6 +200,7 @@
       <div class="sidebar-item" onclick="switchPanel('hero',this)"><i class="fa fa-image"></i> Hero Section</div>
       <div class="sidebar-item" onclick="switchPanel('about',this)"><i class="fa fa-circle-info"></i> About</div>
       <div class="sidebar-item" onclick="switchPanel('features',this)"><i class="fa fa-star"></i> Features</div>
+      <div class="sidebar-item" onclick="switchPanel('services',this)"><i class="fa fa-briefcase"></i> Services</div>
       <span class="nav-group-label">Tours & Packages</span>
       <div class="sidebar-item" onclick="switchPanel('tours',this)"><i class="fa fa-compass"></i> Featured Tours</div>
       <div class="sidebar-item" onclick="switchPanel('destinations',this)"><i class="fa fa-map-pin"></i> Destinations</div>
@@ -343,6 +344,15 @@
           <button class="btn btn-primary" onclick="openFeatureModal()"><i class="fa fa-plus"></i> &nbsp;Add Feature</button>
         </div>
         <div class="items-list" id="features-list"></div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="panel" id="panel-services">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:.65rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase">Services</span>
+          <button class="btn btn-primary" onclick="openServiceModal()"><i class="fa fa-plus"></i> &nbsp;Add Service</button>
+        </div>
+        <div class="items-list" id="services-list"></div>
       </div>
 
       <!-- PACKAGES -->
@@ -567,6 +577,7 @@ function loadPanel(id) {
   else if (id === 'hero') loadHero();
   else if (id === 'about') loadAbout();
   else if (id === 'features') renderFeatures();
+  else if (id === 'services') renderServices();
   else if (id === 'tours') renderTours();
   else if (id === 'destinations') renderDestinations();
   else if (id === 'packages') renderPackages();
@@ -880,6 +891,92 @@ async function deleteFeature(id) {
   if (error) return showError(error.message);
   showSaved();
   renderFeatures();
+}
+
+// =============================================
+// SERVICES
+// =============================================
+async function renderServices() {
+  const list = document.getElementById('services-list');
+  list.innerHTML = `<div class="loading">Loading...</div>`;
+  const { data, error } = await sb.from('services').select('*').order('sort_order');
+  if (error) return showError(error.message);
+
+  if (!data.length) {
+    list.innerHTML = `<div class="loading">No services yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(s => `
+    <div class="item-row">
+      <div class="item-thumb"><i class="fa fa-${s.icon || 'briefcase'}" style="color:var(--gold);"></i></div>
+      <div class="item-info">
+        <div class="item-name">${escapeHtml(s.title_en)}</div>
+        <div class="item-meta">${escapeHtml(s.description_en || '')}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-sm-icon" onclick='openServiceModal(${JSON.stringify(s)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon del" onclick="deleteService(${s.id})"><i class="fa fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openServiceModal(s) {
+  showModal(`
+    <div class="modal-header">
+      <h3>${s ? 'Edit Service' : 'Add Service'}</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="field">
+      <label>Title (EN)</label>
+      <input type="text" id="m-svc-title-en" value="${escapeAttr(s?.title_en || '')}" />
+    </div>
+    <div class="field">
+      <label>Description (EN) — اختياري</label>
+      <textarea id="m-svc-desc-en">${escapeHtml(s?.description_en || '')}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Icon (Font Awesome)</label>
+        <input type="text" id="m-svc-icon" value="${escapeAttr(s?.icon || 'briefcase')}" placeholder="plane, hotel, passport..." />
+      </div>
+      <div class="field">
+        <label>Sort Order</label>
+        <input type="number" id="m-svc-sort" value="${s?.sort_order || 0}" />
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveService(${s?.id || 'null'})">Save Service</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+async function saveService(id) {
+  const data = {
+    title_en: document.getElementById('m-svc-title-en').value,
+    description_en: document.getElementById('m-svc-desc-en').value,
+    icon: document.getElementById('m-svc-icon').value || 'briefcase',
+    sort_order: parseInt(document.getElementById('m-svc-sort').value) || 0
+  };
+
+  const { error } = id
+    ? await sb.from('services').update(data).eq('id', id)
+    : await sb.from('services').insert(data);
+
+  if (error) { alert('Error: ' + error.message); return showError(error.message); }
+  closeModal();
+  showSaved();
+  renderServices();
+}
+
+async function deleteService(id) {
+  if (!confirm('Delete this service?')) return;
+  const { error } = await sb.from('services').delete().eq('id', id);
+  if (error) return showError(error.message);
+  showSaved();
+  renderServices();
 }
 
 // =============================================
