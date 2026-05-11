@@ -948,7 +948,8 @@ async function renderFeatures() {
     return;
   }
 
-  list.innerHTML = data.map(f => `
+  window._cacheFeatures = data;
+  list.innerHTML = data.map((f, i) => `
     <div class="item-row">
       <div class="item-thumb"><i class="fa fa-${f.icon || 'star'}" style="color:var(--gold);"></i></div>
       <div class="item-info">
@@ -956,7 +957,7 @@ async function renderFeatures() {
         <div class="item-meta">${escapeHtml(f.title_ar)}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openFeatureModal(${JSON.stringify(f)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openFeatureModal(window._cacheFeatures[${i}])"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteFeature(${f.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
@@ -1031,7 +1032,8 @@ async function renderServices() {
     return;
   }
 
-  list.innerHTML = data.map(s => `
+  window._cacheServices = data;
+  list.innerHTML = data.map((s, i) => `
     <div class="item-row">
       <div class="item-thumb"><i class="fa fa-${s.icon || 'briefcase'}" style="color:var(--gold);"></i></div>
       <div class="item-info">
@@ -1039,7 +1041,7 @@ async function renderServices() {
         <div class="item-meta">${escapeHtml(s.description_en || '')}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openServiceModal(${JSON.stringify(s)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openServiceModal(window._cacheServices[${i}])"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteService(${s.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
@@ -1144,7 +1146,8 @@ async function renderTours() {
     return;
   }
 
-  list.innerHTML = data.map(t => `
+  window._cacheTours = data;
+  list.innerHTML = data.map((t, i) => `
     <div class="item-row">
       <div class="item-thumb">${t.image_url ? `<img src="${t.image_url}">` : '<i class="fa fa-image"></i>'}</div>
       <div class="item-info">
@@ -1152,7 +1155,7 @@ async function renderTours() {
         <div class="item-meta">${escapeHtml(t.duration_en || '')} · ${escapeHtml(t.price || '')}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openTourModal(${JSON.stringify(t)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openTourModal(window._cacheTours[${i}])"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteTour(${t.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
@@ -1578,7 +1581,8 @@ async function renderDestinations() {
     return;
   }
 
-  list.innerHTML = data.map(d => `
+  window._cacheDests = data;
+  list.innerHTML = data.map((d, i) => `
     <div class="item-row">
       <div class="item-thumb">${d.image_url ? `<img src="${d.image_url}">` : '<i class="fa fa-map-pin"></i>'}</div>
       <div class="item-info">
@@ -1586,7 +1590,7 @@ async function renderDestinations() {
         <div class="item-meta">${escapeHtml(d.name_ar)}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openDestModal(${JSON.stringify(d)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openDestModal(window._cacheDests[${i}])"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteDest(${d.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
@@ -1687,7 +1691,8 @@ async function renderCategories() {
     return;
   }
 
-  list.innerHTML = data.map(cat => `
+  window._cacheCats = data;
+  list.innerHTML = data.map((cat, i) => `
     <div class="item-row">
       <div class="item-thumb" style="font-size:1.4rem;display:flex;align-items:center;justify-content:center;">
         ${cat.icon || '<i class="fa fa-folder"></i>'}
@@ -1697,7 +1702,7 @@ async function renderCategories() {
         <div class="item-meta">${escapeHtml(cat.name_ar || '')}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openCategoryModal(${JSON.stringify(cat)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openCategoryModal(window._cacheCats[${i}])"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteCategory(${cat.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
@@ -1765,7 +1770,9 @@ async function renderPrograms() {
 
   const catMap = Object.fromEntries((cats || []).map(c => [c.id, c.name_en]));
 
-  list.innerHTML = programs.map(p => `
+  window._cachePrograms = programs;
+  window._cacheProgramCats = cats || [];
+  list.innerHTML = programs.map((p, i) => `
     <div class="item-row">
       <div class="item-thumb">${p.image_url ? `<img src="${p.image_url}">` : '<i class="fa fa-mosque"></i>'}</div>
       <div class="item-info">
@@ -1773,7 +1780,7 @@ async function renderPrograms() {
         <div class="item-meta">${catMap[p.category_id] || 'No Category'} · ${p.duration || ''} ${p.price ? '· ' + p.price : ''}</div>
       </div>
       <div class="item-actions">
-        <button class="btn-sm-icon" onclick='openProgramModal(${JSON.stringify(p)},${JSON.stringify(cats || [])})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon" onclick="openProgramModal(window._cachePrograms[${i}], window._cacheProgramCats)"><i class="fa fa-pen"></i></button>
         <button class="btn-sm-icon del" onclick="deleteProgram(${p.id})"><i class="fa fa-trash"></i></button>
       </div>
     </div>
