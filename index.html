@@ -2396,10 +2396,10 @@
         if (tourTypesResult.data && tourTypesResult.data.length > 0) {
           const lang = currentLang;
           translations.en.types.items = tourTypesResult.data.map(t => ({
-            title: t.title_en, desc: t.description_en, cta: t.cta_en || 'Explore'
+            title: t.title_en, desc: t.description_en, cta: t.cta_en || 'Explore', image: t.image_url
           }));
           translations.ar.types.items = tourTypesResult.data.map(t => ({
-            title: t.title_ar, desc: t.description_ar, cta: t.cta_ar || 'استكشف'
+            title: t.title_ar, desc: t.description_ar, cta: t.cta_ar || 'استكشف', image: t.image_url
           }));
         }
 
@@ -2655,8 +2655,8 @@
       const grid = document.getElementById('typesGrid');
       grid.innerHTML = t.types.items.map((type, i) => `
         <div class="type-card">
-          <div class="placeholder-img type-icon">
-            <div class="type-icon-circle">${String(i + 1).padStart(2, '0')}</div>
+          <div class="placeholder-img type-icon" ${type.image ? `style="background-image:url(${type.image});background-size:cover;background-position:center;"` : ''}>
+            <div class="type-icon-circle" ${type.image ? 'style="background:rgba(0,0,0,.35);color:#fff;"' : ''}>${String(i + 1).padStart(2, '0')}</div>
           </div>
           <div class="type-body">
             <h3 class="type-title">${type.title}</h3>
