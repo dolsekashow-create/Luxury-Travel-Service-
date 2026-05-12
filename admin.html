@@ -1730,6 +1730,20 @@ function openTourTypeModal(t) {
       <div class="field"><label>CTA Text (AR)</label><input type="text" id="m-tt-cta-ar" dir="rtl" value="${escapeAttr(t?.cta_ar || '')}" placeholder="استكشف الكلاسيكيات" /></div>
     </div>
     <div class="field"><label>Sort Order</label><input type="number" id="m-tt-sort" value="${t?.sort_order || 0}" /></div>
+    <div class="field" style="margin-top:16px;">
+      <label>Image</label>
+      <div class="img-upload-box">
+        <input type="file" accept="image/*" onchange="handleImgUpload(this,'tourtype','m-tt-img','tt-img-preview','tt-preview-img')" />
+        <i class="fa fa-cloud-arrow-up"></i>
+        <p>Click to upload</p>
+      </div>
+      <div class="upload-progress" id="tourtype-upload-progress"></div>
+      <div class="img-preview-wrap" id="tt-img-preview" style="${t?.image_url ? 'display:block' : ''}">
+        <img id="tt-preview-img" src="${escapeAttr(t?.image_url || '')}" />
+        <div class="remove-img" onclick="removeImg('tourtype','m-tt-img','tt-img-preview','tt-preview-img')"><i class="fa fa-xmark"></i></div>
+      </div>
+      <input type="hidden" id="m-tt-img" value="${escapeAttr(t?.image_url || '')}" />
+    </div>
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button class="btn btn-primary" onclick="saveTourType(${t?.id || 'null'})">Save</button>
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -1745,6 +1759,7 @@ async function saveTourType(id) {
     description_ar: document.getElementById('m-tt-desc-ar').value,
     cta_en: document.getElementById('m-tt-cta-en').value,
     cta_ar: document.getElementById('m-tt-cta-ar').value,
+    image_url: document.getElementById('m-tt-img').value || null,
     sort_order: parseInt(document.getElementById('m-tt-sort').value) || 0
   };
   const { error } = id
