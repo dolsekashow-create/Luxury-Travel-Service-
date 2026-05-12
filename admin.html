@@ -2060,9 +2060,9 @@ const adminTranslations = {
     },
     sidebar: {
       dashboard: 'Dashboard', overview: 'Overview', siteContent: 'Site Content',
-      hero: 'Hero Section', about: 'About', features: 'Features',
+      hero: 'Hero Section', about: 'About', features: 'Features', services: 'Services',
       toursPackages: 'Tours & Packages', packages: 'Packages', tours: 'Featured Tours',
-      destinations: 'Destinations', religiousPrograms: 'Religious Programs', categories: 'Program Categories', programs: 'Programs', categories: 'Program Categories', programs: 'Programs', submissions: 'Inquiries', settings: 'Settings', contact: 'Contact & Social',
+      destinations: 'Destinations', 'tour-types': 'Tour Types', religiousPrograms: 'Religious Programs', categories: 'Program Categories', programs: 'Programs', submissions: 'Inquiries', settings: 'Settings', contact: 'Contact & Social',
       logout: 'Logout'
     },
     overview: { welcome: 'Welcome', welcomeText: '<span id="welcome-text">Manage your website content here. Changes save directly to Supabase and appear on the live site.</span>', tours: 'Featured Tours', packages: 'Packages', destinations: 'Destinations', programs: 'Religious Programs', categories: 'Program Categories' },
@@ -2080,14 +2080,14 @@ const adminTranslations = {
     panelTitles: {
       overview: 'نظرة عامة', hero: 'القسم الرئيسي', about: 'من نحن',
       features: 'المميزات', services: 'الخدمات', packages: 'باقات الجولات', tours: 'الجولات المميزة',
-      destinations: 'الوجهات', categories: 'أقسام البرامج', programs: 'البرامج الدينية', submissions: 'استفسارات العملاء',
+      destinations: 'الوجهات', 'tour-types': 'أنواع الجولات', categories: 'أقسام البرامج', programs: 'البرامج الدينية', submissions: 'استفسارات العملاء',
       contact: 'التواصل والسوشيال'
     },
     sidebar: {
       dashboard: 'لوحة التحكم', overview: 'الرئيسية', siteContent: 'محتوى الموقع',
       hero: 'القسم الرئيسي', about: 'من نحن', features: 'المميزات', services: 'الخدمات',
       toursPackages: 'الجولات والباقات', packages: 'الباقات', tours: 'الجولات المميزة',
-      destinations: 'الوجهات', religiousPrograms: 'البرامج الدينية', categories: 'أقسام البرامج', programs: 'البرامج', submissions: 'الاستفسارات', settings: 'الإعدادات', contact: 'التواصل والسوشيال',
+      destinations: 'الوجهات', 'tour-types': 'أنواع الجولات', religiousPrograms: 'البرامج الدينية', categories: 'أقسام البرامج', programs: 'البرامج', submissions: 'الاستفسارات', settings: 'الإعدادات', contact: 'التواصل والسوشيال',
       logout: 'تسجيل الخروج'
     },
     overview: { welcome: 'مرحباً', welcomeText: 'يمكنك إدارة محتوى الموقع من هنا. التغييرات تُحفظ مباشرة وتظهر على الموقع الحي.', tours: 'الجولات المميزة', packages: 'الباقات', destinations: 'الوجهات', programs: 'البرامج الدينية', categories: 'أقسام البرامج' },
@@ -2132,8 +2132,8 @@ function applyAdminLang() {
   navLabels.forEach((el, i) => { if (labelTexts[i]) el.textContent = labelTexts[i]; });
 
   const sidebarItems = document.querySelectorAll('.sidebar-item');
-  const itemKeys = ['overview','hero','about','features','services','tours','destinations','packages','categories','programs','submissions','contact'];
-  const itemIcons = ['fa-gauge','fa-image','fa-circle-info','fa-star','fa-briefcase','fa-compass','fa-map-pin','fa-suitcase','fa-folder-open','fa-mosque','fa-envelope','fa-address-book'];
+  const itemKeys = ['overview','hero','about','features','services','tours','destinations','tour-types','packages','categories','programs','submissions','contact'];
+  const itemIcons = ['fa-gauge','fa-image','fa-circle-info','fa-star','fa-briefcase','fa-compass','fa-map-pin','fa-th-large','fa-suitcase','fa-folder-open','fa-mosque','fa-envelope','fa-address-book'];
   sidebarItems.forEach((el, i) => {
     if (itemKeys[i]) el.innerHTML = `<i class="fa ${itemIcons[i]}"></i> ${t.sidebar[itemKeys[i]] || itemKeys[i]}`;
   });
