@@ -219,6 +219,7 @@
       <span class="nav-group-label">Tours & Packages</span>
       <div class="sidebar-item" onclick="switchPanel('tours',this)"><i class="fa fa-compass"></i> Featured Tours</div>
       <div class="sidebar-item" onclick="switchPanel('destinations',this)"><i class="fa fa-map-pin"></i> Destinations</div>
+      <div class="sidebar-item" onclick="switchPanel('tour-types',this)"><i class="fa fa-th-large"></i> Tour Types</div>
       <div class="sidebar-item" onclick="switchPanel('packages',this)"><i class="fa fa-suitcase"></i> Packages</div>
       <span class="nav-group-label">Religious Programs</span>
       <div class="sidebar-item" onclick="switchPanel('categories',this)"><i class="fa fa-folder-open"></i> Program Categories</div>
@@ -368,6 +369,14 @@
           <button class="btn btn-primary" onclick="openServiceModal()"><i class="fa fa-plus"></i> &nbsp;Add Service</button>
         </div>
         <div class="items-list" id="services-list"></div>
+      </div>
+
+      <div class="panel" id="panel-tour-types">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:.65rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase">Tour Types</span>
+          <button class="btn btn-primary" onclick="openTourTypeModal()"><i class="fa fa-plus"></i> &nbsp;Add Type</button>
+        </div>
+        <div class="items-list" id="tour-types-list"></div>
       </div>
 
       <!-- PACKAGES -->
@@ -595,6 +604,7 @@ function loadPanel(id) {
   else if (id === 'services') renderServices();
   else if (id === 'tours') renderTours();
   else if (id === 'destinations') renderDestinations();
+  else if (id === 'tour-types') renderTourTypes();
   else if (id === 'packages') renderPackages();
   else if (id === 'categories') renderCategories();
   else if (id === 'programs') renderPrograms();
@@ -1678,6 +1688,80 @@ async function deleteDest(id) {
 }
 
 // =============================================
+// TOUR TYPES (CRUD)
+// =============================================
+async function renderTourTypes() {
+  const list = document.getElementById('tour-types-list');
+  list.innerHTML = `<div class="loading">Loading...</div>`;
+  const { data, error } = await sb.from('tour_types').select('*').order('sort_order');
+  if (error) return showError(error.message);
+  if (!data.length) { list.innerHTML = `<div class="loading">No tour types yet.</div>`; return; }
+  list.innerHTML = data.map(t => `
+    <div class="item-row">
+      <div class="item-thumb"><i class="fa fa-compass" style="color:var(--gold);"></i></div>
+      <div class="item-info">
+        <div class="item-name">${escapeHtml(t.title_en)}</div>
+        <div class="item-meta">${escapeHtml(t.description_en || '')}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-sm-icon" onclick='openTourTypeModal(${JSON.stringify(t)})'><i class="fa fa-pen"></i></button>
+        <button class="btn-sm-icon del" onclick="deleteTourType(${t.id})"><i class="fa fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTourTypeModal(t) {
+  showModal(`
+    <div class="modal-header">
+      <h3>${t ? 'Edit Tour Type' : 'Add Tour Type'}</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Title (EN)</label><input type="text" id="m-tt-title-en" value="${escapeAttr(t?.title_en || '')}" /></div>
+      <div class="field"><label>Title (AR)</label><input type="text" id="m-tt-title-ar" dir="rtl" value="${escapeAttr(t?.title_ar || '')}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Description (EN)</label><textarea id="m-tt-desc-en">${escapeHtml(t?.description_en || '')}</textarea></div>
+      <div class="field"><label>Description (AR)</label><textarea id="m-tt-desc-ar" dir="rtl">${escapeHtml(t?.description_ar || '')}</textarea></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>CTA Text (EN)</label><input type="text" id="m-tt-cta-en" value="${escapeAttr(t?.cta_en || '')}" placeholder="Explore Classics" /></div>
+      <div class="field"><label>CTA Text (AR)</label><input type="text" id="m-tt-cta-ar" dir="rtl" value="${escapeAttr(t?.cta_ar || '')}" placeholder="استكشف الكلاسيكيات" /></div>
+    </div>
+    <div class="field"><label>Sort Order</label><input type="number" id="m-tt-sort" value="${t?.sort_order || 0}" /></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveTourType(${t?.id || 'null'})">Save</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+async function saveTourType(id) {
+  const data = {
+    title_en: document.getElementById('m-tt-title-en').value,
+    title_ar: document.getElementById('m-tt-title-ar').value,
+    description_en: document.getElementById('m-tt-desc-en').value,
+    description_ar: document.getElementById('m-tt-desc-ar').value,
+    cta_en: document.getElementById('m-tt-cta-en').value,
+    cta_ar: document.getElementById('m-tt-cta-ar').value,
+    sort_order: parseInt(document.getElementById('m-tt-sort').value) || 0
+  };
+  const { error } = id
+    ? await sb.from('tour_types').update(data).eq('id', id)
+    : await sb.from('tour_types').insert(data);
+  if (error) { alert('Error: ' + error.message); return showError(error.message); }
+  closeModal(); showSaved(); renderTourTypes();
+}
+
+async function deleteTourType(id) {
+  if (!confirm('Delete this tour type?')) return;
+  const { error } = await sb.from('tour_types').delete().eq('id', id);
+  if (error) return showError(error.message);
+  showSaved(); renderTourTypes();
+}
+
+// =============================================
 // PROGRAM CATEGORIES (CRUD)
 // =============================================
 async function renderCategories() {
@@ -1970,8 +2054,8 @@ const adminTranslations = {
   en: {
     panelTitles: {
       overview: 'Dashboard Overview', hero: 'Hero Section', about: 'About Section',
-      features: 'Features', packages: 'Tour Packages', tours: 'Featured Tours',
-      destinations: 'Destinations', categories: 'Program Categories', programs: 'Religious Programs', submissions: 'Customer Inquiries',
+      features: 'Features', services: 'Services', packages: 'Tour Packages', tours: 'Featured Tours',
+      destinations: 'Destinations', 'tour-types': 'Tour Types', categories: 'Program Categories', programs: 'Religious Programs', submissions: 'Customer Inquiries',
       contact: 'Contact & Social'
     },
     sidebar: {
