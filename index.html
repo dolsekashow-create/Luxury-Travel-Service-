@@ -2243,6 +2243,7 @@
       try {
         // Load all data in parallel
         const [
+          tourTypesResult,
           settingsResult,
           toursResult,
           destinationsResult,
@@ -2253,6 +2254,7 @@
           packageHotelsResult,
           servicesResult
         ] = await Promise.all([
+          sb.from('tour_types').select('*').order('sort_order'),
           sb.from('site_settings').select('*').eq('id', 1).single(),
           sb.from('tours').select('*').order('sort_order'),
           sb.from('destinations').select('*').order('sort_order'),
@@ -2388,6 +2390,17 @@
         if (servicesResult.data && servicesResult.data.length > 0) {
           window._servicesData = servicesResult.data;
           renderServices();
+        }
+
+        // 4c. Tour Types
+        if (tourTypesResult.data && tourTypesResult.data.length > 0) {
+          const lang = currentLang;
+          translations.en.types.items = tourTypesResult.data.map(t => ({
+            title: t.title_en, desc: t.description_en, cta: t.cta_en || 'Explore'
+          }));
+          translations.ar.types.items = tourTypesResult.data.map(t => ({
+            title: t.title_ar, desc: t.description_ar, cta: t.cta_ar || 'استكشف'
+          }));
         }
 
         // 5. Packages with their related data
