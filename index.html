@@ -2654,17 +2654,46 @@
       const t = translations[currentLang];
       const grid = document.getElementById('typesGrid');
       grid.innerHTML = t.types.items.map((type, i) => `
-        <div class="type-card">
+        <div class="type-card" onclick="openTourTypeDetailModal(${i})" style="cursor:pointer;">
           <div class="placeholder-img type-icon" ${type.image ? `style="background-image:url(${type.image});background-size:cover;background-position:center;"` : ''}>
             <div class="type-icon-circle" ${type.image ? 'style="background:rgba(0,0,0,.35);color:#fff;"' : ''}>${String(i + 1).padStart(2, '0')}</div>
           </div>
           <div class="type-body">
             <h3 class="type-title">${type.title}</h3>
             <p class="type-desc">${type.desc}</p>
-            <a href="#" class="type-cta">${type.cta} <span class="arrow">→</span></a>
+            <span class="type-cta">${type.cta} <span class="arrow">→</span></span>
           </div>
         </div>
       `).join('');
+    }
+
+    function openTourTypeDetailModal(idx) {
+      const t = translations[currentLang];
+      const type = t.types.items[idx];
+      if (!type) return;
+
+      const content = document.getElementById('modalContent');
+      content.innerHTML = `
+        <div class="modal-hero">
+          <div class="placeholder-img" ${type.image ? `style="background-image:url(${type.image});background-size:cover;background-position:center;"` : ''}>
+            ${!type.image ? `<span class="placeholder-label">${type.title}</span>` : ''}
+          </div>
+          <div class="modal-hero-title">
+            <h2>${type.title}</h2>
+          </div>
+        </div>
+        <div class="modal-body">
+          <p class="modal-intro" style="font-size:1rem;line-height:1.8;color:var(--color-ink-soft);">${type.desc}</p>
+          <div style="margin-top:2rem;text-align:center;">
+            <a href="#contact" class="btn-book" onclick="closeModal()">${t.packages ? t.packages.bookNow : 'Book Now'}</a>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.classList.add('modal-open');
+      if (window.lucide) lucide.createIcons();
+      document.getElementById('modal').scrollTop = 0;
     }
 
     // ── Programs data (loaded from Supabase or empty fallback) ──
