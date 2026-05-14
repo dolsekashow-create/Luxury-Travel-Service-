@@ -817,218 +817,212 @@
     .accent-italic { color: var(--color-accent); font-style: italic; }
 
     /* ================================
-       SITE PROGRAMS (4 SECTIONS) — encircle layout
-       Title sits in the visual center, cards radiate around it.
-       Layout adapts to card count.
+       SITE PROGRAMS (4 SECTIONS) — bubble layout
+       Circular center title + oval bubble program cards with floating title pills.
+       Inspired by organic, airy travel design.
        ================================ */
     .prog-encircle-wrap {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
+      position: relative;
     }
     .prog-encircle-grid {
       display: grid;
-      gap: 1.25rem;
-      align-items: stretch;
+      gap: 2rem 1.5rem;
+      align-items: center;
     }
-    /* Centerpiece (section title block) */
+
+    /* Centerpiece — circular gradient bubble */
     .prog-encircle-center {
       grid-area: title;
+      aspect-ratio: 1.05;
+      background:
+        radial-gradient(ellipse at center, #fefaf2 0%, #f6ecd5 55%, #efe1bd 100%);
+      border-radius: 50%;
+      padding: clamp(1.5rem, 4vw, 3rem);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 1.5rem 1rem;
-      background: linear-gradient(135deg, var(--color-sand-100), var(--color-sand-50));
-      border: 1px solid var(--color-sand-200);
-      border-radius: 4px;
       position: relative;
+      box-shadow: 0 12px 50px -20px rgba(196, 159, 90, 0.35);
     }
-    .prog-encircle-center::before,
-    .prog-encircle-center::after {
+    /* Decorative ornament */
+    .prog-encircle-center::before {
       content: '';
       position: absolute;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 1px;
-      background: var(--color-accent);
+      width: 92%;
+      height: 92%;
+      border: 1px dashed rgba(196, 159, 90, 0.25);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
     }
-    .prog-encircle-center::before { top: 12px; }
-    .prog-encircle-center::after { bottom: 12px; }
+    .prog-encircle-ornament {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 0.9rem;
+      color: var(--color-accent);
+      opacity: 0.7;
+    }
     .prog-encircle-pill {
       display: inline-block;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
       color: var(--color-accent);
       font-weight: 600;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.7rem;
     }
     .prog-encircle-title {
       font-family: var(--font-display);
-      font-size: clamp(1.4rem, 2.6vw, 2rem);
-      line-height: 1.15;
+      font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+      line-height: 1.05;
       color: var(--color-ink);
-      margin: 0 0 0.6rem;
+      margin: 0 0 0.7rem;
+      font-weight: 500;
+    }
+    .prog-encircle-title-divider {
+      width: 36px;
+      height: 1px;
+      background: var(--color-accent);
+      margin: 0.2rem 0 0.9rem;
     }
     .prog-encircle-sub {
       font-size: 0.82rem;
       color: var(--color-ink-muted);
-      line-height: 1.5;
-      max-width: 240px;
+      line-height: 1.55;
+      max-width: 280px;
     }
 
-    /* Empty state for Romantic Escape */
+    /* Empty state */
     .prog-encircle-empty {
       grid-column: 1 / -1;
       text-align: center;
-      padding: 3rem 1rem;
+      padding: 1.5rem 1rem 3rem;
       color: var(--color-ink-muted);
       font-style: italic;
       font-size: 0.95rem;
     }
 
-    /* Card variant: compact size for the encircle layout */
-    .prog-encircle-grid .prog-card {
-      background: white;
-      border-radius: 3px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-    }
-    .prog-encircle-grid .prog-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 32px rgba(0,0,0,0.12);
-    }
-    .prog-encircle-grid .prog-card-img {
-      aspect-ratio: 4/3;
+    /* Program cards — oval bubble shape with overlapping title pill */
+    .prog-bubble {
       position: relative;
-      overflow: hidden;
-      background: var(--color-sand-200);
+      cursor: pointer;
+      margin-bottom: 2.8rem;
+      transition: transform 0.4s ease;
+      background: transparent;
     }
-    .prog-encircle-grid .prog-card-img img {
+    .prog-bubble:hover { transform: translateY(-6px); }
+    .prog-bubble-img {
+      aspect-ratio: 1 / 1.22;
+      border-radius: 50% / 38%;  /* oval, taller than wide */
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, #f5ead0, #e5d4a8);
+      box-shadow: 0 18px 40px -20px rgba(0,0,0,0.25);
+    }
+    .prog-bubble-img img {
       width: 100%; height: 100%;
       object-fit: cover;
-      transition: transform 0.6s;
+      transition: transform 0.7s ease;
     }
-    .prog-encircle-grid .prog-card:hover .prog-card-img img { transform: scale(1.06); }
-    .prog-encircle-grid .prog-card-img-placeholder {
+    .prog-bubble:hover .prog-bubble-img img { transform: scale(1.08); }
+    .prog-bubble-img-placeholder {
       width: 100%; height: 100%;
-      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-400));
       display: flex; align-items: center; justify-content: center;
+      color: rgba(196, 159, 90, 0.5);
     }
-    .prog-encircle-grid .prog-card-badge {
+    .prog-bubble-duration {
       position: absolute;
-      top: 0.5rem; inset-inline-start: 0.5rem;
-      background: var(--color-accent);
-      color: white;
-      font-size: 0.58rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0.22rem 0.55rem;
-      border-radius: 1px;
-    }
-    .prog-encircle-grid .prog-card-body {
-      padding: 0.85rem 0.9rem 0.9rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .prog-encircle-grid .prog-card-title {
-      font-family: var(--font-display);
-      font-size: 0.95rem;
+      top: 14px;
+      inset-inline-start: 14px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(6px);
       color: var(--color-ink);
-      margin: 0 0 0.4rem;
-      line-height: 1.25;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 100px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .prog-bubble-title-pill {
+      position: absolute;
+      left: 50%;
+      bottom: -22px;
+      transform: translateX(-50%);
+      background: white;
+      padding: 10px 22px;
+      border-radius: 100px;
+      box-shadow: 0 8px 22px -8px rgba(0,0,0,0.18);
+      font-family: var(--font-display);
+      font-size: 0.92rem;
+      color: var(--color-ink);
+      line-height: 1.2;
+      max-width: 92%;
+      white-space: nowrap;
       overflow: hidden;
-      min-height: 2.4em;
+      text-overflow: ellipsis;
+      transition: color 0.3s;
+      text-align: center;
     }
-    .prog-encircle-grid .prog-card:hover .prog-card-title { color: var(--color-accent); }
-    .prog-encircle-grid .prog-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 0.55rem;
-      margin-top: auto;
-      border-top: 1px solid var(--color-sand-100);
-      gap: 0.5rem;
-    }
-    .prog-encircle-grid .prog-card-price {
+    .prog-bubble:hover .prog-bubble-title-pill { color: var(--color-accent); }
+    .prog-bubble-meta {
+      margin-top: 2.2rem;
+      text-align: center;
       font-size: 0.72rem;
       color: var(--color-ink-muted);
+      letter-spacing: 0.04em;
     }
-    .prog-encircle-grid .prog-card-price strong {
-      color: var(--color-accent);
-      font-size: 0.9rem;
-    }
-    .prog-encircle-grid .prog-card-cta {
-      font-size: 0.6rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+    .prog-bubble-meta strong {
       color: var(--color-accent);
       font-weight: 600;
     }
 
-    /* ── Encircle layouts by card count ──
-       Mobile (< 768px): title on top, cards 2-col below */
+    /* ── Encircle grid layouts by card count ── */
     .prog-encircle-grid {
       grid-template-columns: repeat(2, 1fr);
-      grid-template-areas:
-        "title title"
-        "auto  auto";
+      grid-template-areas: "title title" "auto auto";
     }
-
-    /* Single card */
     .prog-encircle-grid[data-count="1"] {
       grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "c1";
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
+      grid-template-areas: "title" "c1";
+      max-width: 520px;
+      margin-left: auto; margin-right: auto;
     }
 
-    /* Tablet & up: title centered with cards around */
-    @media (min-width: 768px) {
-      /* 3 cards: title centered top row */
+    @media (min-width: 820px) {
       .prog-encircle-grid[data-count="3"] {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
           ".  title  ."
           "c1 c2 c3";
       }
-      /* 4 cards: title in the middle, 2 cards each side */
       .prog-encircle-grid[data-count="4"] {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr 1.15fr 1fr;
         grid-template-areas:
           "c1 title c2"
           "c3 title c4";
+        gap: 1.25rem 2rem;
       }
-      /* 5 cards */
       .prog-encircle-grid[data-count="5"] {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
           "c1 title c2"
           "c3 c4 c5";
       }
-      /* 6 cards */
       .prog-encircle-grid[data-count="6"] {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
           "c1 c2 c3"
           "c4 title c5"
-          ".  c6   .";
+          ".  c6  .";
       }
-      /* 7 cards */
       .prog-encircle-grid[data-count="7"] {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
@@ -1036,7 +1030,6 @@
           "c4 title c5"
           "c6 c7 c7";
       }
-      /* 8 cards (matches the sketch) */
       .prog-encircle-grid[data-count="8"] {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
@@ -1044,7 +1037,6 @@
           "c4 title c5"
           "c6 c7 c8";
       }
-      /* 9+ cards: title on top, cards in grid below */
       .prog-encircle-grid[data-count="9"],
       .prog-encircle-grid[data-count="10"],
       .prog-encircle-grid[data-count="11"],
@@ -1052,20 +1044,15 @@
         grid-template-columns: repeat(4, 1fr);
         grid-template-areas:
           "title title title title"
-          "auto  auto  auto  auto";
+          "auto auto auto auto";
       }
     }
 
-    /* Make the center cell taller in 4-card layout */
-    @media (min-width: 768px) {
-      .prog-encircle-grid[data-count="4"] .prog-encircle-center { min-height: 100%; }
-    }
-
-    /* Day Excursions section (keeps the old grid since it has many items) */
+    /* Day Excursions grid uses the same bubble cards */
     .programs-section-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1.25rem;
+      gap: 2rem 1.5rem;
     }
     @media (min-width: 640px) { .programs-section-grid { grid-template-columns: repeat(2,1fr); } }
     @media (min-width: 1024px) { .programs-section-grid { grid-template-columns: repeat(3,1fr); } }
@@ -2054,8 +2041,12 @@
       <div class="prog-encircle-wrap">
         <div class="prog-encircle-grid" id="discoverEgyptGrid" data-count="0">
           <div class="prog-encircle-center">
-            <span class="prog-encircle-pill">🏺 Programs</span>
+            <svg class="prog-encircle-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/>
+            </svg>
+            <span class="prog-encircle-pill">Programs</span>
             <h2 class="prog-encircle-title">Discover Egypt</h2>
+            <div class="prog-encircle-title-divider"></div>
             <p class="prog-encircle-sub">Full multi-day guided tours covering Egypt's greatest historical and cultural highlights.</p>
           </div>
           <div class="prog-encircle-empty">Loading programs…</div>
@@ -2070,8 +2061,12 @@
       <div class="prog-encircle-wrap">
         <div class="prog-encircle-grid" id="romanticEscapeGrid" data-count="0">
           <div class="prog-encircle-center">
-            <span class="prog-encircle-pill">💑 Programs</span>
+            <svg class="prog-encircle-ornament" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="prog-encircle-pill">Programs</span>
             <h2 class="prog-encircle-title">Romantic Escape</h2>
+            <div class="prog-encircle-title-divider"></div>
             <p class="prog-encircle-sub">Intimate experiences designed for couples — from Nile dinner cruises to island retreats.</p>
           </div>
           <div class="prog-encircle-empty">Loading programs…</div>
@@ -2086,8 +2081,13 @@
       <div class="prog-encircle-wrap">
         <div class="prog-encircle-grid" id="therapeuticToursGrid" data-count="0">
           <div class="prog-encircle-center">
-            <span class="prog-encircle-pill">🌿 Programs</span>
+            <svg class="prog-encircle-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2C8 6 6 9 6 13a6 6 0 0012 0c0-4-2-7-6-11z"/>
+              <path d="M12 13v8M9 17l3 3 3-3"/>
+            </svg>
+            <span class="prog-encircle-pill">Programs</span>
             <h2 class="prog-encircle-title">Therapeutic Tours</h2>
+            <div class="prog-encircle-title-divider"></div>
             <p class="prog-encircle-sub">Wellness, sport, and adventure experiences designed to rejuvenate body and spirit.</p>
           </div>
           <div class="prog-encircle-empty">Loading programs…</div>
@@ -2102,8 +2102,13 @@
       <div class="prog-encircle-wrap">
         <div class="prog-encircle-grid" id="spiritualEgyptGrid" data-count="0">
           <div class="prog-encircle-center">
-            <span class="prog-encircle-pill">🕌 Programs</span>
+            <svg class="prog-encircle-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="8" r="3"/>
+              <path d="M12 11v10M9 14h6M8 21h8"/>
+            </svg>
+            <span class="prog-encircle-pill">Programs</span>
             <h2 class="prog-encircle-title">Spiritual Egypt</h2>
+            <div class="prog-encircle-title-divider"></div>
             <p class="prog-encircle-sub">Sacred journeys through Egypt's religious heritage — Islamic, Coptic, and ancient spiritual sites.</p>
           </div>
           <div class="prog-encircle-empty">Loading programs…</div>
@@ -3549,27 +3554,22 @@
 
     function buildProgCard(prog, gridArea) {
       const hasImg = prog.image_url;
-      const price = prog.price ? `<div class="prog-card-price">from <strong>${prog.price}</strong></div>` : '';
-      const duration = prog.duration ? `<span>${prog.duration}</span>` : '';
-      const desc = prog.excerpt || (prog.content_html || '').replace(/<[^>]+>/g,'').substring(0,150) + '…';
+      const duration = prog.duration ? `<span class="prog-bubble-duration">${prog.duration}</span>` : '';
+      const price = prog.price ? `from <strong>${prog.price}</strong>` : '';
       const style = gridArea ? `style="grid-area: ${gridArea};"` : '';
+      const safeTitle = String(prog.title || '').replace(/"/g, '&quot;');
 
       return `
-        <div class="prog-card" ${style} onclick="openProgModal(${prog.id})">
-          <div class="prog-card-img">
+        <div class="prog-bubble" ${style} onclick="openProgModal(${prog.id})">
+          <div class="prog-bubble-img">
             ${hasImg
-              ? `<img src="${prog.image_url}" alt="${prog.title}" loading="lazy" />`
-              : `<div class="prog-card-img-placeholder"><i data-lucide="image" style="color:var(--color-sand-400);width:1.6rem;height:1.6rem;"></i></div>`
+              ? `<img src="${prog.image_url}" alt="${safeTitle}" loading="lazy" />`
+              : `<div class="prog-bubble-img-placeholder"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`
             }
-            ${duration ? `<div class="prog-card-badge">${prog.duration}</div>` : ''}
+            ${duration}
+            <div class="prog-bubble-title-pill">${prog.title}</div>
           </div>
-          <div class="prog-card-body">
-            <div class="prog-card-title">${prog.title}</div>
-            <div class="prog-card-footer">
-              ${price || '<span></span>'}
-              <span class="prog-card-cta">View →</span>
-            </div>
-          </div>
+          ${price ? `<div class="prog-bubble-meta">${price}</div>` : ''}
         </div>`;
     }
 
