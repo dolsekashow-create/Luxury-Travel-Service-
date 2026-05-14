@@ -2016,17 +2016,6 @@
     <div class="scroll-indicator"></div>
   </section>
 
-  <!-- ============= FEATURED TOURS ============= -->
-  <section class="section section-bg-light" id="featured-tours">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">✦ <span data-i18n="featured.eyebrow">Featured Tours</span> ✦</span>
-        <h2 class="section-title" data-i18n="featured.title">Private, premium tours designed around you</h2>
-      </div>
-      <div class="tours-grid" id="featuredTours"></div>
-    </div>
-  </section>
-
   <!-- ============= ABOUT ============= -->
   <section class="section section-bg-white" id="about">
     <div class="container">
@@ -2058,52 +2047,6 @@
       <div class="services-grid" id="servicesGrid"></div>
     </div>
   </section>
-
-  <!-- ============= DESTINATIONS ============= -->
-  <section class="section section-bg-light" id="destinations">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">✦ <span data-i18n="destinations.eyebrow">Destinations</span> ✦</span>
-        <h2 class="section-title" data-i18n="destinations.title">Egypt Day Tours</h2>
-      </div>
-      <div class="destinations-grid" id="destinationsGrid"></div>
-    </div>
-  </section>
-
-  <!-- ============= TOUR TYPES ============= -->
-  <section class="section section-bg-white" id="tour-types">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span data-i18n="types.title">What kind of Egypt</span>
-          <span class="accent-italic" data-i18n="types.titleAccent">are you here for</span>
-        </h2>
-      </div>
-      <div class="types-grid" id="typesGrid"></div>
-    </div>
-  </section>
-
-  <!-- ============= TOUR PACKAGES ============= -->
-  <section class="section section-bg-light" id="packages">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">✦ <span data-i18n="packages.eyebrow">Tour Packages</span> ✦</span>
-        <h2 class="section-title" data-i18n="packages.title">Curated multi-day journeys across Egypt</h2>
-        <p class="section-subtitle" data-i18n="packages.subtitle">Spiritual journeys, biblical trails, and travel services — designed for unforgettable experiences.</p>
-      </div>
-      <div class="packages-grid" id="packagesGrid"></div>
-    </div>
-  </section>
-
-  <!-- ============= MODAL ============= -->
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
-    <div class="modal" id="modal">
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">
-        <i data-lucide="x"></i>
-      </button>
-      <div id="modalContent"></div>
-    </div>
-  </div>
 
   <!-- ============= DISCOVER EGYPT ============= -->
   <section class="section section-bg-light" id="discover-egypt">
@@ -2885,6 +2828,8 @@
 
     // ================================
     // LOAD DATA FROM SUPABASE
+    // Only loads what we actually need: site_settings (Hero/About/Contact)
+    // and lts_site_programs (the 4 program sections + day excursions).
     // ================================
     async function loadFromSupabase() {
       if (!sb) {
@@ -2892,44 +2837,19 @@
         return;
       }
       try {
-        // Load all data in parallel
-        const [
-          tourTypesResult,
-          settingsResult,
-          toursResult,
-          destinationsResult,
-          featuresResult,
-          packagesResult,
-          packageDaysResult,
-          packageInclusionsResult,
-          packageHotelsResult,
-          servicesResult
-        ] = await Promise.all([
-          sb.from('tour_types').select('*').order('sort_order'),
-          sb.from('site_settings').select('*').eq('id', 1).single(),
-          sb.from('tours').select('*').order('sort_order'),
-          sb.from('destinations').select('*').order('sort_order'),
-          sb.from('features').select('*').order('sort_order'),
-          sb.from('packages').select('*').eq('is_active', true).order('sort_order'),
-          sb.from('package_days').select('*').order('sort_order'),
-          sb.from('package_inclusions').select('*').order('sort_order'),
-          sb.from('package_hotels').select('*').order('sort_order'),
-          sb.from('services').select('*').order('sort_order')
-        ]);
+        const settingsResult = await sb.from('site_settings').select('*').eq('id', 1).single();
 
-        // 1. Site Settings (Hero, About, Contact)
+        // Site Settings (Hero, About, Contact, Social)
         const settings = settingsResult.data;
         if (settings) {
-          // Update Hero in both languages
           ['en', 'ar'].forEach(lang => {
-            if (settings[`hero_title_${lang}`]) translations[lang].hero.title = settings[`hero_title_${lang}`];
-            if (settings[`hero_subtitle_${lang}`]) translations[lang].hero.subtitle = settings[`hero_subtitle_${lang}`];
+            if (settings[`hero_title_${lang}`])     translations[lang].hero.title     = settings[`hero_title_${lang}`];
+            if (settings[`hero_subtitle_${lang}`])  translations[lang].hero.subtitle  = settings[`hero_subtitle_${lang}`];
             if (settings[`hero_highlight_${lang}`]) translations[lang].hero.highlight = settings[`hero_highlight_${lang}`];
-            if (settings[`about_title_${lang}`]) translations[lang].about.intro = settings[`about_title_${lang}`];
-            if (settings[`about_text_${lang}`]) translations[lang].about.description = settings[`about_text_${lang}`];
+            if (settings[`about_title_${lang}`])    translations[lang].about.intro       = settings[`about_title_${lang}`];
+            if (settings[`about_text_${lang}`])     translations[lang].about.description = settings[`about_text_${lang}`];
           });
 
-          // Hero image
           if (settings.hero_image_url) {
             const heroBg = document.querySelector('.hero-bg');
             if (heroBg) {
@@ -2938,30 +2858,24 @@
               heroBg.style.backgroundPosition = 'center';
             }
           }
-
-          // Hero video — overrides image as background if set
           if (settings.hero_video_url) {
             const heroVideo = document.getElementById('hero-video');
             const heroBg = document.querySelector('.hero-bg');
             if (heroVideo) {
               heroVideo.src = settings.hero_video_url;
               heroVideo.style.display = 'block';
-              // Dim the static bg so video shows through
               if (heroBg) {
                 heroBg.style.backgroundImage = 'none';
                 heroBg.style.background = '#0a0a0a';
               }
             }
           }
-
-          // About image
           if (settings.about_image_url) {
             window._aboutImageUrl = settings.about_image_url;
           }
 
-          // Contact info
           ['en', 'ar'].forEach(lang => {
-            if (settings[`contact_address_${lang}`]) translations[lang].footer.contact.address1 = settings[`contact_address_${lang}`];
+            if (settings[`contact_address_${lang}`])  translations[lang].footer.contact.address1 = settings[`contact_address_${lang}`];
             if (settings[`contact_address2_${lang}`]) translations[lang].footer.contact.address2 = settings[`contact_address2_${lang}`];
           });
           if (settings.contact_email) {
@@ -2969,7 +2883,6 @@
             translations.ar.footer.contact.email = settings.contact_email;
           }
 
-          // Social links
           window._socialLinks = {
             facebook: settings.social_facebook,
             instagram: settings.social_instagram,
@@ -2979,132 +2892,7 @@
           };
         }
 
-        // 2. Tours
-        if (toursResult.data && toursResult.data.length > 0) {
-          translations.en.featuredTours.items = toursResult.data.map(t => ({
-            id: t.id,
-            slug: t.slug,
-            title: t.title_en,
-            duration: t.duration_en,
-            excerpt: t.excerpt_en,
-            overview: t.overview_en || '',
-            image: t.image_url,
-            price: t.price,
-            href: `#tour-${t.slug}`
-          }));
-          translations.ar.featuredTours.items = toursResult.data.map(t => ({
-            id: t.id,
-            slug: t.slug,
-            title: t.title_ar,
-            duration: t.duration_ar,
-            excerpt: t.excerpt_ar,
-            overview: t.overview_ar || '',
-            image: t.image_url,
-            price: t.price,
-            href: `#tour-${t.slug}`
-          }));
-
-          // Store raw tours for detail modal (with days/inclusions/gallery loaded on demand)
-          window._rawTours = toursResult.data;
-        }
-
-        // 3. Destinations
-        if (destinationsResult.data && destinationsResult.data.length > 0) {
-          window._rawDestinations = destinationsResult.data;
-          translations.en.destinations.items = destinationsResult.data.map(d => ({
-            name: d.name_en,
-            desc: d.description_en,
-            image: d.image_url,
-            href: `#dest-${d.slug}`
-          }));
-          translations.ar.destinations.items = destinationsResult.data.map(d => ({
-            name: d.name_ar,
-            desc: d.description_ar,
-            image: d.image_url,
-            href: `#dest-${d.slug}`
-          }));
-        }
-
-        // 4. Features
-        if (featuresResult.data && featuresResult.data.length > 0) {
-          translations.en.about.features = featuresResult.data.map(f => ({
-            title: f.title_en,
-            desc: f.description_en
-          }));
-          translations.ar.about.features = featuresResult.data.map(f => ({
-            title: f.title_ar,
-            desc: f.description_ar
-          }));
-        }
-
-        // 4b. Services
-        if (servicesResult.data && servicesResult.data.length > 0) {
-          window._servicesData = servicesResult.data;
-          renderServices();
-        }
-
-        // 4c. Tour Types
-        if (tourTypesResult.data && tourTypesResult.data.length > 0) {
-          const lang = currentLang;
-          translations.en.types.items = tourTypesResult.data.map(t => ({
-            title: t.title_en, desc: t.description_en, cta: t.cta_en || 'Explore', image: t.image_url
-          }));
-          translations.ar.types.items = tourTypesResult.data.map(t => ({
-            title: t.title_ar, desc: t.description_ar, cta: t.cta_ar || 'استكشف', image: t.image_url
-          }));
-        }
-
-        // 5. Packages with their related data
-        if (packagesResult.data && packagesResult.data.length > 0) {
-          const buildPackages = (lang) => packagesResult.data.map(pkg => {
-            const days = (packageDaysResult.data || [])
-              .filter(d => d.package_id === pkg.id)
-              .map(d => ({
-                num: d[`day_number_${lang}`],
-                title: d[`title_${lang}`],
-                desc: d[`description_${lang}`]
-              }));
-
-            const inclusions = packageInclusionsResult.data || [];
-            const included = inclusions.filter(i => i.package_id === pkg.id && i.is_included).map(i => i[`text_${lang}`]);
-            const excluded = inclusions.filter(i => i.package_id === pkg.id && !i.is_included).map(i => i[`text_${lang}`]);
-
-            const hotels = (packageHotelsResult.data || [])
-              .filter(h => h.package_id === pkg.id)
-              .map(h => ({
-                city: h[`city_${lang}`],
-                name: h[`hotel_name_${lang}`]
-              }));
-
-            return {
-              id: pkg.slug,
-              db_id: pkg.id,
-              title: pkg[`title_${lang}`],
-              badge: pkg[`badge_${lang}`],
-              duration: pkg[`duration_${lang}`],
-              price: pkg.price,
-              excerpt: pkg[`excerpt_${lang}`],
-              overview: pkg[`overview_${lang}`],
-              image: pkg.image_url,
-              days, included, excluded, hotels
-            };
-          });
-
-          translations.en.packages.items = buildPackages('en');
-          translations.ar.packages.items = buildPackages('ar');
-          // store raw for carousel id lookup
-          window._rawPackages = translations.en.packages.items;
-        }
-
-        // 6. Programs and Categories
-        const [categoriesResult, programsResult] = await Promise.all([
-          sb.from('program_categories').select('*').order('sort_order'),
-          sb.from('programs').select('*').eq('is_active', true).order('sort_order')
-        ]);
-        if (categoriesResult.data) categoriesData = categoriesResult.data;
-        if (programsResult.data) programsData = programsResult.data;
-
-        console.log('✓ Data loaded from Supabase');
+        console.log('✓ Site settings loaded from Supabase');
       } catch (error) {
         console.error('Failed to load from Supabase:', error);
         console.log('→ Using default content');
@@ -3977,13 +3765,10 @@
 
       // Render dynamic sections
       renderNavigation();
-      renderTours();
       renderAboutFeatures();
-      renderDestinations();
-      renderTypes();
-      renderPackages();
-      renderPrograms();
       renderServices();
+      renderAllProgramSections();
+      renderExcursions(window._currentExcTab || 'cairo');
       renderFooter();
 
       // Re-init Lucide icons
