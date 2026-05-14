@@ -817,7 +817,312 @@
     .accent-italic { color: var(--color-accent); font-style: italic; }
 
     /* ================================
-       PROGRAMS
+       SITE PROGRAMS (4 SECTIONS)
+       ================================ */
+    .programs-section-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 640px) { .programs-section-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (min-width: 1024px) { .programs-section-grid { grid-template-columns: repeat(3,1fr); } }
+
+    .prog-card {
+      background: white;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: all 0.4s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .prog-card:hover {
+      box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+      transform: translateY(-4px);
+    }
+    .prog-card-img {
+      aspect-ratio: 16/10;
+      position: relative;
+      overflow: hidden;
+      background: var(--color-sand-200);
+    }
+    .prog-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+    .prog-card:hover .prog-card-img img { transform: scale(1.07); }
+    .prog-card-img-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-300));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .prog-card-badge {
+      position: absolute;
+      top: 0.75rem; inset-inline-start: 0.75rem;
+      background: var(--color-accent);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 1px;
+    }
+    .prog-card-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .prog-card-meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: 0.5rem;
+    }
+    .prog-card-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--color-ink);
+      margin-bottom: 0.6rem;
+      line-height: 1.3;
+      transition: color 0.3s;
+    }
+    .prog-card:hover .prog-card-title { color: var(--color-accent); }
+    .prog-card-desc {
+      font-size: 0.875rem;
+      color: var(--color-ink-soft);
+      line-height: 1.6;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .prog-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      margin-top: 1rem;
+      border-top: 1px solid var(--color-sand-100);
+    }
+    .prog-card-price {
+      font-size: 0.8rem;
+      color: var(--color-ink-muted);
+    }
+    .prog-card-price strong {
+      color: var(--color-accent);
+      font-size: 1rem;
+    }
+    .prog-card-cta {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: gap 0.3s;
+    }
+    .prog-card:hover .prog-card-cta { gap: 0.65rem; }
+
+    /* ================================
+       EXCURSION TABS
+       ================================ */
+    .exc-tabs-wrap {
+      display: flex;
+      gap: 0;
+      margin-bottom: 3rem;
+      justify-content: center;
+      border: 1px solid var(--color-sand-300);
+      border-radius: 2px;
+      overflow: hidden;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .exc-tab {
+      background: none;
+      border: none;
+      border-right: 1px solid var(--color-sand-300);
+      color: var(--color-ink-muted);
+      padding: 0.75rem 1.75rem;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .exc-tab:last-child { border-right: none; }
+    .exc-tab.active {
+      background: var(--color-accent);
+      color: white;
+    }
+    .exc-tab:hover:not(.active) {
+      background: var(--color-sand-100);
+      color: var(--color-ink);
+    }
+
+    /* ================================
+       PROGRAM DETAIL MODAL
+       ================================ */
+    .prog-modal-hero {
+      position: relative;
+      height: 320px;
+      background: var(--color-sand-200);
+      overflow: hidden;
+    }
+    @media (min-width: 768px) { .prog-modal-hero { height: 420px; } }
+    .prog-modal-hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .prog-modal-hero-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-400));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .prog-modal-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(26,20,16,0.75) 0%, transparent 60%);
+      display: flex; align-items: flex-end;
+      padding: 2rem;
+    }
+    .prog-modal-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: white;
+      line-height: 1.2;
+    }
+    /* Image slider inside modal */
+    .prog-img-slider {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+    .prog-img-slider-track {
+      width: 100%; height: 100%;
+      position: relative;
+    }
+    .prog-img-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .prog-img-slide.active { opacity: 1; }
+    .prog-img-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .prog-slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      color: var(--color-ink);
+      font-size: 1rem;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .prog-slider-btn:hover {
+      background: var(--color-accent);
+      color: white;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .prog-slider-btn.prev { left: 1rem; }
+    .prog-slider-btn.next { right: 1rem; }
+    .prog-slider-dots {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%; transform: translateX(-50%);
+      display: flex; gap: 6px; z-index: 10;
+    }
+    .prog-slider-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .prog-slider-dot.active { background: white; transform: scale(1.3); }
+
+    .prog-modal-body {
+      padding: 2rem;
+    }
+    @media (min-width: 768px) { .prog-modal-body { padding: 2.5rem; } }
+    .prog-modal-content {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--color-ink-soft);
+    }
+    .prog-modal-content p { margin-bottom: 1rem; }
+    .prog-modal-content strong, .prog-modal-content b { color: var(--color-ink); }
+    .prog-modal-content h1, .prog-modal-content h2, .prog-modal-content h3 {
+      font-family: var(--font-display);
+      color: var(--color-ink);
+      margin: 1.5rem 0 0.75rem;
+    }
+    .prog-modal-content h1 { font-size: 1.4rem; }
+    .prog-modal-content h2 { font-size: 1.25rem; }
+    .prog-modal-content h3 { font-size: 1.1rem; color: var(--color-accent); }
+    .prog-modal-content ul { padding-inline-start: 1.5rem; margin-bottom: 1rem; }
+    .prog-modal-content li { margin-bottom: 0.4rem; }
+    .prog-modal-content table {
+      width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem;
+    }
+    .prog-modal-content td, .prog-modal-content th {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-sand-200);
+      text-align: start;
+    }
+    .prog-modal-content th { background: var(--color-sand-100); font-weight: 600; }
+    .prog-modal-cta-bar {
+      display: flex; gap: 1rem; align-items: center;
+      padding: 1.5rem 2rem 2rem;
+      border-top: 1px solid var(--color-sand-100);
+      flex-wrap: wrap;
+    }
+    .prog-modal-price-tag {
+      font-size: 0.8rem;
+      color: var(--color-ink-muted);
+    }
+    .prog-modal-price-tag strong {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--color-accent);
+    }
+
+    /* Section label pill above each programs section */
+    .prog-section-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-sand-100);
+      border: 1px solid var(--color-sand-300);
+      border-radius: 50px;
+      padding: 0.35rem 1rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-accent-dark);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    /* ================================
+       PROGRAMS (OLD - kept for religious)
        ================================ */
     .programs-tabs {
       display: flex;
@@ -1563,6 +1868,89 @@
     </div>
   </section>
 
+  <!-- ============= DISCOVER EGYPT ============= -->
+  <section class="section section-bg-white" id="discover-egypt">
+    <div class="container">
+      <div class="section-header">
+        <span class="prog-section-pill">🏺 Programs</span>
+        <h2 class="section-title">Discover Egypt</h2>
+        <p class="section-subtitle">Full multi-day guided tours covering Egypt's greatest historical and cultural highlights.</p>
+      </div>
+      <div class="programs-section-grid" id="discoverEgyptGrid">
+        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= ROMANTIC ESCAPE ============= -->
+  <section class="section section-bg-light" id="romantic-escape">
+    <div class="container">
+      <div class="section-header">
+        <span class="prog-section-pill">💑 Programs</span>
+        <h2 class="section-title">Romantic Escape</h2>
+        <p class="section-subtitle">Intimate experiences designed for couples — from Nile dinner cruises to island retreats.</p>
+      </div>
+      <div class="programs-section-grid" id="romanticEscapeGrid">
+        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= THERAPEUTIC TOURS ============= -->
+  <section class="section section-bg-white" id="therapeutic-tours">
+    <div class="container">
+      <div class="section-header">
+        <span class="prog-section-pill">🌿 Programs</span>
+        <h2 class="section-title">Therapeutic Tours</h2>
+        <p class="section-subtitle">Wellness, sport, and adventure experiences designed to rejuvenate body and spirit.</p>
+      </div>
+      <div class="programs-section-grid" id="therapeuticToursGrid">
+        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= SPIRITUAL EGYPT ============= -->
+  <section class="section section-bg-light" id="spiritual-egypt">
+    <div class="container">
+      <div class="section-header">
+        <span class="prog-section-pill">🕌 Programs</span>
+        <h2 class="section-title">Spiritual Egypt</h2>
+        <p class="section-subtitle">Sacred journeys through Egypt's religious heritage — Islamic, Coptic, and ancient spiritual sites.</p>
+      </div>
+      <div class="programs-section-grid" id="spiritualEgyptGrid">
+        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= EXCURSIONS ============= -->
+  <section class="section section-bg-white" id="excursions">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">✦ Day Excursions ✦</span>
+        <h2 class="section-title">Excursions</h2>
+        <p class="section-subtitle">Day trips and activities available from your base city — Cairo, Hurghada, or Sharm El Sheikh.</p>
+      </div>
+      <div class="exc-tabs-wrap">
+        <button class="exc-tab active" onclick="switchExcTab('cairo')">From Cairo</button>
+        <button class="exc-tab" onclick="switchExcTab('hrg')">From Hurghada</button>
+        <button class="exc-tab" onclick="switchExcTab('ssh')">From Sharm El Sheikh</button>
+      </div>
+      <div class="programs-section-grid" id="excursionsGrid">
+        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading excursions…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= PROGRAM DETAIL MODAL ============= -->
+  <div class="modal-overlay" id="progModalOverlay" onclick="closeProgModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;overflow-y:auto;">
+    <div id="progModal" style="background:white;max-width:800px;width:90%;margin:3rem auto;border-radius:2px;overflow:hidden;position:relative;">
+      <button onclick="closeProgModalBtn()" style="position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,0.4);border:none;color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
+      <div id="progModalContent"></div>
+    </div>
+  </div>
+
   <!-- ============= FOOTER ============= -->
   <footer id="contact">
     <div class="footer-top-line"></div>
@@ -1629,12 +2017,21 @@
         logo: { name: "Luxury Travel", tag: "Service" },
         nav: {
           home: "Home",
-          tours: "Egypt Day Tours",
-          cairo: "Cairo Day Tours",
-          luxor: "Luxor Day Trips",
-          aswan: "Aswan Excursions",
+          programs: "Programs",
+          discoverEgypt: "Discover Egypt",
+          romanticEscape: "Romantic Escape",
+          therapeuticTours: "Therapeutic Tours",
+          spiritualEgypt: "Spiritual Egypt",
+          excursions: "Excursions",
+          excCairo: "From Cairo",
+          excHrg: "From Hurghada",
+          excSsh: "From Sharm El Sheikh",
+          services: "Services",
+          svcMeetAssist: "Meet & Assist",
+          svcVisa: "Visas",
+          svcTransfer: "Transfers",
+          svcFlights: "Flight & Train Booking",
           about: "About us",
-          programs: "Religious Programs",
           contact: "Contact Us"
         },
         hero: {
@@ -1882,12 +2279,21 @@
         logo: { name: "لاكشري ترافل", tag: "سيرفيس" },
         nav: {
           home: "الرئيسية",
-          tours: "جولات يومية",
-          cairo: "جولات القاهرة",
-          luxor: "رحلات الأقصر",
-          aswan: "جولات أسوان",
+          programs: "البرامج",
+          discoverEgypt: "اكتشف مصر",
+          romanticEscape: "الرومانسية",
+          therapeuticTours: "رحلات علاجية",
+          spiritualEgypt: "مصر الروحانية",
+          excursions: "الرحلات اليومية",
+          excCairo: "من القاهرة",
+          excHrg: "من الغردقة",
+          excSsh: "من شرم الشيخ",
+          services: "خدماتنا",
+          svcMeetAssist: "الاستقبال والمساعدة",
+          svcVisa: "التأشيرات",
+          svcTransfer: "الترانسفير",
+          svcFlights: "حجز الطيران والقطارات",
           about: "من نحن",
-          programs: "البرامج الدينية",
           contact: "تواصل معنا"
         },
         hero: {
@@ -2500,16 +2906,36 @@
       const navItems = [
         { label: t.nav.home, action: () => scrollToSection('top') },
         {
-          label: t.nav.tours, action: () => scrollToSection('destinations'),
+          label: t.nav.programs,
+          action: () => scrollToSection('discover-egypt'),
           children: [
-            { label: t.nav.cairo,  action: () => scrollToDestination('Cairo') },
-            { label: t.nav.luxor,  action: () => scrollToDestination('Luxor') },
-            { label: t.nav.aswan,  action: () => scrollToDestination('Aswan') }
+            { label: t.nav.discoverEgypt,    action: () => scrollToSection('discover-egypt') },
+            { label: t.nav.romanticEscape,   action: () => scrollToSection('romantic-escape') },
+            { label: t.nav.therapeuticTours, action: () => scrollToSection('therapeutic-tours') },
+            { label: t.nav.spiritualEgypt,   action: () => scrollToSection('spiritual-egypt') }
           ]
         },
-        { label: t.nav.about,    action: () => scrollToSection('about') },
-        { label: t.nav.programs, action: () => scrollToSection('programs') },
-        { label: t.nav.contact,  action: () => scrollToSection('contact') }
+        {
+          label: t.nav.excursions,
+          action: () => scrollToSection('excursions'),
+          children: [
+            { label: t.nav.excCairo, action: () => { scrollToSection('excursions'); setTimeout(()=>switchExcTab('cairo'),600); } },
+            { label: t.nav.excHrg,   action: () => { scrollToSection('excursions'); setTimeout(()=>switchExcTab('hrg'),600); } },
+            { label: t.nav.excSsh,   action: () => { scrollToSection('excursions'); setTimeout(()=>switchExcTab('ssh'),600); } }
+          ]
+        },
+        {
+          label: t.nav.services,
+          action: () => scrollToSection('services'),
+          children: [
+            { label: t.nav.svcMeetAssist, action: () => scrollToSection('services') },
+            { label: t.nav.svcVisa,       action: () => scrollToSection('services') },
+            { label: t.nav.svcTransfer,   action: () => scrollToSection('services') },
+            { label: t.nav.svcFlights,    action: () => scrollToSection('services') }
+          ]
+        },
+        { label: t.nav.about,   action: () => scrollToSection('about') },
+        { label: t.nav.contact, action: () => scrollToSection('contact') }
       ];
 
       const navLinks = document.getElementById('navLinks');
@@ -2527,7 +2953,6 @@
         </li>
       `).join('');
 
-      // store actions on window so onclick strings can call them
       window.navActions = navItems.map(item => item.action);
       window.navChildActions = navItems.map(item =>
         item.children ? item.children.map(c => c.action) : []
@@ -2656,7 +3081,7 @@
       grid.innerHTML = t.types.items.map((type, i) => `
         <div class="type-card" onclick="openTourTypeDetailModal(${i})" style="cursor:pointer;">
           <div class="placeholder-img type-icon" ${type.image ? `style="background-image:url(${type.image});background-size:cover;background-position:center;"` : ''}>
-
+            <div class="type-icon-circle" ${type.image ? 'style="background:rgba(0,0,0,.35);color:#fff;"' : ''}>${String(i + 1).padStart(2, '0')}</div>
           </div>
           <div class="type-body">
             <h3 class="type-title">${type.title}</h3>
@@ -3047,6 +3472,187 @@
       });
     }
 
+    // ================================
+    // SITE PROGRAMS DATA & RENDER
+    // ================================
+    window._sitePrograms = []; // loaded from Supabase lts_site_programs
+
+    function buildProgCard(prog) {
+      const hasImg = prog.image_url;
+      const price = prog.price ? `<div class="prog-card-price">from <strong>${prog.price}</strong></div>` : '';
+      const duration = prog.duration ? `<span>${prog.duration}</span>` : '';
+      const desc = prog.excerpt || (prog.content_html || '').replace(/<[^>]+>/g,'').substring(0,150) + '…';
+
+      return `
+        <div class="prog-card" onclick="openProgModal(${prog.id})">
+          <div class="prog-card-img">
+            ${hasImg
+              ? `<img src="${prog.image_url}" alt="${prog.title}" loading="lazy" />`
+              : `<div class="prog-card-img-placeholder"><i data-lucide="image" style="color:var(--color-sand-400);width:2rem;height:2rem;"></i></div>`
+            }
+            ${duration ? `<div class="prog-card-badge">${prog.duration}</div>` : ''}
+          </div>
+          <div class="prog-card-body">
+            <div class="prog-card-title">${prog.title}</div>
+            <div class="prog-card-desc">${desc}</div>
+            <div class="prog-card-footer">
+              ${price}
+              <span class="prog-card-cta">View Details →</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderProgramsSection(sectionId, gridId, sectionSlug) {
+      const grid = document.getElementById(gridId);
+      if (!grid) return;
+      const items = window._sitePrograms.filter(p => p.section === sectionSlug && p.is_active !== false);
+      if (!items.length) {
+        grid.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;font-style:italic;">No programs added yet. Upload programs from the admin panel.</div>`;
+        return;
+      }
+      grid.innerHTML = items.map(buildProgCard).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderAllProgramSections() {
+      renderProgramsSection('discover-egypt',    'discoverEgyptGrid',    'discover_egypt');
+      renderProgramsSection('romantic-escape',   'romanticEscapeGrid',   'romantic_escape');
+      renderProgramsSection('therapeutic-tours', 'therapeuticToursGrid', 'therapeutic_tours');
+      renderProgramsSection('spiritual-egypt',   'spiritualEgyptGrid',   'spiritual_egypt');
+    }
+
+    // ── Excursions tabs ──
+    window._currentExcTab = 'cairo';
+    function switchExcTab(tab) {
+      window._currentExcTab = tab;
+      document.querySelectorAll('.exc-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tab}'`));
+      });
+      renderExcursions(tab);
+    }
+
+    function renderExcursions(tab) {
+      const grid = document.getElementById('excursionsGrid');
+      if (!grid) return;
+      const items = window._sitePrograms.filter(p =>
+        p.section === 'excursion' &&
+        p.excursion_location === tab &&
+        p.is_active !== false
+      );
+      if (!items.length) {
+        grid.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;font-style:italic;">No excursions added yet for this city.</div>`;
+        return;
+      }
+      grid.innerHTML = items.map(buildProgCard).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // ── Program Detail Modal ──
+    window._progSliderIdx = 0;
+    window._progSliderImages = [];
+
+    function openProgModal(progId) {
+      const prog = window._sitePrograms.find(p => p.id === progId);
+      if (!prog) return;
+
+      const images = prog.images && prog.images.length ? prog.images :
+                     (prog.image_url ? [prog.image_url] : []);
+      window._progSliderImages = images;
+      window._progSliderIdx = 0;
+
+      const sliderHtml = buildProgSlider(images, prog.title);
+      const contentHtml = prog.content_html || `<p>${prog.excerpt || ''}</p>`;
+      const priceBar = prog.price
+        ? `<div class="prog-modal-cta-bar">
+            <div class="prog-modal-price-tag">Starting from<strong>${prog.price}</strong></div>
+            <a href="#contact" onclick="closeProgModalBtn()" class="btn-book" style="margin-inline-start:auto;">Book Now</a>
+           </div>` : `<div class="prog-modal-cta-bar">
+            <a href="#contact" onclick="closeProgModalBtn()" class="btn-book" style="margin-inline-start:auto;">Book Now</a>
+           </div>`;
+
+      document.getElementById('progModalContent').innerHTML = `
+        <div class="prog-modal-hero">${sliderHtml}</div>
+        <div class="prog-modal-body">
+          <div class="prog-modal-content">${contentHtml}</div>
+        </div>
+        ${priceBar}
+      `;
+
+      const overlay = document.getElementById('progModalOverlay');
+      overlay.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      overlay.scrollTop = 0;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function buildProgSlider(images, title) {
+      if (!images.length) {
+        return `<div class="prog-modal-hero-placeholder"><span style="color:var(--color-sand-600);font-size:0.9rem;letter-spacing:.1em;">${title}</span></div>
+                <div class="prog-modal-hero-overlay"><div class="prog-modal-title">${title}</div></div>`;
+      }
+      const slides = images.map((url, i) => `
+        <div class="prog-img-slide ${i===0?'active':''}" id="pslide_${i}">
+          <img src="${url}" alt="${title}" loading="lazy" />
+        </div>`).join('');
+
+      const dots = images.length > 1 ? images.map((_,i) => `
+        <button class="prog-slider-dot ${i===0?'active':''}" onclick="progSliderGo(${i});event.stopPropagation()"></button>`
+      ).join('') : '';
+
+      const arrows = images.length > 1 ? `
+        <button class="prog-slider-btn prev" onclick="progSliderPrev();event.stopPropagation()">‹</button>
+        <button class="prog-slider-btn next" onclick="progSliderNext();event.stopPropagation()">›</button>
+        <div class="prog-slider-dots">${dots}</div>` : '';
+
+      return `
+        <div class="prog-img-slider">
+          <div class="prog-img-slider-track">${slides}</div>
+          ${arrows}
+        </div>
+        <div class="prog-modal-hero-overlay"><div class="prog-modal-title">${title}</div></div>`;
+    }
+
+    function progSliderGo(idx) {
+      const imgs = window._progSliderImages;
+      idx = ((idx % imgs.length) + imgs.length) % imgs.length;
+      window._progSliderIdx = idx;
+      document.querySelectorAll('[id^="pslide_"]').forEach((el,i) => el.classList.toggle('active', i===idx));
+      document.querySelectorAll('.prog-slider-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+    }
+    function progSliderNext() { progSliderGo(window._progSliderIdx + 1); }
+    function progSliderPrev() { progSliderGo(window._progSliderIdx - 1); }
+
+    function closeProgModal(e) {
+      if (e && e.target.id !== 'progModalOverlay') return;
+      closeProgModalBtn();
+    }
+    function closeProgModalBtn() {
+      document.getElementById('progModalOverlay').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProgModalBtn(); });
+
+    // ── Load site programs from Supabase ──
+    async function loadSitePrograms() {
+      if (!sb) return;
+      try {
+        const { data, error } = await sb
+          .from('lts_site_programs')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+        if (error) throw error;
+        if (data && data.length) {
+          window._sitePrograms = data;
+          renderAllProgramSections();
+          renderExcursions(window._currentExcTab);
+        }
+      } catch(e) {
+        console.warn('Could not load lts_site_programs:', e.message);
+      }
+    }
+
     function renderAll() {
       // Set HTML attributes
       document.documentElement.lang = currentLang;
@@ -3111,6 +3717,7 @@
         }
         await loadFromSupabase();
         await loadAllItemImages();
+        await loadSitePrograms();
         renderAll();
         applyImages();
       } catch (e) {
