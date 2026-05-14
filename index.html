@@ -817,32 +817,276 @@
     .accent-italic { color: var(--color-accent); font-style: italic; }
 
     /* ================================
-       SITE PROGRAMS (4 SECTIONS)
+       SITE PROGRAMS (4 SECTIONS) — encircle layout
+       Title sits in the visual center, cards radiate around it.
+       Layout adapts to card count.
        ================================ */
+    .prog-encircle-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .prog-encircle-grid {
+      display: grid;
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+    /* Centerpiece (section title block) */
+    .prog-encircle-center {
+      grid-area: title;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: linear-gradient(135deg, var(--color-sand-100), var(--color-sand-50));
+      border: 1px solid var(--color-sand-200);
+      border-radius: 4px;
+      position: relative;
+    }
+    .prog-encircle-center::before,
+    .prog-encircle-center::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 1px;
+      background: var(--color-accent);
+    }
+    .prog-encircle-center::before { top: 12px; }
+    .prog-encircle-center::after { bottom: 12px; }
+    .prog-encircle-pill {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .prog-encircle-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin: 0 0 0.6rem;
+    }
+    .prog-encircle-sub {
+      font-size: 0.82rem;
+      color: var(--color-ink-muted);
+      line-height: 1.5;
+      max-width: 240px;
+    }
+
+    /* Empty state for Romantic Escape */
+    .prog-encircle-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-ink-muted);
+      font-style: italic;
+      font-size: 0.95rem;
+    }
+
+    /* Card variant: compact size for the encircle layout */
+    .prog-encircle-grid .prog-card {
+      background: white;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .prog-encircle-grid .prog-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.12);
+    }
+    .prog-encircle-grid .prog-card-img {
+      aspect-ratio: 4/3;
+      position: relative;
+      overflow: hidden;
+      background: var(--color-sand-200);
+    }
+    .prog-encircle-grid .prog-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+    .prog-encircle-grid .prog-card:hover .prog-card-img img { transform: scale(1.06); }
+    .prog-encircle-grid .prog-card-img-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-400));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .prog-encircle-grid .prog-card-badge {
+      position: absolute;
+      top: 0.5rem; inset-inline-start: 0.5rem;
+      background: var(--color-accent);
+      color: white;
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.55rem;
+      border-radius: 1px;
+    }
+    .prog-encircle-grid .prog-card-body {
+      padding: 0.85rem 0.9rem 0.9rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .prog-encircle-grid .prog-card-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: var(--color-ink);
+      margin: 0 0 0.4rem;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.4em;
+    }
+    .prog-encircle-grid .prog-card:hover .prog-card-title { color: var(--color-accent); }
+    .prog-encircle-grid .prog-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.55rem;
+      margin-top: auto;
+      border-top: 1px solid var(--color-sand-100);
+      gap: 0.5rem;
+    }
+    .prog-encircle-grid .prog-card-price {
+      font-size: 0.72rem;
+      color: var(--color-ink-muted);
+    }
+    .prog-encircle-grid .prog-card-price strong {
+      color: var(--color-accent);
+      font-size: 0.9rem;
+    }
+    .prog-encircle-grid .prog-card-cta {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    /* ── Encircle layouts by card count ──
+       Mobile (< 768px): title on top, cards 2-col below */
+    .prog-encircle-grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-areas:
+        "title title"
+        "auto  auto";
+    }
+
+    /* Single card */
+    .prog-encircle-grid[data-count="1"] {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "c1";
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Tablet & up: title centered with cards around */
+    @media (min-width: 768px) {
+      /* 3 cards: title centered top row */
+      .prog-encircle-grid[data-count="3"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          ".  title  ."
+          "c1 c2 c3";
+      }
+      /* 4 cards: title in the middle, 2 cards each side */
+      .prog-encircle-grid[data-count="4"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "c1 title c2"
+          "c3 title c4";
+      }
+      /* 5 cards */
+      .prog-encircle-grid[data-count="5"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "c1 title c2"
+          "c3 c4 c5";
+      }
+      /* 6 cards */
+      .prog-encircle-grid[data-count="6"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "c1 c2 c3"
+          "c4 title c5"
+          ".  c6   .";
+      }
+      /* 7 cards */
+      .prog-encircle-grid[data-count="7"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "c1 c2 c3"
+          "c4 title c5"
+          "c6 c7 c7";
+      }
+      /* 8 cards (matches the sketch) */
+      .prog-encircle-grid[data-count="8"] {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "c1 c2 c3"
+          "c4 title c5"
+          "c6 c7 c8";
+      }
+      /* 9+ cards: title on top, cards in grid below */
+      .prog-encircle-grid[data-count="9"],
+      .prog-encircle-grid[data-count="10"],
+      .prog-encircle-grid[data-count="11"],
+      .prog-encircle-grid[data-count="12"] {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-areas:
+          "title title title title"
+          "auto  auto  auto  auto";
+      }
+    }
+
+    /* Make the center cell taller in 4-card layout */
+    @media (min-width: 768px) {
+      .prog-encircle-grid[data-count="4"] .prog-encircle-center { min-height: 100%; }
+    }
+
+    /* Day Excursions section (keeps the old grid since it has many items) */
     .programs-section-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 1.25rem;
     }
     @media (min-width: 640px) { .programs-section-grid { grid-template-columns: repeat(2,1fr); } }
     @media (min-width: 1024px) { .programs-section-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (min-width: 1280px) { .programs-section-grid { grid-template-columns: repeat(4,1fr); } }
 
     .prog-card {
       background: white;
-      border-radius: 2px;
+      border-radius: 3px;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      transition: all 0.4s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
       display: flex;
       flex-direction: column;
     }
     .prog-card:hover {
-      box-shadow: 0 20px 45px rgba(0,0,0,0.12);
-      transform: translateY(-4px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.12);
+      transform: translateY(-3px);
     }
     .prog-card-img {
-      aspect-ratio: 16/10;
+      aspect-ratio: 4/3;
       position: relative;
       overflow: hidden;
       background: var(--color-sand-200);
@@ -852,82 +1096,90 @@
       object-fit: cover;
       transition: transform 0.6s;
     }
-    .prog-card:hover .prog-card-img img { transform: scale(1.07); }
+    .prog-card:hover .prog-card-img img { transform: scale(1.06); }
     .prog-card-img-placeholder {
       width: 100%; height: 100%;
-      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-300));
+      background: linear-gradient(135deg, var(--color-sand-200), var(--color-sand-400));
       display: flex; align-items: center; justify-content: center;
     }
     .prog-card-badge {
       position: absolute;
-      top: 0.75rem; inset-inline-start: 0.75rem;
+      top: 0.5rem; inset-inline-start: 0.5rem;
       background: var(--color-accent);
       color: white;
-      font-size: 0.65rem;
+      font-size: 0.58rem;
       font-weight: 600;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 0.3rem 0.75rem;
+      padding: 0.22rem 0.55rem;
       border-radius: 1px;
     }
     .prog-card-body {
-      padding: 1.5rem;
+      padding: 0.85rem 0.9rem 0.9rem;
       flex: 1;
       display: flex;
       flex-direction: column;
     }
     .prog-card-meta {
-      font-size: 0.7rem;
+      font-size: 0.62rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--color-ink-muted);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.35rem;
     }
     .prog-card-title {
       font-family: var(--font-display);
-      font-size: 1.2rem;
+      font-size: 0.95rem;
       color: var(--color-ink);
-      margin-bottom: 0.6rem;
-      line-height: 1.3;
+      margin: 0 0 0.4rem;
+      line-height: 1.25;
       transition: color 0.3s;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.4em;
     }
     .prog-card:hover .prog-card-title { color: var(--color-accent); }
     .prog-card-desc {
-      font-size: 0.875rem;
+      font-size: 0.78rem;
       color: var(--color-ink-soft);
-      line-height: 1.6;
+      line-height: 1.5;
       flex: 1;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      margin-bottom: 0.6rem;
     }
     .prog-card-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 1rem;
-      margin-top: 1rem;
+      padding-top: 0.55rem;
+      margin-top: auto;
       border-top: 1px solid var(--color-sand-100);
+      gap: 0.5rem;
     }
     .prog-card-price {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       color: var(--color-ink-muted);
     }
     .prog-card-price strong {
       color: var(--color-accent);
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
     .prog-card-cta {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--color-accent);
       font-weight: 600;
-      display: flex; align-items: center; gap: 0.4rem;
+      display: flex; align-items: center; gap: 0.3rem;
       transition: gap 0.3s;
+      white-space: nowrap;
     }
-    .prog-card:hover .prog-card-cta { gap: 0.65rem; }
+    .prog-card:hover .prog-card-cta { gap: 0.5rem; }
 
     /* ================================
        EXCURSION TABS
@@ -1853,83 +2105,76 @@
     </div>
   </div>
 
-  <!-- ============= RELIGIOUS PROGRAMS ============= -->
-  <section class="section section-bg-light" id="programs">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-eyebrow">✦ <span data-i18n="programs.eyebrow">Religious Programs</span> ✦</span>
-        <h2 class="section-title" data-i18n="programs.title">Sacred Journeys &amp; Religious Programs</h2>
-        <p class="section-subtitle" data-i18n="programs.subtitle">Curated spiritual experiences across Egypt's holiest sites.</p>
-      </div>
-      <!-- Category filter tabs -->
-      <div class="programs-tabs" id="programsTabs"></div>
-      <!-- Programs grid -->
-      <div class="tours-grid" id="programsGrid"></div>
-    </div>
-  </section>
-
   <!-- ============= DISCOVER EGYPT ============= -->
-  <section class="section section-bg-white" id="discover-egypt">
+  <section class="section section-bg-light" id="discover-egypt">
     <div class="container">
-      <div class="section-header">
-        <span class="prog-section-pill">🏺 Programs</span>
-        <h2 class="section-title">Discover Egypt</h2>
-        <p class="section-subtitle">Full multi-day guided tours covering Egypt's greatest historical and cultural highlights.</p>
-      </div>
-      <div class="programs-section-grid" id="discoverEgyptGrid">
-        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      <div class="prog-encircle-wrap">
+        <div class="prog-encircle-grid" id="discoverEgyptGrid" data-count="0">
+          <div class="prog-encircle-center">
+            <span class="prog-encircle-pill">🏺 Programs</span>
+            <h2 class="prog-encircle-title">Discover Egypt</h2>
+            <p class="prog-encircle-sub">Full multi-day guided tours covering Egypt's greatest historical and cultural highlights.</p>
+          </div>
+          <div class="prog-encircle-empty">Loading programs…</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============= ROMANTIC ESCAPE ============= -->
-  <section class="section section-bg-light" id="romantic-escape">
+  <section class="section section-bg-white" id="romantic-escape">
     <div class="container">
-      <div class="section-header">
-        <span class="prog-section-pill">💑 Programs</span>
-        <h2 class="section-title">Romantic Escape</h2>
-        <p class="section-subtitle">Intimate experiences designed for couples — from Nile dinner cruises to island retreats.</p>
-      </div>
-      <div class="programs-section-grid" id="romanticEscapeGrid">
-        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      <div class="prog-encircle-wrap">
+        <div class="prog-encircle-grid" id="romanticEscapeGrid" data-count="0">
+          <div class="prog-encircle-center">
+            <span class="prog-encircle-pill">💑 Programs</span>
+            <h2 class="prog-encircle-title">Romantic Escape</h2>
+            <p class="prog-encircle-sub">Intimate experiences designed for couples — from Nile dinner cruises to island retreats.</p>
+          </div>
+          <div class="prog-encircle-empty">Loading programs…</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============= THERAPEUTIC TOURS ============= -->
-  <section class="section section-bg-white" id="therapeutic-tours">
+  <section class="section section-bg-light" id="therapeutic-tours">
     <div class="container">
-      <div class="section-header">
-        <span class="prog-section-pill">🌿 Programs</span>
-        <h2 class="section-title">Therapeutic Tours</h2>
-        <p class="section-subtitle">Wellness, sport, and adventure experiences designed to rejuvenate body and spirit.</p>
-      </div>
-      <div class="programs-section-grid" id="therapeuticToursGrid">
-        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      <div class="prog-encircle-wrap">
+        <div class="prog-encircle-grid" id="therapeuticToursGrid" data-count="0">
+          <div class="prog-encircle-center">
+            <span class="prog-encircle-pill">🌿 Programs</span>
+            <h2 class="prog-encircle-title">Therapeutic Tours</h2>
+            <p class="prog-encircle-sub">Wellness, sport, and adventure experiences designed to rejuvenate body and spirit.</p>
+          </div>
+          <div class="prog-encircle-empty">Loading programs…</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============= SPIRITUAL EGYPT ============= -->
-  <section class="section section-bg-light" id="spiritual-egypt">
+  <section class="section section-bg-white" id="spiritual-egypt">
     <div class="container">
-      <div class="section-header">
-        <span class="prog-section-pill">🕌 Programs</span>
-        <h2 class="section-title">Spiritual Egypt</h2>
-        <p class="section-subtitle">Sacred journeys through Egypt's religious heritage — Islamic, Coptic, and ancient spiritual sites.</p>
-      </div>
-      <div class="programs-section-grid" id="spiritualEgyptGrid">
-        <div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;">Loading programs…</div>
+      <div class="prog-encircle-wrap">
+        <div class="prog-encircle-grid" id="spiritualEgyptGrid" data-count="0">
+          <div class="prog-encircle-center">
+            <span class="prog-encircle-pill">🕌 Programs</span>
+            <h2 class="prog-encircle-title">Spiritual Egypt</h2>
+            <p class="prog-encircle-sub">Sacred journeys through Egypt's religious heritage — Islamic, Coptic, and ancient spiritual sites.</p>
+          </div>
+          <div class="prog-encircle-empty">Loading programs…</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============= EXCURSIONS ============= -->
-  <section class="section section-bg-white" id="excursions">
+  <!-- ============= DAY EXCURSIONS ============= -->
+  <section class="section section-bg-light" id="excursions">
     <div class="container">
       <div class="section-header">
         <span class="section-eyebrow">✦ Day Excursions ✦</span>
-        <h2 class="section-title">Excursions</h2>
+        <h2 class="section-title">Day Excursions</h2>
         <p class="section-subtitle">Day trips and activities available from your base city — Cairo, Hurghada, or Sharm El Sheikh.</p>
       </div>
       <div class="exc-tabs-wrap">
@@ -2022,7 +2267,7 @@
           romanticEscape: "Romantic Escape",
           therapeuticTours: "Therapeutic Tours",
           spiritualEgypt: "Spiritual Egypt",
-          excursions: "Excursions",
+          excursions: "Day Excursions",
           excCairo: "From Cairo",
           excHrg: "From Hurghada",
           excSsh: "From Sharm El Sheikh",
@@ -3019,19 +3264,56 @@
     function renderServices() {
       const grid = document.getElementById('servicesGrid');
       if (!grid) return;
-      const services = window._servicesData || [];
-      if (!services.length) {
-        grid.closest('section').style.display = 'none';
-        return;
-      }
+      const t = translations[currentLang];
+      const isAr = currentLang === 'ar';
+
+      // Services content sourced from LTS_Travel_services.docx
+      const defaultServices = [
+        {
+          icon: 'handshake',
+          title_en: 'Meet & Assist',
+          title_ar: 'الاستقبال والمساعدة',
+          desc_en: "Our fleet of deluxe vehicles operates in Cairo, Hurghada, Sharm El Sheikh, Aswan, Luxor and Alexandria. An LTS representative will be waiting for you in the arrivals terminal with a placard bearing your name, welcoming you and driving you straight to your destination in the vehicle of your choice.",
+          desc_ar: "أسطولنا من السيارات الفاخرة يعمل في القاهرة والغردقة وشرم الشيخ وأسوان والأقصر والإسكندرية. مندوب LTS هينتظرك في صالة الوصول بلافتة باسمك ويوصلك مباشرة لمكانك بالسيارة اللي تختارها."
+        },
+        {
+          icon: 'passport',
+          title_en: 'Visa Service',
+          title_ar: 'خدمة التأشيرات',
+          desc_en: "We can provide you with a visa as soon as you arrive, saving you the trouble of waiting in line. If you send your passport details in time, we can issue an Egyptian visa that will arrive at all Egyptian airports upon your arrival — or even before. We recommend obtaining an e-visa in advance to minimize delays.",
+          desc_ar: "بنوفر لك تأشيرة فور وصولك من غير ما تستنى في الطابور. لو بعتنا تفاصيل جواز سفرك في الوقت المناسب، نقدر نُصدر تأشيرة مصرية تستلمها في أي مطار مصري عند وصولك أو حتى قبل."
+        },
+        {
+          icon: 'car',
+          title_en: 'Private Transfers',
+          title_ar: 'الترانسفير الخاص',
+          desc_en: "Travel in comfort and safety from the airport to your hotel in Cairo, Giza, Hurghada, Sharm El-Sheikh, Luxor, Aswan, or Alexandria — in a well-maintained vehicle without sharing space with other passengers. At the end of your trip we also arrange a private transfer back to the airport.",
+          desc_ar: "تنقل بأمان وراحة من المطار لفندقك في القاهرة أو الجيزة أو الغردقة أو شرم الشيخ أو الأقصر أو أسوان أو الإسكندرية، في سيارة مجهزة من غير مشاركة. ونرتب ترانسفير العودة للمطار في نهاية رحلتك."
+        },
+        {
+          icon: 'plane',
+          title_en: 'Flight & Train Booking',
+          title_ar: 'حجز الطيران والقطارات',
+          desc_en: "Tell us where you want to go and where you're coming from. Once you submit your trip details, we'll reserve the right flight ticket for you on your preferred airline — and we can also handle train bookings across Egypt's domestic network.",
+          desc_ar: "قلنا رايح فين وجاي منين. بعد ما تبعتلنا تفاصيل رحلتك، بنحجز لك تذكرة الطيران المناسبة على الشركة اللي تختارها، وكمان بنرتب حجز القطارات داخل مصر."
+        }
+      ];
+
+      const stored = window._servicesData;
+      const services = (stored && stored.length) ? stored : defaultServices;
+
       grid.closest('section').style.display = '';
-      grid.innerHTML = services.map(s => `
+      grid.innerHTML = services.map(s => {
+        const title = isAr ? (s.title_ar || s.title_en) : (s.title_en || s.title_ar);
+        const desc = isAr ? (s.desc_ar || s.description_ar || s.desc_en || s.description_en)
+                          : (s.desc_en || s.description_en || s.desc_ar || s.description_ar);
+        return `
         <div class="service-card">
           <div class="service-icon"><i class="fa fa-${s.icon || 'briefcase'}"></i></div>
-          <div class="service-title">${s.title_en}</div>
-          ${s.description_en ? `<div class="service-desc">${s.description_en}</div>` : ''}
-        </div>
-      `).join('');
+          <div class="service-title">${title}</div>
+          ${desc ? `<div class="service-desc">${desc}</div>` : ''}
+        </div>`;
+      }).join('');
     }
 
     function renderDestinations() {
@@ -3477,49 +3759,73 @@
     // ================================
     window._sitePrograms = []; // loaded from Supabase lts_site_programs
 
-    function buildProgCard(prog) {
+    function buildProgCard(prog, gridArea) {
       const hasImg = prog.image_url;
       const price = prog.price ? `<div class="prog-card-price">from <strong>${prog.price}</strong></div>` : '';
       const duration = prog.duration ? `<span>${prog.duration}</span>` : '';
       const desc = prog.excerpt || (prog.content_html || '').replace(/<[^>]+>/g,'').substring(0,150) + '…';
+      const style = gridArea ? `style="grid-area: ${gridArea};"` : '';
 
       return `
-        <div class="prog-card" onclick="openProgModal(${prog.id})">
+        <div class="prog-card" ${style} onclick="openProgModal(${prog.id})">
           <div class="prog-card-img">
             ${hasImg
               ? `<img src="${prog.image_url}" alt="${prog.title}" loading="lazy" />`
-              : `<div class="prog-card-img-placeholder"><i data-lucide="image" style="color:var(--color-sand-400);width:2rem;height:2rem;"></i></div>`
+              : `<div class="prog-card-img-placeholder"><i data-lucide="image" style="color:var(--color-sand-400);width:1.6rem;height:1.6rem;"></i></div>`
             }
             ${duration ? `<div class="prog-card-badge">${prog.duration}</div>` : ''}
           </div>
           <div class="prog-card-body">
             <div class="prog-card-title">${prog.title}</div>
-            <div class="prog-card-desc">${desc}</div>
             <div class="prog-card-footer">
-              ${price}
-              <span class="prog-card-cta">View Details →</span>
+              ${price || '<span></span>'}
+              <span class="prog-card-cta">View →</span>
             </div>
           </div>
         </div>`;
     }
 
-    function renderProgramsSection(sectionId, gridId, sectionSlug) {
+    // For the 4 encircle sections: title stays in the center, cards radiate around.
+    function renderEncircleSection(gridId, sectionSlug) {
       const grid = document.getElementById(gridId);
       if (!grid) return;
-      const items = window._sitePrograms.filter(p => p.section === sectionSlug && p.is_active !== false);
+      const items = window._sitePrograms
+        .filter(p => p.section === sectionSlug && p.is_active !== false)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+      // Keep the centerpiece div, replace any cards/empty messages around it
+      const center = grid.querySelector('.prog-encircle-center');
+      grid.innerHTML = '';
+      if (center) grid.appendChild(center);
+
+      grid.setAttribute('data-count', items.length);
+
       if (!items.length) {
-        grid.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;font-style:italic;">No programs added yet. Upload programs from the admin panel.</div>`;
+        const empty = document.createElement('div');
+        empty.className = 'prog-encircle-empty';
+        empty.innerHTML = '<em>Coming soon — new programs are being curated.</em>';
+        grid.appendChild(empty);
         return;
       }
-      grid.innerHTML = items.map(buildProgCard).join('');
+
+      // Append each card with its grid-area assignment
+      items.forEach((p, i) => {
+        const area = (items.length <= 8) ? `c${i + 1}` : null;
+        const cardHtml = buildProgCard(p, area);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = cardHtml;
+        const card = wrapper.firstElementChild;
+        grid.appendChild(card);
+      });
+
       if (window.lucide) lucide.createIcons();
     }
 
     function renderAllProgramSections() {
-      renderProgramsSection('discover-egypt',    'discoverEgyptGrid',    'discover_egypt');
-      renderProgramsSection('romantic-escape',   'romanticEscapeGrid',   'romantic_escape');
-      renderProgramsSection('therapeutic-tours', 'therapeuticToursGrid', 'therapeutic_tours');
-      renderProgramsSection('spiritual-egypt',   'spiritualEgyptGrid',   'spiritual_egypt');
+      renderEncircleSection('discoverEgyptGrid',    'discover_egypt');
+      renderEncircleSection('romanticEscapeGrid',   'romantic_escape');
+      renderEncircleSection('therapeuticToursGrid', 'therapeutic_tours');
+      renderEncircleSection('spiritualEgyptGrid',   'spiritual_egypt');
     }
 
     // ── Excursions tabs ──
@@ -3535,16 +3841,18 @@
     function renderExcursions(tab) {
       const grid = document.getElementById('excursionsGrid');
       if (!grid) return;
-      const items = window._sitePrograms.filter(p =>
-        p.section === 'excursion' &&
-        p.excursion_location === tab &&
-        p.is_active !== false
-      );
+      const items = window._sitePrograms
+        .filter(p =>
+          p.section === 'excursion' &&
+          p.excursion_location === tab &&
+          p.is_active !== false
+        )
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       if (!items.length) {
         grid.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--color-ink-muted);grid-column:1/-1;font-style:italic;">No excursions added yet for this city.</div>`;
         return;
       }
-      grid.innerHTML = items.map(buildProgCard).join('');
+      grid.innerHTML = items.map(p => buildProgCard(p)).join('');
       if (window.lucide) lucide.createIcons();
     }
 
@@ -3600,10 +3908,11 @@
         <button class="prog-slider-dot ${i===0?'active':''}" onclick="progSliderGo(${i});event.stopPropagation()"></button>`
       ).join('') : '';
 
-      const arrows = images.length > 1 ? `
-        <button class="prog-slider-btn prev" onclick="progSliderPrev();event.stopPropagation()">‹</button>
-        <button class="prog-slider-btn next" onclick="progSliderNext();event.stopPropagation()">›</button>
-        <div class="prog-slider-dots">${dots}</div>` : '';
+      // Arrows are always present per design spec — if there's only 1 image they just loop to itself.
+      const arrows = `
+        <button class="prog-slider-btn prev" onclick="progSliderPrev();event.stopPropagation()" aria-label="Previous image">‹</button>
+        <button class="prog-slider-btn next" onclick="progSliderNext();event.stopPropagation()" aria-label="Next image">›</button>
+        ${dots ? `<div class="prog-slider-dots">${dots}</div>` : ''}`;
 
       return `
         <div class="prog-img-slider">
@@ -3615,6 +3924,7 @@
 
     function progSliderGo(idx) {
       const imgs = window._progSliderImages;
+      if (!imgs || !imgs.length) return;
       idx = ((idx % imgs.length) + imgs.length) % imgs.length;
       window._progSliderIdx = idx;
       document.querySelectorAll('[id^="pslide_"]').forEach((el,i) => el.classList.toggle('active', i===idx));
@@ -3673,6 +3983,7 @@
       renderTypes();
       renderPackages();
       renderPrograms();
+      renderServices();
       renderFooter();
 
       // Re-init Lucide icons
