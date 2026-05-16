@@ -282,10 +282,22 @@
             <div class="field">
               <label>Hero Image URL</label>
               <input id="hero-image-url" placeholder="https://…" />
+              <div class="img-upload-box" style="margin-top:8px;">
+                <i class="fa fa-cloud-upload-alt"></i>
+                <p>Click or drop image to upload</p>
+                <input type="file" accept="image/*" onchange="uploadToUrlField(event, 'hero-image-url', 'site/hero')" />
+              </div>
+              <div class="upload-progress" id="hero-image-progress"></div>
             </div>
             <div class="field">
               <label>Hero Video URL (overrides image if set)</label>
               <input id="hero-video-url" placeholder="https://…" />
+              <div class="img-upload-box" style="margin-top:8px;">
+                <i class="fa fa-cloud-upload-alt"></i>
+                <p>Click or drop video to upload</p>
+                <input type="file" accept="video/*" onchange="uploadToUrlField(event, 'hero-video-url', 'site/hero')" />
+              </div>
+              <div class="upload-progress" id="hero-video-progress"></div>
             </div>
           </div>
 
@@ -323,6 +335,12 @@
           <div class="field">
             <label>About Image URL</label>
             <input id="about-image-url" placeholder="https://…" />
+            <div class="img-upload-box" style="margin-top:8px;">
+              <i class="fa fa-cloud-upload-alt"></i>
+              <p>Click or drop image to upload</p>
+              <input type="file" accept="image/*" onchange="uploadToUrlField(event, 'about-image-url', 'site/about')" />
+            </div>
+            <div class="upload-progress" id="about-image-progress"></div>
           </div>
 
           <button class="btn btn-primary" onclick="saveAbout()"><i class="fa fa-save"></i>&nbsp; Save About</button>
@@ -1141,6 +1159,40 @@ function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
+}
+
+// =============================================
+// GENERIC UPLOAD → URL field
+// Uploads a file to programs/<folder>/<timestamp>.<ext>
+// and sets the resulting public URL into the target input.
+// =============================================
+async function uploadToUrlField(ev, inputId, folder) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  const input = document.getElementById(inputId);
+  const progressId = inputId.replace('-url', '') + '-progress';
+  const progress = document.getElementById(progressId);
+  if (progress) progress.textContent = 'Uploading…';
+
+  try {
+    const ts = Date.now();
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${folder}/${ts}.${ext}`;
+    const { error } = await sb.storage.from(STORAGE_BUCKET).upload(path, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false
+    });
+    if (error) throw error;
+    const { data: { publicUrl } } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    input.value = publicUrl;
+    if (progress) progress.textContent = `✓ Uploaded — URL filled in above. Don't forget to click Save.`;
+    toast('Uploaded — click Save to apply', 'success');
+  } catch (e) {
+    if (progress) progress.textContent = `Error: ${e.message}`;
+    toast(`Upload failed: ${e.message}`, 'error');
+  } finally {
+    ev.target.value = '';
+  }
 }
 
 // =============================================
