@@ -2834,8 +2834,7 @@
 
     // ================================
     // LOAD DATA FROM SUPABASE
-    // Only loads what we actually need: site_settings (Hero/About/Contact)
-    // and lts_site_programs (the 4 program sections + day excursions).
+    // Loads site_settings (Hero/About/Contact) and lts_services (services section).
     // ================================
     async function loadFromSupabase() {
       if (!sb) {
@@ -2843,7 +2842,10 @@
         return;
       }
       try {
-        const settingsResult = await sb.from('site_settings').select('*').eq('id', 1).single();
+        const [settingsResult, servicesResult] = await Promise.all([
+          sb.from('site_settings').select('*').eq('id', 1).single(),
+          sb.from('lts_services').select('*').eq('is_active', true).order('sort_order')
+        ]);
 
         // Site Settings (Hero, About, Contact, Social)
         const settings = settingsResult.data;
@@ -2898,7 +2900,19 @@
           };
         }
 
-        console.log('✓ Site settings loaded from Supabase');
+        // Services from lts_services table
+        if (servicesResult.data && servicesResult.data.length) {
+          window._servicesData = servicesResult.data.map(s => ({
+            icon: s.icon || 'briefcase',
+            title_en: s.title_en,
+            title_ar: s.title_ar,
+            desc_en: s.description_en,
+            desc_ar: s.description_ar
+          }));
+          renderServices();
+        }
+
+        console.log('✓ Loaded settings + services from Supabase');
       } catch (error) {
         console.error('Failed to load from Supabase:', error);
         console.log('→ Using default content');
