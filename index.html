@@ -2907,7 +2907,8 @@
             title_en: s.title_en,
             title_ar: s.title_ar,
             desc_en: s.description_en,
-            desc_ar: s.description_ar
+            desc_ar: s.description_ar,
+            image_url: s.image_url || null
           }));
           renderServices();
         }
@@ -3115,9 +3116,13 @@
         const title = isAr ? (s.title_ar || s.title_en) : (s.title_en || s.title_ar);
         const desc = isAr ? (s.desc_ar || s.description_ar || s.desc_en || s.description_en)
                           : (s.desc_en || s.description_en || s.desc_ar || s.description_ar);
+        const img = s.image_url || s.image;
+        const visual = img
+          ? `<div class="service-icon" style="width:96px;height:96px;border-radius:50%;background:#fff center/cover no-repeat url('${img}');"></div>`
+          : `<div class="service-icon"><i class="fa fa-${s.icon || 'briefcase'}"></i></div>`;
         return `
         <div class="service-card">
-          <div class="service-icon"><i class="fa fa-${s.icon || 'briefcase'}"></i></div>
+          ${visual}
           <div class="service-title">${title}</div>
           ${desc ? `<div class="service-desc">${desc}</div>` : ''}
         </div>`;
