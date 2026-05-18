@@ -628,44 +628,316 @@
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
     }
-    @media (min-width: 640px) { .services-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 1024px) { .services-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 640px) { .services-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; } }
+    @media (min-width: 1024px) { .services-grid { grid-template-columns: repeat(4, 1fr); gap: 1.75rem; } }
 
     .service-card {
       background: white;
       border: 1px solid var(--color-sand-100, #e8e0d0);
-      padding: 1.5rem 1.25rem;
+      border-radius: 6px;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: .75rem;
-      transition: box-shadow .3s, transform .3s;
+      cursor: pointer;
+      transition: box-shadow .35s, transform .35s, border-color .35s;
+      position: relative;
     }
     .service-card:hover {
-      box-shadow: 0 8px 30px rgba(0,0,0,.08);
-      transform: translateY(-3px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.12);
+      transform: translateY(-5px);
+      border-color: var(--color-accent);
     }
-    .service-icon {
-      width: 2.5rem; height: 2.5rem;
-      background: rgba(193,154,91,.1);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--color-accent, #c19a5b);
-      font-size: 1rem;
+    .service-card:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+
+    .service-image {
+      width: 100%;
+      height: 240px;
+      background: linear-gradient(135deg, #e6d5b3 0%, #d4b683 50%, #c19a5b 100%) center/cover no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 639px) { .service-image { height: 220px; } }
+    .service-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.28) 100%);
+      transition: opacity .35s;
+      opacity: 0;
+    }
+    .service-card:hover .service-image::after { opacity: 1; }
+    .service-image > img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .6s ease;
+      display: block;
+    }
+    .service-card:hover .service-image > img { transform: scale(1.06); }
+
+    .service-image-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-sand-700);
+      font-size: 2.75rem;
+    }
+
+    .service-body {
+      padding: 1.25rem 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+      flex: 1;
     }
     .service-title {
-      font-size: .85rem;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
       font-weight: 600;
       color: var(--color-ink, #1a1a2e);
-      line-height: 1.4;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
     }
+    html[dir="rtl"] .service-title { letter-spacing: 0; }
     .service-desc {
-      font-size: .78rem;
+      font-size: .82rem;
       color: var(--color-ink-soft, #666);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .service-book-btn {
+      margin-top: .75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      padding: .7rem 1rem;
+      background: transparent;
+      color: var(--color-accent-dark);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: .78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1.5px solid var(--color-accent);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all .25s;
+      align-self: stretch;
+    }
+    html[dir="rtl"] .service-book-btn { letter-spacing: 0; text-transform: none; }
+    .service-card:hover .service-book-btn {
+      background: var(--color-accent);
+      color: white;
+    }
+    .service-book-btn i, .service-book-btn svg { font-size: .85rem; }
+
+    /* ================================
+       SERVICE BOOKING MODAL
+       ================================ */
+    .svc-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 20, 16, 0.82);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-y: auto;
+    }
+    .svc-modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .svc-modal {
+      background: var(--color-sand-50);
+      max-width: 720px;
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      animation: slideUp 0.4s ease-out;
+      margin: auto;
+    }
+    .svc-modal-close {
+      position: absolute;
+      top: 0.85rem;
+      inset-inline-end: 0.85rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      background: rgba(255,255,255,0.95);
+      border: none;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.25s;
+      color: var(--color-ink);
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .svc-modal-close:hover {
+      background: var(--color-accent);
+      color: white;
+      transform: rotate(90deg);
+    }
+    .svc-modal-hero {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #c19a5b 0%, #8b6638 100%) center/cover no-repeat;
+      position: relative;
+    }
+    @media (min-width: 640px) { .svc-modal-hero { height: 240px; } }
+    .svc-modal-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, transparent 60%);
+    }
+    .svc-modal-hero-title {
+      position: absolute;
+      inset-inline-start: 1.5rem;
+      inset-inline-end: 1.5rem;
+      bottom: 1.25rem;
+      color: white;
+      z-index: 2;
+    }
+    .svc-modal-hero-title h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      line-height: 1.2;
+      margin-bottom: 0.25rem;
+    }
+    .svc-modal-hero-title p {
+      font-size: 0.82rem;
+      opacity: 0.92;
+      letter-spacing: 0.05em;
+    }
+    html[dir="rtl"] .svc-modal-hero-title p { letter-spacing: 0; }
+
+    .svc-modal-body {
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+    @media (min-width: 640px) { .svc-modal-body { padding: 2rem 2rem 2.25rem; } }
+
+    .svc-form-intro {
+      font-size: 0.9rem;
+      color: var(--color-ink-soft);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--color-sand-200);
+    }
+
+    .svc-form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem 1.25rem;
+    }
+    @media (min-width: 640px) { .svc-form-grid { grid-template-columns: 1fr 1fr; } }
+
+    .svc-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .svc-field.full { grid-column: 1 / -1; }
+    .svc-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-ink-soft);
+      letter-spacing: 0.03em;
+    }
+    html[dir="rtl"] .svc-field label { letter-spacing: 0; }
+    .svc-field label .req { color: #c0392b; margin-inline-start: 2px; }
+    .svc-field input,
+    .svc-field select,
+    .svc-field textarea {
+      padding: 0.7rem 0.85rem;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--color-ink);
+      background: white;
+      border: 1px solid var(--color-sand-200);
+      border-radius: 3px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .svc-field textarea { resize: vertical; min-height: 90px; font-family: inherit; }
+    .svc-field input:focus,
+    .svc-field select:focus,
+    .svc-field textarea:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(193,154,91,0.15);
+    }
+
+    .svc-form-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .svc-btn {
+      flex: 1 1 200px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.2rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    html[dir="rtl"] .svc-btn { letter-spacing: 0; text-transform: none; }
+    .svc-btn-primary {
+      background: var(--color-accent);
+      color: white;
+    }
+    .svc-btn-primary:hover {
+      background: var(--color-accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .svc-btn-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+    .svc-btn-whatsapp:hover {
+      background: #128C7E;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .svc-form-note {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--color-ink-muted);
+      text-align: center;
       line-height: 1.5;
     }
+    .svc-form-success {
+      padding: 0.9rem 1rem;
+      background: rgba(76, 175, 80, 0.1);
+      border: 1px solid #4caf50;
+      border-radius: 3px;
+      color: #2e7d32;
+      font-size: 0.88rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    .svc-form-success.show { display: block; }
 
     .feature-num {
       width: 3rem; height: 3rem;
@@ -2145,6 +2417,14 @@
     </div>
   </div>
 
+  <!-- ============= SERVICE BOOKING MODAL ============= -->
+  <div class="svc-modal-overlay" id="svcModalOverlay" onclick="closeServiceModal(event)">
+    <div class="svc-modal" id="svcModal" onclick="event.stopPropagation()">
+      <button class="svc-modal-close" onclick="closeServiceModalBtn()" aria-label="Close">✕</button>
+      <div id="svcModalContent"></div>
+    </div>
+  </div>
+
   <!-- ============= FOOTER ============= -->
   <footer id="contact">
     <div class="footer-top-line"></div>
@@ -2890,6 +3170,10 @@
             translations.en.footer.contact.email = settings.contact_email;
             translations.ar.footer.contact.email = settings.contact_email;
           }
+          // Optional: WhatsApp number for booking-request WhatsApp button (e.g. "201234567890")
+          if (settings.contact_whatsapp) {
+            window._whatsappNumber = String(settings.contact_whatsapp).replace(/[^\d+]/g, '');
+          }
 
           window._socialLinks = {
             facebook: settings.social_facebook,
@@ -3079,6 +3363,7 @@
       // Services content sourced from LTS_Travel_services.docx
       const defaultServices = [
         {
+          key: 'meet-assist',
           icon: 'handshake',
           title_en: 'Meet & Assist',
           title_ar: 'الاستقبال والمساعدة',
@@ -3086,6 +3371,7 @@
           desc_ar: "أسطولنا من السيارات الفاخرة يعمل في القاهرة والغردقة وشرم الشيخ وأسوان والأقصر والإسكندرية. مندوب LTS هينتظرك في صالة الوصول بلافتة باسمك ويوصلك مباشرة لمكانك بالسيارة اللي تختارها."
         },
         {
+          key: 'visa',
           icon: 'passport',
           title_en: 'Visa Service',
           title_ar: 'خدمة التأشيرات',
@@ -3093,6 +3379,7 @@
           desc_ar: "بنوفر لك تأشيرة فور وصولك من غير ما تستنى في الطابور. لو بعتنا تفاصيل جواز سفرك في الوقت المناسب، نقدر نُصدر تأشيرة مصرية تستلمها في أي مطار مصري عند وصولك أو حتى قبل."
         },
         {
+          key: 'transfer',
           icon: 'car',
           title_en: 'Private Transfers',
           title_ar: 'الترانسفير الخاص',
@@ -3100,6 +3387,7 @@
           desc_ar: "تنقل بأمان وراحة من المطار لفندقك في القاهرة أو الجيزة أو الغردقة أو شرم الشيخ أو الأقصر أو أسوان أو الإسكندرية، في سيارة مجهزة من غير مشاركة. ونرتب ترانسفير العودة للمطار في نهاية رحلتك."
         },
         {
+          key: 'flight',
           icon: 'plane',
           title_en: 'Flight & Train Booking',
           title_ar: 'حجز الطيران والقطارات',
@@ -3111,22 +3399,350 @@
       const stored = window._servicesData;
       const services = (stored && stored.length) ? stored : defaultServices;
 
+      // Stash services globally for the booking modal
+      window._services = services;
+
       grid.closest('section').style.display = '';
-      grid.innerHTML = services.map(s => {
+      grid.innerHTML = services.map((s, idx) => {
         const title = isAr ? (s.title_ar || s.title_en) : (s.title_en || s.title_ar);
         const desc = isAr ? (s.desc_ar || s.description_ar || s.desc_en || s.description_en)
                           : (s.desc_en || s.description_en || s.desc_ar || s.description_ar);
         const img = s.image_url || s.image;
+        const iconName = s.icon || 'briefcase';
         const visual = img
-          ? `<div class="service-icon" style="width:96px;height:96px;border-radius:50%;background:#fff center/cover no-repeat url('${img}');"></div>`
-          : `<div class="service-icon"><i class="fa fa-${s.icon || 'briefcase'}"></i></div>`;
+          ? `<img src="${img}" alt="${title}" loading="lazy" />`
+          : `<div class="service-image-fallback"><i class="fa fa-${iconName}"></i></div>`;
+        const bookLabel = isAr ? 'احجز الخدمة' : 'Book This Service';
         return `
-        <div class="service-card">
-          ${visual}
-          <div class="service-title">${title}</div>
-          ${desc ? `<div class="service-desc">${desc}</div>` : ''}
+        <div class="service-card" onclick="openServiceBookingModal(${idx})" tabindex="0" role="button" onkeypress="if(event.key==='Enter'||event.key===' ')openServiceBookingModal(${idx})" aria-label="${bookLabel}: ${title}">
+          <div class="service-image">${visual}</div>
+          <div class="service-body">
+            <div class="service-title">${title}</div>
+            ${desc ? `<div class="service-desc">${desc}</div>` : ''}
+            <button type="button" class="service-book-btn" onclick="event.stopPropagation();openServiceBookingModal(${idx})">
+              ${bookLabel} <i class="fa fa-arrow-${isAr ? 'left' : 'right'}"></i>
+            </button>
+          </div>
         </div>`;
       }).join('');
+    }
+
+    // ================================
+    // SERVICE BOOKING MODAL
+    // ================================
+
+    // Per-service field schemas. Each schema defines what extra info we need
+    // from the customer for that specific service, so the email we receive
+    // is complete and we can quote/respond quickly.
+    function getServiceFieldsSchema(serviceKey, isAr) {
+      const L = (en, ar) => isAr ? ar : en;
+      const yes = L('Yes', 'نعم');
+      const no = L('No', 'لا');
+
+      // Common fields that appear in every form
+      const commonFields = [
+        { name: 'fullName',  type: 'text',  required: true,  label: L('Full Name', 'الاسم بالكامل'), placeholder: L('e.g. John Smith', 'مثلاً: أحمد محمد') },
+        { name: 'email',     type: 'email', required: true,  label: L('Email Address', 'البريد الإلكتروني'), placeholder: 'you@example.com' },
+        { name: 'phone',     type: 'tel',   required: true,  label: L('Phone / WhatsApp', 'الهاتف / واتساب'), placeholder: L('+1 555 123 4567', '‎+20 100 000 0000') },
+        { name: 'country',   type: 'text',  required: false, label: L('Country / Nationality', 'الدولة / الجنسية'), placeholder: L('e.g. United Kingdom', 'مثلاً: المملكة المتحدة') }
+      ];
+
+      // Service-specific fields
+      const serviceFields = {
+        'meet-assist': [
+          { name: 'arrivalDate', type: 'date',   required: true,  label: L('Arrival Date', 'تاريخ الوصول') },
+          { name: 'arrivalTime', type: 'time',   required: false, label: L('Arrival Time', 'وقت الوصول') },
+          { name: 'airport',     type: 'select', required: true,  label: L('Airport', 'المطار'),
+            options: [
+              { v: '', t: L('— Select —', '— اختر —') },
+              { v: 'Cairo (CAI)',         t: L('Cairo (CAI)', 'القاهرة (CAI)') },
+              { v: 'Hurghada (HRG)',      t: L('Hurghada (HRG)', 'الغردقة (HRG)') },
+              { v: 'Sharm El-Sheikh (SSH)', t: L('Sharm El-Sheikh (SSH)', 'شرم الشيخ (SSH)') },
+              { v: 'Luxor (LXR)',         t: L('Luxor (LXR)', 'الأقصر (LXR)') },
+              { v: 'Aswan (ASW)',         t: L('Aswan (ASW)', 'أسوان (ASW)') },
+              { v: 'Alexandria (HBE/ALY)', t: L('Alexandria (HBE/ALY)', 'الإسكندرية (HBE/ALY)') }
+            ]
+          },
+          { name: 'flightNumber', type: 'text',   required: false, label: L('Flight Number', 'رقم الرحلة'), placeholder: L('e.g. MS786', 'مثلاً: MS786') },
+          { name: 'dropoff',      type: 'text',   required: true,  label: L('Destination / Hotel', 'الوجهة / الفندق'), placeholder: L('e.g. Four Seasons Cairo', 'مثلاً: فندق فورسيزونز القاهرة') },
+          { name: 'passengers',   type: 'number', required: true,  label: L('Number of Passengers', 'عدد الركاب'), min: 1, default: 2 },
+          { name: 'vehicleType',  type: 'select', required: false, label: L('Vehicle Preference', 'نوع السيارة المفضل'),
+            options: [
+              { v: '',          t: L('Any / Recommend best', 'أي نوع / اقترحوا الأنسب') },
+              { v: 'Sedan',     t: L('Sedan (1–3 pax)', 'سيدان (١-٣ ركاب)') },
+              { v: 'SUV',       t: L('SUV (1–4 pax)', 'دفع رباعي (١-٤ ركاب)') },
+              { v: 'Minivan',   t: L('Minivan (5–7 pax)', 'ميني فان (٥-٧ ركاب)') },
+              { v: 'Minibus',   t: L('Minibus (8–14 pax)', 'ميني باص (٨-١٤ راكب)') },
+              { v: 'Coach',     t: L('Coach (15+ pax)', 'أتوبيس (١٥+ راكب)') }
+            ]
+          }
+        ],
+
+        'visa': [
+          { name: 'visaNationality',  type: 'text',   required: true,  label: L('Passport Nationality', 'جنسية جواز السفر'), placeholder: L('e.g. American', 'مثلاً: أمريكي') },
+          { name: 'passportNumber',   type: 'text',   required: false, label: L('Passport Number (optional)', 'رقم جواز السفر (اختياري)') },
+          { name: 'passportExpiry',   type: 'date',   required: false, label: L('Passport Expiry Date', 'تاريخ انتهاء الجواز') },
+          { name: 'visaArrival',      type: 'date',   required: true,  label: L('Expected Arrival Date', 'تاريخ الوصول المتوقع') },
+          { name: 'visaAirport',      type: 'select', required: true,  label: L('Arrival Airport', 'مطار الوصول'),
+            options: [
+              { v: '', t: L('— Select —', '— اختر —') },
+              { v: 'Cairo (CAI)',         t: L('Cairo (CAI)', 'القاهرة (CAI)') },
+              { v: 'Hurghada (HRG)',      t: L('Hurghada (HRG)', 'الغردقة (HRG)') },
+              { v: 'Sharm El-Sheikh (SSH)', t: L('Sharm El-Sheikh (SSH)', 'شرم الشيخ (SSH)') },
+              { v: 'Luxor (LXR)',         t: L('Luxor (LXR)', 'الأقصر (LXR)') },
+              { v: 'Aswan (ASW)',         t: L('Aswan (ASW)', 'أسوان (ASW)') },
+              { v: 'Alexandria (HBE/ALY)', t: L('Alexandria (HBE/ALY)', 'الإسكندرية (HBE/ALY)') }
+            ]
+          },
+          { name: 'visaPassengers',   type: 'number', required: true,  label: L('Number of Travelers', 'عدد المسافرين'), min: 1, default: 1 },
+          { name: 'visaType',         type: 'select', required: false, label: L('Visa Type', 'نوع التأشيرة'),
+            options: [
+              { v: 'Tourist (Single Entry)',   t: L('Tourist (Single Entry)', 'سياحية (دخول واحد)') },
+              { v: 'Tourist (Multiple Entry)', t: L('Tourist (Multiple Entry)', 'سياحية (دخول متعدد)') },
+              { v: 'Recommend best',           t: L('Not sure — recommend best', 'مش متأكد — اقترحوا الأنسب') }
+            ]
+          }
+        ],
+
+        'transfer': [
+          { name: 'transferFrom', type: 'text',  required: true, label: L('Pickup Location', 'مكان الانطلاق'), placeholder: L('e.g. Cairo Airport Terminal 3', 'مثلاً: مطار القاهرة - مبنى ٣') },
+          { name: 'transferTo',   type: 'text',  required: true, label: L('Drop-off Location', 'مكان الوصول'), placeholder: L('e.g. Mena House Hotel, Giza', 'مثلاً: فندق ماريوت الزمالك') },
+          { name: 'transferDate', type: 'date',  required: true, label: L('Transfer Date', 'تاريخ الترانسفير') },
+          { name: 'transferTime', type: 'time',  required: false, label: L('Transfer Time', 'وقت الترانسفير') },
+          { name: 'roundTrip',    type: 'select', required: false, label: L('Round Trip?', 'ذهاب وعودة؟'),
+            options: [
+              { v: 'One way',    t: L('One way only', 'ذهاب فقط') },
+              { v: 'Round trip', t: L('Round trip (need return too)', 'ذهاب وعودة') }
+            ]
+          },
+          { name: 'transferPax',     type: 'number', required: true, label: L('Number of Passengers', 'عدد الركاب'), min: 1, default: 2 },
+          { name: 'transferLuggage', type: 'number', required: false, label: L('Number of Luggage Pieces', 'عدد قطع الشنط') },
+          { name: 'transferVehicle', type: 'select', required: false, label: L('Vehicle Preference', 'نوع السيارة المفضل'),
+            options: [
+              { v: '',          t: L('Any / Recommend best', 'أي نوع / اقترحوا الأنسب') },
+              { v: 'Sedan',     t: L('Sedan (1–3 pax)', 'سيدان (١-٣ ركاب)') },
+              { v: 'SUV',       t: L('SUV (1–4 pax)', 'دفع رباعي (١-٤ ركاب)') },
+              { v: 'Minivan',   t: L('Minivan (5–7 pax)', 'ميني فان (٥-٧ ركاب)') },
+              { v: 'Minibus',   t: L('Minibus (8–14 pax)', 'ميني باص (٨-١٤ راكب)') },
+              { v: 'Coach',     t: L('Coach (15+ pax)', 'أتوبيس (١٥+ راكب)') }
+            ]
+          }
+        ],
+
+        'flight': [
+          { name: 'bookingType', type: 'select', required: true, label: L('Booking Type', 'نوع الحجز'),
+            options: [
+              { v: 'Flight', t: L('Flight', 'طيران') },
+              { v: 'Train',  t: L('Train', 'قطار') },
+              { v: 'Both',   t: L('Both — need a combined itinerary', 'الاثنين معاً') }
+            ]
+          },
+          { name: 'flightFrom',  type: 'text',  required: true, label: L('From (City / Airport)', 'من (المدينة / المطار)'), placeholder: L('e.g. London (LHR)', 'مثلاً: لندن (LHR)') },
+          { name: 'flightTo',    type: 'text',  required: true, label: L('To (City / Airport)', 'إلى (المدينة / المطار)'), placeholder: L('e.g. Cairo (CAI)', 'مثلاً: القاهرة (CAI)') },
+          { name: 'flightDate',  type: 'date',  required: true, label: L('Departure Date', 'تاريخ السفر') },
+          { name: 'returnDate',  type: 'date',  required: false, label: L('Return Date (if round trip)', 'تاريخ العودة (لو ذهاب وعودة)') },
+          { name: 'flightPax',   type: 'number', required: true, label: L('Number of Passengers', 'عدد المسافرين'), min: 1, default: 1 },
+          { name: 'flightClass', type: 'select', required: false, label: L('Class Preference', 'الدرجة المفضلة'),
+            options: [
+              { v: 'Economy',         t: L('Economy', 'سياحية') },
+              { v: 'Premium Economy', t: L('Premium Economy', 'سياحية مميزة') },
+              { v: 'Business',        t: L('Business', 'رجال الأعمال') },
+              { v: 'First',           t: L('First Class', 'الدرجة الأولى') }
+            ]
+          },
+          { name: 'preferredAirline', type: 'text', required: false, label: L('Preferred Airline (optional)', 'شركة الطيران المفضلة (اختياري)'), placeholder: L('e.g. EgyptAir', 'مثلاً: مصر للطيران') }
+        ]
+      };
+
+      // For services without a custom schema, use a generic but useful one
+      const genericFields = [
+        { name: 'serviceDate',    type: 'date',   required: false, label: L('Preferred Date', 'التاريخ المفضل') },
+        { name: 'servicePax',     type: 'number', required: false, label: L('Number of People', 'عدد الأشخاص'), min: 1, default: 2 },
+        { name: 'serviceLocation', type: 'text',   required: false, label: L('Location / City', 'المدينة / الموقع'), placeholder: L('e.g. Cairo, Luxor…', 'مثلاً: القاهرة، الأقصر…') }
+      ];
+
+      const specific = serviceFields[serviceKey] || genericFields;
+
+      // Always include a notes field at the end
+      const notesField = { name: 'notes', type: 'textarea', required: false, full: true,
+        label: L('Additional Notes / Special Requests', 'ملاحظات إضافية / طلبات خاصة'),
+        placeholder: L('Anything else we should know? Allergies, accessibility, preferences…', 'أي تفاصيل إضافية؟ مثلاً: حساسية، احتياجات خاصة، تفضيلات…')
+      };
+
+      return [...commonFields, ...specific, notesField];
+    }
+
+    function openServiceBookingModal(idx) {
+      const services = window._services || [];
+      const service = services[idx];
+      if (!service) return;
+      const isAr = currentLang === 'ar';
+      const title = isAr ? (service.title_ar || service.title_en) : (service.title_en || service.title_ar);
+      const desc  = isAr ? (service.desc_ar || service.description_ar || service.desc_en || service.description_en)
+                         : (service.desc_en || service.description_en || service.desc_ar || service.description_ar);
+      const img   = service.image_url || service.image;
+      const key   = service.key || service.id || ('service-' + idx);
+
+      const fields = getServiceFieldsSchema(key, isAr);
+      const L = (en, ar) => isAr ? ar : en;
+
+      const fieldsHtml = fields.map(f => {
+        const req = f.required ? '<span class="req">*</span>' : '';
+        const fullClass = f.full ? ' full' : '';
+        let inner = '';
+        if (f.type === 'select') {
+          inner = `<select name="${f.name}" ${f.required ? 'required' : ''}>` +
+            (f.options || []).map(o => `<option value="${o.v}">${o.t}</option>`).join('') +
+            `</select>`;
+        } else if (f.type === 'textarea') {
+          inner = `<textarea name="${f.name}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''}></textarea>`;
+        } else {
+          const extra = (f.type === 'number' && f.min !== undefined) ? `min="${f.min}"` : '';
+          const val = (f.default !== undefined) ? `value="${f.default}"` : '';
+          inner = `<input type="${f.type}" name="${f.name}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''} ${extra} ${val} />`;
+        }
+        return `
+          <div class="svc-field${fullClass}">
+            <label for="${f.name}">${f.label}${req}</label>
+            ${inner}
+          </div>`;
+      }).join('');
+
+      const heroStyle = img
+        ? `style="background-image:url('${img}');"`
+        : '';
+      const intro = L(
+        'Fill in your details below and we’ll get back to you with a personalized quote.',
+        'املأ بياناتك في الأسفل وهنرجعلك بعرض سعر مخصص في أقرب وقت.'
+      );
+
+      document.getElementById('svcModalContent').innerHTML = `
+        <div class="svc-modal-hero" ${heroStyle}>
+          <div class="svc-modal-hero-title">
+            <h3>${title}</h3>
+            <p>${L('Booking Request', 'طلب حجز')}</p>
+          </div>
+        </div>
+        <div class="svc-modal-body">
+          <p class="svc-form-intro">${intro}</p>
+          <form id="svcBookingForm" onsubmit="return submitServiceBooking(event, '${encodeURIComponent(title)}')">
+            <div class="svc-form-grid">${fieldsHtml}</div>
+            <div class="svc-form-actions">
+              <button type="submit" class="svc-btn svc-btn-primary">
+                <i class="fa fa-envelope"></i> ${L('Send Request by Email', 'إرسال الطلب بالإيميل')}
+              </button>
+              <button type="button" class="svc-btn svc-btn-whatsapp" onclick="submitServiceBookingWhatsApp('${encodeURIComponent(title)}')">
+                <i class="fa-brands fa-whatsapp"></i> ${L('Send via WhatsApp', 'إرسال عبر واتساب')}
+              </button>
+            </div>
+            <p class="svc-form-note">${L(
+              '★ Fields marked with * are required. Your request is sent directly to our team — we’ll respond within 24 hours.',
+              '★ الحقول اللي عليها * إجبارية. طلبك بيوصل لفريقنا مباشرةً — هنرد عليك خلال 24 ساعة.'
+            )}</p>
+            <div class="svc-form-success" id="svcFormSuccess">${L(
+              '✓ Your email client has opened with your request. Please send it to complete your booking inquiry.',
+              '✓ تم فتح برنامج البريد بالطلب جاهز. ابعت الإيميل علشان نكمّل حجزك.'
+            )}</div>
+          </form>
+        </div>
+      `;
+
+      document.getElementById('svcModalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeServiceModal(e) {
+      if (e && e.target.id !== 'svcModalOverlay') return;
+      closeServiceModalBtn();
+    }
+    function closeServiceModalBtn() {
+      document.getElementById('svcModalOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const ov = document.getElementById('svcModalOverlay');
+        if (ov && ov.classList.contains('open')) closeServiceModalBtn();
+      }
+    });
+
+    // Build a human-readable summary of the form fields, used in email & WhatsApp.
+    function buildBookingSummary(form, serviceTitle, isAr) {
+      const fd = new FormData(form);
+      const labels = {};
+      // Match label text to field name from currently-rendered form
+      form.querySelectorAll('.svc-field').forEach(div => {
+        const input = div.querySelector('input, select, textarea');
+        const lab = div.querySelector('label');
+        if (input && lab) {
+          // strip the * marker if present
+          labels[input.name] = lab.textContent.replace(/\s*\*\s*$/, '').trim();
+        }
+      });
+
+      const lines = [];
+      lines.push(isAr ? `طلب حجز خدمة: ${serviceTitle}` : `Service Booking Request: ${serviceTitle}`);
+      lines.push(isAr ? '────────────────────────' : '────────────────────────');
+      for (const [name, val] of fd.entries()) {
+        if (!val) continue;
+        const label = labels[name] || name;
+        lines.push(`${label}: ${val}`);
+      }
+      lines.push(isAr ? '────────────────────────' : '────────────────────────');
+      lines.push(isAr ? 'تم الإرسال من موقع Luxury Travel Service' : 'Sent from Luxury Travel Service website');
+      return lines.join('\n');
+    }
+
+    function getContactEmail() {
+      // Pull from translations (in case admin updated it via Supabase settings)
+      try {
+        return (translations[currentLang] && translations[currentLang].footer && translations[currentLang].footer.contact && translations[currentLang].footer.contact.email)
+          || 'info@luxurytravelservice.com';
+      } catch (e) {
+        return 'info@luxurytravelservice.com';
+      }
+    }
+
+    function getWhatsAppNumber() {
+      // Pull from a configured global if available, otherwise return null and let mailto be primary
+      return (window._whatsappNumber || '').replace(/[^\d+]/g, '');
+    }
+
+    function submitServiceBooking(e, encodedTitle) {
+      e.preventDefault();
+      const form = e.target;
+      const isAr = currentLang === 'ar';
+      const serviceTitle = decodeURIComponent(encodedTitle);
+      const summary = buildBookingSummary(form, serviceTitle, isAr);
+      const email = getContactEmail();
+      const subject = (isAr ? 'طلب حجز خدمة: ' : 'Service Booking Request: ') + serviceTitle;
+      const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summary)}`;
+      window.location.href = mailto;
+      // Show confirmation message
+      const ok = document.getElementById('svcFormSuccess');
+      if (ok) ok.classList.add('show');
+      return false;
+    }
+
+    function submitServiceBookingWhatsApp(encodedTitle) {
+      const form = document.getElementById('svcBookingForm');
+      if (!form) return;
+      // Basic HTML5 validation
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const isAr = currentLang === 'ar';
+      const serviceTitle = decodeURIComponent(encodedTitle);
+      const summary = buildBookingSummary(form, serviceTitle, isAr);
+      const phone = getWhatsAppNumber();
+      // If a WhatsApp number is configured we use wa.me/<number>, otherwise we use the generic wa.me/?text=
+      // which lets the user pick a contact in WhatsApp.
+      const url = phone
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(summary)}`
+        : `https://wa.me/?text=${encodeURIComponent(summary)}`;
+      window.open(url, '_blank', 'noopener');
     }
 
     function renderDestinations() {
