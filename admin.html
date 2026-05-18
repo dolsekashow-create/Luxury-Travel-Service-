@@ -427,6 +427,18 @@
             <label>Email</label>
             <input id="c-email" type="email" />
           </div>
+
+          <div class="form-row">
+            <div class="field" style="max-width:140px;">
+              <label>WhatsApp Country Code</label>
+              <input id="c-whatsapp-code" type="text" placeholder="+20" maxlength="5" />
+            </div>
+            <div class="field">
+              <label>WhatsApp Number</label>
+              <input id="c-whatsapp-number" type="text" placeholder="1001234567" inputmode="tel" />
+            </div>
+          </div>
+          <div id="c-whatsapp-preview" style="margin-top:-0.5rem;font-size:0.78rem;color:var(--text-muted,#999);min-height:1.2em;"></div>
         </div>
 
         <div class="card">
@@ -825,19 +837,75 @@ async function loadContact() {
   document.getElementById('c-addr2-en').value = s.contact_address2_en || '';
   document.getElementById('c-addr2-ar').value = s.contact_address2_ar || '';
   document.getElementById('c-email').value    = s.contact_email || '';
+
+  // WhatsApp: stored as combined string "+20 1234567890" — split back into 2 fields
+  const wa = (s.contact_whatsapp || '').trim();
+  const codeField = document.getElementById('c-whatsapp-code');
+  const numField  = document.getElementById('c-whatsapp-number');
+  if (wa) {
+    if (wa.includes(' ')) {
+      const ix = wa.indexOf(' ');
+      codeField.value = wa.slice(0, ix).trim();
+      numField.value  = wa.slice(ix + 1).trim();
+    } else if (wa.startsWith('+')) {
+      // e.g. "+201234567890" — take "+" plus next 1–3 digits as code
+      const m = wa.match(/^(\+\d{1,3})(\d.*)$/);
+      if (m) { codeField.value = m[1]; numField.value = m[2]; }
+      else   { codeField.value = ''; numField.value = wa; }
+    } else {
+      codeField.value = '';
+      numField.value  = wa;
+    }
+  } else {
+    codeField.value = '';
+    numField.value  = '';
+  }
+  updateWhatsAppPreview();
+
   document.getElementById('s-facebook').value     = s.social_facebook || '';
   document.getElementById('s-instagram').value    = s.social_instagram || '';
   document.getElementById('s-youtube').value      = s.social_youtube || '';
   document.getElementById('s-linkedin').value     = s.social_linkedin || '';
   document.getElementById('s-tripadvisor').value  = s.social_tripadvisor || '';
 }
+
+function updateWhatsAppPreview() {
+  const code = (document.getElementById('c-whatsapp-code').value || '').trim();
+  const num  = (document.getElementById('c-whatsapp-number').value || '').trim();
+  const preview = document.getElementById('c-whatsapp-preview');
+  if (!preview) return;
+  if (!code && !num) {
+    preview.textContent = '';
+    return;
+  }
+  const combined = (code ? code + ' ' : '') + num;
+  // also show the wa.me link format (digits only)
+  const digits = combined.replace(/[^\d]/g, '');
+  preview.innerHTML = `<i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> Booking requests will be sent to: <strong>${combined}</strong>` +
+    (digits ? ` &middot; <span style="opacity:.7;">wa.me/${digits}</span>` : '');
+}
+
 async function saveContact() {
+  // Combine WhatsApp code + number into a single field for the public site
+  const waCodeRaw = (document.getElementById('c-whatsapp-code').value || '').trim();
+  const waNumRaw  = (document.getElementById('c-whatsapp-number').value || '').trim();
+  let whatsapp = null;
+  if (waCodeRaw || waNumRaw) {
+    // Normalize the code: ensure it starts with + if it's just digits
+    let code = waCodeRaw;
+    if (code && !code.startsWith('+')) code = '+' + code.replace(/[^\d]/g, '');
+    // Strip non-digits from number portion (keeps it clean)
+    const num = waNumRaw.replace(/[^\d]/g, '');
+    whatsapp = ((code ? code + ' ' : '') + num).trim();
+  }
+
   const upd = {
     contact_address_en:   document.getElementById('c-addr1-en').value || null,
     contact_address_ar:   document.getElementById('c-addr1-ar').value || null,
     contact_address2_en:  document.getElementById('c-addr2-en').value || null,
     contact_address2_ar:  document.getElementById('c-addr2-ar').value || null,
     contact_email:        document.getElementById('c-email').value || null,
+    contact_whatsapp:     whatsapp,
     social_facebook:      document.getElementById('s-facebook').value || null,
     social_instagram:     document.getElementById('s-instagram').value || null,
     social_youtube:       document.getElementById('s-youtube').value || null,
@@ -1475,7 +1543,14 @@ async function deleteSubmission(id) {
 // =============================================
 // INIT
 // =============================================
-document.addEventListener('DOMContentLoaded', checkAuth);
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
+  // Live preview for WhatsApp fields
+  const codeEl = document.getElementById('c-whatsapp-code');
+  const numEl  = document.getElementById('c-whatsapp-number');
+  if (codeEl) codeEl.addEventListener('input', updateWhatsAppPreview);
+  if (numEl)  numEl.addEventListener('input', updateWhatsAppPreview);
+});
 </script>
 </body>
 </html>
