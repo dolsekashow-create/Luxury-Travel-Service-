@@ -1147,11 +1147,15 @@
     /* Centerpiece — circular gradient bubble */
     .prog-encircle-center {
       grid-area: title;
-      aspect-ratio: 1.05;
+      aspect-ratio: 1;
+      max-width: 260px;
+      width: 100%;
+      justify-self: center;
+      align-self: center;
       background:
         radial-gradient(ellipse at center, #fefaf2 0%, #f6ecd5 55%, #efe1bd 100%);
       border-radius: 50%;
-      padding: clamp(1.5rem, 4vw, 3rem);
+      padding: clamp(1rem, 3vw, 2rem);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1174,9 +1178,9 @@
       pointer-events: none;
     }
     .prog-encircle-ornament {
-      width: 32px;
-      height: 32px;
-      margin-bottom: 0.9rem;
+      width: 24px;
+      height: 24px;
+      margin-bottom: 0.5rem;
       color: var(--color-accent);
       opacity: 0.7;
     }
@@ -1191,7 +1195,7 @@
     }
     .prog-encircle-title {
       font-family: var(--font-display);
-      font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+      font-size: clamp(1.1rem, 2vw, 1.7rem);
       line-height: 1.05;
       color: var(--color-ink);
       margin: 0 0 0.7rem;
@@ -1204,10 +1208,10 @@
       margin: 0.2rem 0 0.9rem;
     }
     .prog-encircle-sub {
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       color: var(--color-ink-muted);
-      line-height: 1.55;
-      max-width: 280px;
+      line-height: 1.5;
+      max-width: 200px;
     }
 
     /* Empty state */
@@ -1317,11 +1321,11 @@
           "c1 c2 c3";
       }
       .prog-encircle-grid[data-count="4"] {
-        grid-template-columns: 1fr 1.15fr 1fr;
+        grid-template-columns: 1fr 0.75fr 1fr;
         grid-template-areas:
           "c1 title c2"
           "c3 title c4";
-        gap: 1.25rem 2rem;
+        gap: 1.25rem 1.5rem;
       }
       .prog-encircle-grid[data-count="5"] {
         grid-template-columns: repeat(3, 1fr);
