@@ -679,6 +679,46 @@
     }
     .service-card:hover .service-image > img { transform: scale(1.06); }
 
+
+    /* ── Service Image Carousel ── */
+    .svc-carousel { position: relative; width: 100%; height: 100%; }
+    .svc-carousel-track {
+      display: flex; height: 100%;
+      transition: transform .45s cubic-bezier(.4,0,.2,1);
+    }
+    .svc-carousel-track img {
+      min-width: 100%; width: 100%; height: 100%;
+      object-fit: cover; flex-shrink: 0;
+      transition: transform .6s ease;
+      display: block;
+    }
+    .service-card:hover .svc-carousel-track img { transform: scale(1.06); }
+    .svc-carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.82); border: none;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 5; font-size: .7rem;
+      color: var(--color-ink); opacity: 0;
+      transition: opacity .25s, background .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+    .service-card:hover .svc-carousel-btn { opacity: 1; }
+    .svc-carousel-btn:hover { background: white; }
+    .svc-carousel-btn.prev { left: 8px; }
+    .svc-carousel-btn.next { right: 8px; }
+    .svc-carousel-dots {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px; z-index: 5;
+    }
+    .svc-carousel-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,.55); border: none; padding: 0; cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .svc-carousel-dot.active {
+      background: white; transform: scale(1.3);
+    }
     .service-image-fallback {
       position: absolute;
       inset: 0;
@@ -3263,7 +3303,9 @@
             title_ar: s.title_ar,
             desc_en: s.description_en,
             desc_ar: s.description_ar,
-            image_url: s.image_url || null
+            image_url: s.image_url || null,
+            images: Array.isArray(s.images) && s.images.length ? s.images
+                    : (s.image_url ? [s.image_url] : [])
           }));
           renderServices();
         }
@@ -3425,7 +3467,26 @@
       `).join('');
     }
 
-    function renderServices() {
+    // ── Service Carousel helpers ──────────────────────────────────────────
+    function svcCarousel(id, idx) {
+      const car = document.getElementById(id);
+      if (!car) return;
+      const track = car.querySelector('.svc-carousel-track');
+      const dots  = car.querySelectorAll('.svc-carousel-dot');
+      const total = track.children.length;
+      if (idx < 0) idx = total - 1;
+      if (idx >= total) idx = 0;
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      car.dataset.current = idx;
+    }
+    function svcCarouselStep(id, delta) {
+      const car = document.getElementById(id);
+      const cur = parseInt(car?.dataset.current || '0');
+      svcCarousel(id, cur + delta);
+    }
+
+        function renderServices() {
       const grid = document.getElementById('servicesGrid');
       if (!grid) return;
       const t = translations[currentLang];
@@ -3478,11 +3539,25 @@
         const title = isAr ? (s.title_ar || s.title_en) : (s.title_en || s.title_ar);
         const desc = isAr ? (s.desc_ar || s.description_ar || s.desc_en || s.description_en)
                           : (s.desc_en || s.description_en || s.desc_ar || s.description_ar);
-        const img = s.image_url || s.image;
+        const imgs = (s.images && s.images.length) ? s.images
+                    : (s.image_url || s.image) ? [s.image_url || s.image] : [];
         const iconName = s.icon || 'briefcase';
-        const visual = img
-          ? `<img src="${img}" alt="${title}" loading="lazy" />`
-          : `<div class="service-image-fallback"><i class="fa fa-${iconName}"></i></div>`;
+        const carouselId = `svc-car-${idx}`;
+        let visual;
+        if (imgs.length > 1) {
+          const dots = imgs.map((_,i) => `<button class="svc-carousel-dot${i===0?' active':''}" onclick="event.stopPropagation();svcCarousel('${carouselId}',${i})" aria-label="Image ${i+1}"></button>`).join('');
+          const slides = imgs.map(u => `<img src="${u}" alt="${title}" loading="lazy" />`).join('');
+          visual = `<div class="svc-carousel" id="${carouselId}">
+            <div class="svc-carousel-track">${slides}</div>
+            <button class="svc-carousel-btn prev" onclick="event.stopPropagation();svcCarouselStep('${carouselId}',-1)" aria-label="Previous"><i class="fa fa-chevron-left"></i></button>
+            <button class="svc-carousel-btn next" onclick="event.stopPropagation();svcCarouselStep('${carouselId}',1)" aria-label="Next"><i class="fa fa-chevron-right"></i></button>
+            <div class="svc-carousel-dots">${dots}</div>
+          </div>`;
+        } else if (imgs.length === 1) {
+          visual = `<img src="${imgs[0]}" alt="${title}" loading="lazy" />`;
+        } else {
+          visual = `<div class="service-image-fallback"><i class="fa fa-${iconName}"></i></div>`;
+        }
         const bookLabel = isAr ? 'احجز الخدمة' : 'Book This Service';
         return `
         <div class="service-card" onclick="openServiceBookingModal(${idx})" tabindex="0" role="button" onkeypress="if(event.key==='Enter'||event.key===' ')openServiceBookingModal(${idx})" aria-label="${bookLabel}: ${title}">
