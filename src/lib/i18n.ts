@@ -75,6 +75,7 @@ export const ui = {
     skip: 'Skip to content',
     nav: { home: 'Home', programs: 'Programs', excursions: 'Day Excursions', services: 'Services', about: 'About Us', contact: 'Contact', menu: 'Menu', other: 'العربية' },
     hero: { explore: 'Explore Programs', whatsapp: 'Chat on WhatsApp' },
+    places: ['Cairo', 'Giza', 'Luxor', 'Aswan', 'Hurghada', 'Sharm El Sheikh', 'Alexandria', 'Sinai', 'Dahab', 'Abu Simbel'],
     about: {
       eyebrow: 'About Us', mission: 'Our Mission', vision: 'Our Vision',
       features: [
@@ -117,6 +118,7 @@ export const ui = {
     skip: 'انتقل إلى المحتوى',
     nav: { home: 'الرئيسية', programs: 'البرامج', excursions: 'الرحلات اليومية', services: 'خدماتنا', about: 'من نحن', contact: 'تواصل معنا', menu: 'القائمة', other: 'English' },
     hero: { explore: 'استعرض البرامج', whatsapp: 'تواصل عبر واتساب' },
+    places: ['القاهرة', 'الجيزة', 'الأقصر', 'أسوان', 'الغردقة', 'شرم الشيخ', 'الإسكندرية', 'سيناء', 'دهب', 'أبو سمبل'],
     about: {
       eyebrow: 'من نحن', mission: 'رسالتنا', vision: 'رؤيتنا',
       features: [

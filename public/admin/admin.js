@@ -392,7 +392,8 @@ function viewHero() {
       pair('Subtitle', hero.subtitle, { rows: 3 }), pair('Bottom line', hero.highlight, { rows: 2 })),
     card('Hero Background', 'image',
       h('div', { class: 'field' }, h('span', { class: 'label' }, 'Background image (shown instantly, before the video loads)'), singleImage(hero, 'image', 'site')),
-      field('Background video URL (optional)', input(hero, 'video', { dir: 'ltr', placeholder: '/media/site/hero.mp4' }), 'Leave empty to show the image only. Use a silent MP4 under 4 MB.')),
+      field('Background video URL (optional)', input(hero, 'video', { dir: 'ltr', placeholder: '/media/site/hero.mp4' }), 'Leave empty to show the image only. Use a silent 1080p MP4.'),
+      field('Smaller video for phones (optional)', input(hero, 'videoSmall', { dir: 'ltr', placeholder: '/media/site/hero-720.mp4' }), 'A lighter 720p copy used on small screens.')),
   ];
 }
 function viewAbout() {

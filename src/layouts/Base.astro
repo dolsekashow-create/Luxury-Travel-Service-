@@ -32,6 +32,7 @@ const org = {
 <html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -56,10 +57,31 @@ const org = {
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body class:list={{ 'is-home': home }}>
+    <div class="progress" aria-hidden="true"></div>
     <a class="skip" href="#main">{lang === 'ar' ? 'انتقل إلى المحتوى' : 'Skip to content'}</a>
     <Header lang={lang} path={path} />
     <main id="main"><slot /></main>
     <Footer lang={lang} />
     <BookingDialog lang={lang} />
+    <script>
+      // Scroll reveals: content is only hidden when JS is running (html.js), and shows a little early.
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }),
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      );
+      document.querySelectorAll<HTMLElement>('.reveal, [data-inview]').forEach((el) => {
+        // stagger siblings that enter together
+        const i = [...el.parentElement!.children].filter((c) => c.classList.contains('reveal')).indexOf(el);
+        el.style.setProperty('--i', String(Math.min(Math.max(i, 0), 7)));
+        io.observe(el);
+      });
+      // loops only run while they are on screen
+      const loops = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-paused', !e.isIntersecting)));
+      document.querySelectorAll('.marquee').forEach((el) => loops.observe(el));
+    </script>
   </body>
 </html>

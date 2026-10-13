@@ -14,12 +14,12 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
 ---
 <Base lang={lang} title={title} description={tr(hero.subtitle, lang)} path="/" home>
   <section class="hero">
-    {hero.image && <img class="hero-media" src={hero.image} srcset={`${sm(hero.image)} 640w, ${hero.image} 1280w`} sizes="100vw"
-      alt="" width="1280" height="720" fetchpriority="high" decoding="async" />}
-    {hero.video && <video class="hero-media hero-video" data-src={hero.video} muted loop playsinline preload="none" aria-hidden="true"></video>}
+    {hero.image && <img class="hero-media" src={hero.image} srcset={`${sm(hero.image)} 800w, ${hero.image} 1600w`} sizes="100vw"
+      alt="" width="1600" height="900" fetchpriority="high" decoding="async" />}
+    {hero.video && <video class="hero-media hero-video" data-src={hero.video} data-src-small={hero.videoSmall || undefined} muted loop playsinline preload="none" aria-hidden="true"></video>}
     <div class="container hero-content">
       <p class="eyebrow hero-tag">{tr(hero.tag, lang)}</p>
-      <h1>{tr(hero.title, lang)}</h1>
+      <h1>{tr(hero.title, lang).split(" ").map((w, i) => <><span class="w"><span style={`--i:${i}`}>{w}</span></span>{" "}</>)}</h1>
       <p class="hero-sub">{tr(hero.subtitle, lang)}</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href={`#${sections[0]?.anchor ?? 'excursions'}`}>{t.hero.explore} <Icon name="arrow" size={18} /></a>
@@ -29,9 +29,15 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
     </div>
   </section>
 
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      {[0, 1].map(() => t.places.map((p) => <span>{p}<Icon name="ornament" size={14} /></span>))}
+    </div>
+  </div>
+
   <section class="section" id="about">
     <div class="container about-grid">
-      <div>
+      <div class="reveal">
         <p class="eyebrow">{t.about.eyebrow}</p>
         <h2 class="section-title">{tr(about.title, lang)}</h2>
         <p class="lead">{tr(about.text, lang)}</p>
@@ -42,7 +48,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
           ))}
         </ul>
       </div>
-      <div class="about-side">
+      <div class="about-side reveal">
         {about.image && <img class="about-img" src={about.image} srcset={`${sm(about.image)} 640w, ${about.image} 1400w`}
           sizes="(min-width: 900px) 480px, 90vw" alt="" width="1402" height="1122" loading="lazy" decoding="async" />}
         <div class="mv">
@@ -56,7 +62,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
   {services.length > 0 && (
     <section class="section section-alt" id="services">
       <div class="container">
-        <header class="section-head">
+        <header class="section-head reveal">
           <p class="eyebrow">{t.services.eyebrow}</p>
           <h2 class="section-title">{t.services.title}</h2>
         </header>
@@ -86,7 +92,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
     <section class:list={['section', { 'section-alt': i % 2 === 1 }]} id={s.anchor}>
       <div class="container">
         <div class="encircle" data-count={s.items.length}>
-          <header class="encircle-center">
+          <header class="encircle-center reveal">
             <Icon name="ornament" size={24} />
             <p class="encircle-pill">{t.programs.eyebrow}</p>
             <h2 class="encircle-title">{tr(s.title, lang)}</h2>
@@ -101,7 +107,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
   {locations.length > 0 && (
     <section class:list={['section', { 'section-alt': sections.length % 2 === 1 }]} id="excursions">
       <div class="container">
-        <header class="section-head">
+        <header class="section-head reveal">
           <p class="eyebrow">{t.excursions.eyebrow}</p>
           <h2 class="section-title">{t.excursions.title}</h2>
           <p class="section-sub">{t.excursions.sub}</p>
@@ -125,14 +131,23 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
     </section>
   )}
 
-  <section class="section cta" id="contact">
+  <section class="section cta" id="contact" data-inview>
+    <svg class="lineart" viewBox="0 0 1200 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" preserveAspectRatio="xMidYMax slice">
+      <path pathLength="1" style="--i:0" d="M0 262h1200" />
+      <path pathLength="1" style="--i:1" d="M560 262 760 78l200 184M760 78l52 184" />
+      <path pathLength="1" style="--i:2" d="M880 262 1010 142l130 120M1010 142l34 120" />
+      <path pathLength="1" style="--i:3" d="M430 262 520 180l90 82M520 180l24 82" />
+      <circle pathLength="1" style="--i:4" cx="330" cy="92" r="34" />
+      <path pathLength="1" style="--i:5" d="M70 236h150l-18 22H92zM140 236V120c44 30 62 70 66 116M140 120c-18 44-24 82-22 116" />
+      <path pathLength="1" style="--i:6" d="M40 282c40-10 70-10 110 0s70 10 110 0 70-10 110 0" />
+    </svg>
     <div class="container cta-inner">
-      <div>
+      <div class="reveal">
         <p class="eyebrow">{t.contact.eyebrow}</p>
         <h2 class="section-title">{t.contact.title}</h2>
         <p class="section-sub">{t.contact.sub}</p>
       </div>
-      <ul class="cta-list">
+      <ul class="cta-list reveal">
         {wa && <li><a class="cta-item" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={24} /><span><small>{t.contact.whatsapp}</small><b dir="ltr">{contact.whatsapp}</b></span></a></li>}
         {contact.email && <li><a class="cta-item" href={`mailto:${contact.email}`}><Icon name="mail" size={24} /><span><small>{t.contact.email}</small><b dir="ltr">{contact.email}</b></span></a></li>}
         {contact.phone && <li><a class="cta-item" href={`tel:${contact.phone.replace(/[^\d+]/g, '')}`}><Icon name="phone" size={24} /><span><small>{t.contact.phone}</small><b dir="ltr">{contact.phone}</b></span></a></li>}
@@ -149,7 +164,8 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
   if (video && !slow && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const start = () => {
       video.muted = true;
-      video.src = video.dataset.src!;
+      // phones get the lighter 720p file when there is one
+      video.src = (innerWidth < 900 && video.dataset.srcSmall) || video.dataset.src!;
       video.addEventListener('playing', () => video.classList.add('on'), { once: true });
       video.play().catch(() => {});
     };

@@ -17,7 +17,8 @@
       "ar": "تبحث عن شريك موثوق ومنظم رحلات وافدة في مصر؟ تواصل معنا على مدار الساعة طوال أيام الأسبوع."
     },
     "image": "/media/site/hero-poster.webp",
-    "video": "/media/site/hero.mp4"
+    "video": "/media/site/hero.mp4",
+    "videoSmall": "/media/site/hero-720.mp4"
   },
   "about": {
     "title": {

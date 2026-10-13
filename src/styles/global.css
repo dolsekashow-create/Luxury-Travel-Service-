@@ -84,7 +84,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: sticky; top: 0; z-index: 50; height: var(--header-h);
   background: rgb(26 20 16 / 0.92); backdrop-filter: blur(10px); color: var(--white);
 }
-.is-home .site-header { position: fixed; inset-inline: 0; animation: header-solid linear both; animation-timeline: scroll(); animation-range: 0 320px; }
+.is-home .site-header { position: fixed; inset-inline: 0; animation: header-solid linear both; }
+body.is-home .site-header { animation-timeline: scroll(); animation-range: 0 320px; }
 @keyframes header-solid { from { background: rgb(26 20 16 / 0.25); } to { background: rgb(26 20 16 / 0.92); } }
 .header-row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .brand { display: inline-flex; flex-direction: column; line-height: 1.1; }
@@ -123,7 +124,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ============ Hero ============ */
-.hero { position: relative; min-height: min(100svh, 860px); display: grid; align-items: start; color: var(--white); background: var(--ink); isolation: isolate; }
+.hero { overflow: hidden; position: relative; min-height: min(100svh, 860px); display: grid; align-items: start; color: var(--white); background: var(--ink); isolation: isolate; }
 .hero-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
 .hero-video { opacity: 0; transition: opacity 0.8s; }
 .hero-video.on { opacity: 1; }
@@ -245,13 +246,77 @@ main > .section:not(#about) { content-visibility: auto; contain-intrinsic-size: 
 .bubble-meta { margin-top: 0.6rem; font-size: 0.82rem; color: var(--ink-muted); }
 .bubble-meta b { color: var(--gold-dark); font-weight: 600; font-size: 0.95rem; }
 
-/* Scroll reveal: pure CSS, only where supported and motion is welcome */
+/* ============ Motion ============
+   Hidden start states only exist under html.js, so the page is complete without JavaScript. */
+:root { --ease-out: cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes word-up { from { transform: translateY(110%); } to { transform: none; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes spin { to { rotate: 360deg; } }
+@keyframes kenburns { from { transform: scale(1.1); } to { transform: none; } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes marquee-rtl { to { transform: translateX(50%); } }
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes drift { from { transform: translateY(28px); } to { transform: translateY(-28px); } }
+
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-block: 0.12em; margin-block: -0.12em; }
+.w > span { display: inline-block; }
+.progress { display: none; }
+.lineart { position: absolute; inset: auto 0 0; width: 100%; height: min(60%, 300px); color: var(--gold); opacity: 0.22; pointer-events: none; }
+.cta { position: relative; overflow: hidden; }
+.cta-inner { position: relative; }
+
+.marquee { overflow: hidden; background: var(--ink); color: var(--sand-200); border-top: 1px solid rgb(255 255 255 / 0.08); }
+.marquee-track { display: flex; width: max-content; }
+.marquee-track span { display: inline-flex; align-items: center; gap: 1.75rem; padding-block: 0.9rem; padding-inline-start: 1.75rem; font-family: var(--font-display); font-size: 1.05rem; white-space: nowrap; }
+.marquee-track .icon { color: var(--gold); }
+
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.45) 50%, transparent 65%); translate: -120% 0; pointer-events: none; }
+.btn-primary:hover::after { translate: 120% 0; transition: translate 0.7s var(--ease-out); }
+
 @media (prefers-reduced-motion: no-preference) {
+  .js .reveal { opacity: 0; }
+  .js .reveal.is-in { animation: rise 0.9s var(--ease-out) calc(var(--i, 0) * 80ms) both; }
+
+  /* hero entrance: under 1.5s in total, buttons usable from the start */
+  .hero-media { animation: kenburns 14s var(--ease-out) both; }
+  .js .hero .w > span { animation: word-up 0.9s var(--ease-out) calc(0.15s + var(--i) * 90ms) both; }
+  .js .hero-tag { animation: rise 0.8s var(--ease-out) 0.05s both; }
+  .js .hero-sub { animation: rise 0.9s var(--ease-out) 0.45s both; }
+  .js .hero-cta { animation: rise 0.9s var(--ease-out) 0.6s both; }
+  .js .hero-highlight { animation: rise 0.9s var(--ease-out) 0.75s both; }
+  .js .program-head h1 { animation: rise 0.8s var(--ease-out) 0.05s both; }
+  .js .program-head .meta { animation: rise 0.8s var(--ease-out) 0.2s both; }
+
+  /* section title rule grows, the circle ornament draws itself, the dashed ring turns slowly */
+  .js .reveal .section-title::after { transform: scaleX(0); }
+  .js .reveal.is-in .section-title::after { animation: grow-x 0.8s var(--ease-out) 0.35s both; }
+  .js .encircle-center.is-in::before { animation: spin 6s var(--ease-out) 0.2s 1 both; }
+  .js .encircle-center .icon path { stroke-dasharray: 80; stroke-dashoffset: 80; }
+  .js .encircle-center.is-in .icon path { animation: draw 1.6s var(--ease-out) 0.3s forwards; }
+  .js .encircle-title::after { transform: scaleX(0); }
+  .js .encircle-center.is-in .encircle-title::after { animation: grow-x 0.8s var(--ease-out) 0.5s both; }
+
+  /* contact band: line drawing of the pyramids, the sun and a felucca */
+  .js .lineart :is(path, circle) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .js .is-in > .lineart :is(path, circle) { animation: draw 2.2s var(--ease-out) calc(var(--i) * 220ms) forwards; }
+
+  .marquee-track { animation: marquee 45s linear infinite; }
+  :root[dir='rtl'] .marquee-track { animation-name: marquee-rtl; }
+  .marquee.is-paused .marquee-track, .marquee:hover .marquee-track { animation-play-state: paused; }
+
   @supports (animation-timeline: view()) {
-    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
-    @keyframes reveal { from { opacity: 0; translate: 0 24px; } to { opacity: 1; translate: 0 0; } }
+    /* scroll-linked: reading progress bar and a gentle drift on the about photo */
+    .progress { display: block; position: fixed; inset: 0 0 auto; height: 3px; z-index: 60; background: var(--gold); transform-origin: 0 50%; animation: grow-x linear both; }
+    /* kept in its own rule: the minifier folds animation-timeline into the shorthand, which browsers reject */
+    html .progress { animation-timeline: scroll(root); }
+    :root[dir='rtl'] .progress { transform-origin: 100% 50%; }
+    .about-img { animation: drift linear both; }
+    .about-side .about-img { animation-timeline: view(); }
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
