@@ -15,15 +15,25 @@
 
 الرابط: `/admin/` على نفس الموقع.
 
+الدخول بكلمة سر. كلمة السر ورمز GitHub محفوظان في إعدادات Vercel (وليس في الكود)، والدالة `api/gh.js` تتحقق من كلمة السر ثم تنفّذ طلبات GitHub بالنيابة عن اللوحة.
+
+### الإعداد (مرة واحدة)
+
 1. أنشئ رمز وصول من GitHub: **Settings ← Developer settings ← Fine-grained tokens ← Generate new token**.
    - Repository access: «Only select repositories» ثم مستودع الموقع فقط.
    - Permissions ← Repository permissions ← **Contents: Read and write**.
-2. افتح `/admin/`، اكتب اسم المستودع بصيغة `owner/repo` والصق الرمز.
-3. عدّل ما تريد، ثم اضغط **نشر التغييرات**. كل نشر = commit واحد في GitHub، وبعده يعيد Vercel بناء الموقع خلال دقيقة إلى دقيقتين.
+2. في Vercel: **Project ← Settings ← Environment Variables** أضف:
+   - `ADMIN_PASSWORD` = كلمة السر التي ستعطيها للعميل (اجعلها طويلة).
+   - `GITHUB_TOKEN` = الرمز من الخطوة 1.
+3. من **Deployments** اختر آخر نشر ثم **Redeploy** حتى تُقرأ المتغيرات.
 
-لتثبيت اسم المستودع في شاشة الدخول اكتبه في `public/admin/config.json` (`"repo": "owner/repo"`).
+### الاستخدام
 
-الرمز يُحفظ في متصفحك فقط ولا يُرفع إلى أي مكان غير GitHub. من لا يملك رمزاً لا يستطيع تعديل أي شيء.
+افتح `/admin/`، اكتب كلمة السر، عدّل ما تريد، ثم اضغط **Publish Changes**. كل نشر = commit واحد في GitHub، وبعده يعيد Vercel بناء الموقع خلال دقيقة إلى دقيقتين.
+
+لتغيير كلمة السر: عدّل `ADMIN_PASSWORD` في Vercel ثم Redeploy؛ كل الجلسات القديمة تنتهي تلقائياً.
+
+للمطوّر: في شاشة الدخول خيار «Developer: sign in with a GitHub token» للدخول برمز شخصي مباشرة دون كلمة السر.
 
 ## التشغيل محلياً
 

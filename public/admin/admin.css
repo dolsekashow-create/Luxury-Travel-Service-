@@ -200,6 +200,7 @@ input:focus, select:focus, textarea:focus, .rich-area:focus { outline: none; bor
 .form-error { padding: 0.75rem 0.9rem 0.6rem; border: 1px solid var(--danger); border-radius: var(--radius); background: rgb(229 100 92 / 0.1); color: #ffb4ae; font-size: 0.9rem; }
 .help { font-size: 0.88rem; color: var(--text-2); }
 .help summary { cursor: pointer; color: var(--gold); min-height: 36px; display: flex; align-items: center; }
+.help-body { display: grid; gap: 1rem; margin-top: 0.75rem; }
 .help ol { list-style: decimal; padding-left: 1.3rem; display: grid; gap: 0.4rem; margin-top: 0.5rem; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

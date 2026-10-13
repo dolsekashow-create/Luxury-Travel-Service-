@@ -1,6 +1,7 @@
 // Luxury Travel Service — admin panel.
 // Content lives in the GitHub repo (src/data/*.json + public/media). This page edits it through the
-// GitHub API with the owner's access token; every publish is one commit and the host rebuilds the site.
+// GitHub API; every publish is one commit and the host rebuilds the site. Normal login is a password,
+// checked by /api/gh on the host, which holds the GitHub token; a personal token still works as a fallback.
 
 const FILES = { settings: 'src/data/settings.json', programs: 'src/data/programs.json', services: 'src/data/services.json' };
 const SECTIONS = { discover_egypt: 'Discover Egypt', romantic_escape: 'Romantic Escape', therapeutic_tours: 'Therapeutic Tours', spiritual_egypt: 'Spiritual Egypt', excursion: 'Day Excursions' };
@@ -60,6 +61,7 @@ const slugify = (s) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
 const store = { get: (k) => localStorage.getItem(k) ?? sessionStorage.getItem(k), del: (k) => (localStorage.removeItem(k), sessionStorage.removeItem(k)) };
 const S = {
   repo: store.get('lts.repo') || '', branch: '', token: store.get('lts.token') || '', siteUrl: '',
+  session: store.get('lts.session') || '', // set after a password login; requests then go through /api/gh
   head: '', shas: {}, lastCommit: null, data: null, original: {},
   pending: new Map(),  // "/media/…" -> Blob waiting to be committed
   previews: new Map(), // "/media/…" -> object URL for images not deployed yet
@@ -69,23 +71,26 @@ const S = {
 
 // ---------- GitHub API ----------
 async function gh(path, { method = 'GET', body, raw } = {}) {
-  const res = await fetch(`https://api.github.com/repos/${S.repo}${path}`, {
+  const viaHost = !!S.session;
+  const url = viaHost ? `/api/gh?path=${encodeURIComponent(path)}${raw ? '&raw=1' : ''}` : `https://api.github.com/repos/${S.repo}${path}`;
+  const res = await fetch(url, {
     method,
     headers: {
-      Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json',
-      Authorization: `Bearer ${S.token}`, 'X-GitHub-Api-Version': '2022-11-28',
+      Authorization: `Bearer ${viaHost ? S.session : S.token}`,
+      ...(viaHost ? {} : { Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }),
       ...(body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
     const msg = await res.json().then((j) => j.message, () => res.statusText);
-    throw Object.assign(new Error(msg), { status: res.status });
+    throw Object.assign(new Error(msg), { status: res.status, viaHost });
   }
   return raw ? res.text() : res.json();
 }
 const explain = (e) =>
-  e.status === 401 ? 'The access token is invalid or has expired.'
+  e.viaHost && [401, 403, 501].includes(e.status) ? e.message
+  : e.status === 401 ? 'The access token is invalid or has expired.'
   : e.status === 403 ? 'This token cannot write to the repository (it needs Contents: Read and write).'
   : e.status === 404 ? 'Repository not found, or the token has no access to it.'
   : e.status === 409 || e.status === 422 ? `Could not save because of a conflicting change. Reload the page and try again. (${e.message})`
@@ -627,42 +632,50 @@ function shell() {
   render();
 }
 function logout() {
-  const out = () => { store.del('lts.token'); location.reload(); };
+  const out = () => { store.del('lts.token'); store.del('lts.session'); location.reload(); };
   if (dirtyFiles().length) confirmBox('You have unpublished changes that will be lost.', 'Logout', out); else out();
 }
 
 function login(error) {
-  const form = { repo: S.repo, token: '', remember: true };
+  const form = { password: '', repo: S.repo, token: '', remember: true };
   const err = h('p', { class: 'form-error', role: 'alert', hidden: !error }, error || '');
-  const btn = h('button', { class: 'btn primary block', type: 'submit' }, 'Sign In');
-  const submit = async (e) => {
-    e.preventDefault();
-    S.repo = form.repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\.git$|\/$/g, '');
-    S.token = form.token.trim();
-    if (!/^[\w.-]+\/[\w.-]+$/.test(S.repo) || !S.token) { err.textContent = 'Enter the repository as owner/repo and your access token.'; err.hidden = false; return; }
+  const fail = (msg) => { err.textContent = msg; err.hidden = false; };
+  const remember = (key, value) => { store.del(key); (form.remember ? localStorage : sessionStorage).setItem(key, value); };
+  const run = async (btn, label, fn) => {
     btn.disabled = true; btn.textContent = 'Checking…';
-    try {
-      await loadRepo();
-      const where = form.remember ? localStorage : sessionStorage;
-      store.del('lts.token'); where.setItem('lts.token', S.token); localStorage.setItem('lts.repo', S.repo);
-      shell();
-    } catch (ex) { err.textContent = explain(ex); err.hidden = false; btn.disabled = false; btn.textContent = 'Sign In'; }
+    try { await fn(); await loadRepo(); shell(); } catch (ex) { S.session = ''; fail(explain(ex)); btn.disabled = false; btn.textContent = label; }
   };
+  const btn = h('button', { class: 'btn primary block', type: 'submit' }, 'Sign In');
+  const submit = (e) => {
+    e.preventDefault();
+    if (!form.password) return fail('Enter the password.');
+    run(btn, 'Sign In', async () => {
+      const res = await fetch('/api/gh?login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: form.password }) });
+      const data = await res.json().catch(() => ({ message: 'The login service did not answer. Try again in a moment.' }));
+      if (!res.ok) throw Object.assign(new Error(data.message), { status: res.status, viaHost: true });
+      S.session = data.session; S.repo = data.repo; S.token = '';
+      store.del('lts.token'); remember('lts.session', S.session);
+    });
+  };
+  // Fallback for the developer: sign in with a personal GitHub token instead of the password.
+  const tokenBtn = h('button', { class: 'btn block', type: 'button', onclick: () => {
+    S.repo = form.repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\.git$|\/$/g, '');
+    S.token = form.token.trim(); S.session = '';
+    if (!/^[\w.-]+\/[\w.-]+$/.test(S.repo) || !S.token) return fail('Enter the repository as owner/repo and your access token.');
+    run(tokenBtn, 'Sign in with token', async () => { store.del('lts.session'); remember('lts.token', S.token); localStorage.setItem('lts.repo', S.repo); });
+  } }, 'Sign in with token');
   $('#app').replaceChildren(
     h('main', { class: 'login' },
       h('form', { class: 'login-card', onsubmit: submit },
         logo(),
-        h('p', { class: 'muted' }, 'The site content is stored in its GitHub repository. Sign in with a GitHub access token to edit it.'),
-        field('Repository', input(form, 'repo', { dir: 'ltr', placeholder: 'owner/repository' })),
-        field('GitHub access token', input(form, 'token', { type: 'password', dir: 'ltr', placeholder: 'github_pat_…' })),
+        field('Password', input(form, 'password', { type: 'password', dir: 'ltr', placeholder: '••••••••' })),
         h('div', { class: 'field inline' }, toggle(form, 'remember', 'Remember me on this device')),
         err, btn,
-        h('details', { class: 'help' }, h('summary', {}, 'How do I get an access token?'),
-          h('ol', {},
-            h('li', {}, 'Open ', h('a', { href: 'https://github.com/settings/personal-access-tokens/new', target: '_blank', rel: 'noopener' }, 'GitHub → Fine-grained tokens'), '.'),
-            h('li', {}, 'Under Repository access choose “Only select repositories” and pick the site repository.'),
-            h('li', {}, 'Under Permissions → Repository permissions set Contents to “Read and write”.'),
-            h('li', {}, 'Press Generate token and paste it here. It is stored only in this browser.'))))));
+        h('details', { class: 'help' }, h('summary', {}, 'Developer: sign in with a GitHub token'),
+          h('div', { class: 'help-body' },
+            field('Repository', input(form, 'repo', { dir: 'ltr', placeholder: 'owner/repository' })),
+            field('GitHub access token', input(form, 'token', { type: 'password', dir: 'ltr', placeholder: 'github_pat_…' })),
+            tokenBtn)))));
 }
 
 // ---------- boot ----------
@@ -670,6 +683,6 @@ function login(error) {
   $('#app').replaceChildren(h('div', { class: 'boot' }, 'Loading…'));
   const cfg = await fetch('config.json').then((r) => r.json()).catch(() => ({}));
   S.repo = S.repo || cfg.repo || ''; S.branch = cfg.branch || ''; S.siteUrl = cfg.siteUrl || '';
-  if (!S.repo || !S.token) return login();
-  try { await loadRepo(); shell(); } catch (e) { login(explain(e)); }
+  if (!S.session && !S.token) return login();
+  try { await loadRepo(); shell(); } catch (e) { S.session = ''; store.del('lts.session'); login(explain(e)); }
 })();
