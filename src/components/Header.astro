@@ -1,0 +1,66 @@
+---
+import Icon from './Icon.astro';
+import { ui, base, tr, SECTIONS, LOCATIONS, inSection, excursions, type Lang } from '../lib/i18n';
+const { lang, path } = Astro.props as { lang: Lang; path: string };
+const t = ui[lang].nav;
+const home = base(lang);
+const other: Lang = lang === 'ar' ? 'en' : 'ar';
+const sections = SECTIONS.filter((s) => inSection(s.id).length);
+const locations = LOCATIONS.filter((l) => excursions(l.id).length);
+---
+<header class="site-header" id="top">
+  <div class="container header-row">
+    <a class="brand" href={home}>
+      <span class="brand-name">{lang === 'ar' ? 'لاكشري ترافل' : 'Luxury Travel'}</span>
+      <span class="brand-tag">{lang === 'ar' ? 'سيرفيس' : 'Service'}</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label={t.menu}>
+      <Icon name="menu" size={24} />
+    </button>
+
+    <nav class="site-nav" id="site-nav" aria-label={t.menu}>
+      <ul>
+        <li><a href={home}>{t.home}</a></li>
+        {sections.length > 0 && (
+          <li class="has-sub">
+            <a href={`${home}#${sections[0].anchor}`}>{t.programs} <Icon name="chevron-down" size={14} /></a>
+            <ul class="sub">
+              {sections.map((s) => <li><a href={`${home}#${s.anchor}`}>{tr(s.title, lang)}</a></li>)}
+            </ul>
+          </li>
+        )}
+        {locations.length > 0 && (
+          <li class="has-sub">
+            <a href={`${home}#excursions`}>{t.excursions} <Icon name="chevron-down" size={14} /></a>
+            <ul class="sub">
+              {locations.map((l) => <li><a href={`${home}#exc-${l.id}`}>{tr(l.title, lang)}</a></li>)}
+            </ul>
+          </li>
+        )}
+        <li><a href={`${home}#services`}>{t.services}</a></li>
+        <li><a href={`${home}#about`}>{t.about}</a></li>
+        <li><a href={`${home}#contact`}>{t.contact}</a></li>
+        <li>
+          <a class="lang-switch" href={(other === 'ar' ? '/ar' : '') + path} hreflang={other} lang={other}>
+            <Icon name="globe" size={16} /> {t.other}
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (btn && nav) {
+    const set = (open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      nav.classList.toggle('open', open);
+    };
+    btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+    nav.addEventListener('click', (e) => (e.target as HTMLElement).closest('a') && set(false));
+    addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+  }
+</script>

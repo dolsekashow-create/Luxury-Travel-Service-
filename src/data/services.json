@@ -1,0 +1,189 @@
+[
+  {
+    "id": 1,
+    "slug": "meet-assist",
+    "form": "meet-assist",
+    "sort": 1,
+    "active": true,
+    "title": {
+      "en": "Meet & Assist",
+      "ar": "الاستقبال والمساعدة"
+    },
+    "description": {
+      "en": "Our fleet of deluxe vehicles operates in Cairo, Hurghada, Sharm El Sheikh, Aswan, Luxor and Alexandria. An LTS representative will be waiting for you in the arrivals terminal with a placard bearing your name, welcoming you and driving you straight to your destination in the vehicle of your choice.",
+      "ar": "أسطولنا من السيارات الفاخرة يعمل في القاهرة والغردقة وشرم الشيخ وأسوان والأقصر والإسكندرية. سيكون مندوب LTS في انتظارك بصالة الوصول حاملاً لافتة باسمك، ليرحب بك ويصحبك مباشرة إلى وجهتك في السيارة التي تختارها."
+    },
+    "images": [
+      "/media/services/meet-assist/01.webp"
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "visa",
+    "form": "visa",
+    "sort": 2,
+    "active": true,
+    "title": {
+      "en": "Visa Service",
+      "ar": "خدمة التأشيرات"
+    },
+    "description": {
+      "en": "We can provide you with a visa as soon as you arrive, saving you the trouble of waiting in line. If you send your passport details in time, we can issue an Egyptian visa that will arrive at all Egyptian airports upon your arrival — or even before. We recommend obtaining an e-visa in advance to minimize delays.",
+      "ar": "نوفر لك التأشيرة فور وصولك دون الانتظار في الطوابير. إذا أرسلت بيانات جواز سفرك في وقت مناسب، نصدر لك تأشيرة مصرية تجدها جاهزة في أي مطار مصري عند وصولك أو حتى قبله. وننصح بالحصول على التأشيرة الإلكترونية مسبقاً لتفادي أي تأخير."
+    },
+    "images": [
+      "/media/services/visa/01.webp",
+      "/media/services/visa/02.webp"
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "transfer",
+    "form": "transfer",
+    "sort": 3,
+    "active": true,
+    "title": {
+      "en": "Private Transfers",
+      "ar": "الانتقالات الخاصة"
+    },
+    "description": {
+      "en": "Travel in comfort and safety from the airport to your hotel in Cairo, Giza, Hurghada, Sharm El-Sheikh, Luxor, Aswan, or Alexandria — in a well-maintained vehicle without sharing space with other passengers. At the end of your trip we also arrange a private transfer back to the airport.",
+      "ar": "تنقّل براحة وأمان من المطار إلى فندقك في القاهرة أو الجيزة أو الغردقة أو شرم الشيخ أو الأقصر أو أسوان أو الإسكندرية، في سيارة خاصة مجهزة لا يشاركك فيها أحد. ونرتب لك كذلك انتقال العودة إلى المطار في نهاية رحلتك."
+    },
+    "images": [
+      "/media/services/transfer/01.webp",
+      "/media/services/transfer/02.webp"
+    ]
+  },
+  {
+    "id": 4,
+    "slug": "flight",
+    "form": "flight",
+    "sort": 4,
+    "active": true,
+    "title": {
+      "en": "Flight & Train Booking",
+      "ar": "حجز الطيران والقطارات"
+    },
+    "description": {
+      "en": "Tell us where you want to go and where you're coming from. Once you submit your trip details, we'll reserve the right flight ticket for you on your preferred airline — and we can also handle train bookings across Egypt's domestic network.",
+      "ar": "أخبرنا بوجهتك ومكان قدومك، وبعد إرسال تفاصيل رحلتك نحجز لك تذكرة الطيران المناسبة على شركة الطيران التي تفضلها، كما نرتب لك حجز القطارات داخل مصر."
+    },
+    "images": [
+      "/media/services/flight/01.webp"
+    ]
+  },
+  {
+    "id": 5,
+    "slug": "hotel",
+    "form": "generic",
+    "sort": 5,
+    "active": true,
+    "title": {
+      "en": "Hotel Reservations",
+      "ar": "حجز الفنادق"
+    },
+    "description": {
+      "en": "LTS has negotiated the best prices on the market with all Egyptian hotels. Just let us know your destination and dates, and we'll find you the best deals on lodging for the duration of your trip — matched to your budget.",
+      "ar": "تفاوضت LTS على أفضل الأسعار في السوق مع الفنادق المصرية. أخبرنا بوجهتك وتواريخ سفرك، ونجد لك أفضل عروض الإقامة طوال رحلتك بما يناسب ميزانيتك."
+    },
+    "images": [
+      "/media/services/hotel/01.webp"
+    ]
+  },
+  {
+    "id": 6,
+    "slug": "excursions",
+    "form": "generic",
+    "sort": 6,
+    "active": true,
+    "title": {
+      "en": "Excursions",
+      "ar": "الرحلات والجولات"
+    },
+    "description": {
+      "en": "We offer any kind of trip you may need — cultural tours, adventures, beach and sun, night tours, safari, snorkeling, diving, and more. Just email us your preferred days, times, and number of people.",
+      "ar": "نقدم لك كل أنواع الرحلات التي قد تحتاجها: جولات ثقافية، مغامرات، شواطئ وشمس، جولات ليلية، سفاري، سنوركلينج، غوص وغيرها. أرسل لنا الأيام والأوقات المفضلة وعدد الأشخاص فقط."
+    },
+    "images": [
+      "/media/services/excursions/01.webp"
+    ]
+  },
+  {
+    "id": 7,
+    "slug": "medical",
+    "form": "generic",
+    "sort": 7,
+    "active": true,
+    "title": {
+      "en": "Medical & Therapeutic Packages",
+      "ar": "باقات السياحة العلاجية"
+    },
+    "description": {
+      "en": "LTS offers a wide range of medical and therapeutic tourism packages — including fully prepared ambulances from the airport to hospital, treatment plans with the world's leading physicians in private clinics, radiological/analytical/medical examinations in specialist facilities, and competitive pricing in the shortest possible time.",
+      "ar": "تقدم LTS باقات متنوعة للسياحة الطبية والعلاجية، تشمل سيارات إسعاف مجهزة من المطار إلى المستشفى، وخطط علاج مع نخبة من الأطباء في عيادات خاصة، وفحوصات وتحاليل وأشعة في مراكز متخصصة، بأسعار تنافسية وفي أقصر وقت ممكن."
+    },
+    "images": [
+      "/media/services/medical/01.webp",
+      "/media/services/medical/02.webp",
+      "/media/services/medical/03.webp"
+    ]
+  },
+  {
+    "id": 8,
+    "slug": "nile-cruise",
+    "form": "generic",
+    "sort": 8,
+    "active": true,
+    "title": {
+      "en": "Nile Cruise",
+      "ar": "الرحلات النيلية"
+    },
+    "description": {
+      "en": "A dedicated cruise division manages all ground operations for cruise lines, including transfers, pre/post itineraries, and shore excursions. Discover the greatest Nile River Cruises in Egypt — ultra-luxury cruises, Dahabiya sailing boats, and Lake Nasser journeys between Luxor and Aswan.",
+      "ar": "قسم متخصص يدير جميع العمليات الأرضية لشركات الرحلات النيلية، من الانتقالات إلى برامج ما قبل الرحلة وما بعدها والجولات على الشاطئ. اكتشف أفضل الرحلات النيلية في مصر: بواخر فائقة الفخامة، ومراكب الدهبية الشراعية، ورحلات بحيرة ناصر بين الأقصر وأسوان."
+    },
+    "images": [
+      "/media/services/nile-cruise/01.webp",
+      "/media/services/nile-cruise/02.webp"
+    ]
+  },
+  {
+    "id": 9,
+    "slug": "groups",
+    "form": "generic",
+    "sort": 9,
+    "active": true,
+    "title": {
+      "en": "Groups on Tour Series",
+      "ar": "برامج المجموعات السياحية"
+    },
+    "description": {
+      "en": "With our wide range of products and resources, combined with guaranteed accommodations at competitive prices, LTS can operate tour groups to precise specifications — and if necessary, under specific corporate identities.",
+      "ar": "بفضل تنوع منتجاتنا وإمكاناتنا، مع ضمان الإقامة بأسعار تنافسية، تستطيع LTS تشغيل المجموعات السياحية وفق مواصفات دقيقة، وتحت العلامة التجارية لشريكنا عند الحاجة."
+    },
+    "images": [
+      "/media/services/groups/01.webp"
+    ]
+  },
+  {
+    "id": 11,
+    "slug": "media-film-production",
+    "form": "generic",
+    "sort": 10,
+    "active": true,
+    "title": {
+      "en": "Media & Film Production",
+      "ar": "خدمات الإعلام والإنتاج السينمائي"
+    },
+    "description": {
+      "en": "Egypt offers world-class filming locations at affordable rates. With 12+ years of experience working with production companies, we handle everything — location scouting, government permits, equipment logistics, local crew, and on-ground support. Send us your requirements 3–4 weeks before arrival and we will have everything ready.",
+      "ar": "مصر توفر مواقع تصوير عالمية بتكلفة مناسبة. بخبرة تتجاوز 12 عاماً في العمل مع شركات الإنتاج، نتولى كل شيء: اختيار المواقع، التصاريح الحكومية، نقل المعدات، الطاقم المحلي والدعم الميداني. أرسل لنا متطلباتك قبل وصولك بثلاثة إلى أربعة أسابيع وسنجهز كل شيء."
+    },
+    "images": [
+      "/media/services/media-film-production/01.webp",
+      "/media/services/media-film-production/02.webp",
+      "/media/services/media-film-production/03.webp"
+    ]
+  }
+]

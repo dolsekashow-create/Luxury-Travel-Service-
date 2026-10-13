@@ -1,0 +1,60 @@
+---
+import Icon from './Icon.astro';
+import { ui, base, tr, settings, SITE_NAME, SECTIONS, inSection, waLink, type Lang } from '../lib/i18n';
+const { lang } = Astro.props as { lang: Lang };
+const t = ui[lang];
+const home = base(lang);
+const c = settings.contact;
+const socials = Object.entries(settings.social).filter(([, v]) => v);
+const links = [
+  ...SECTIONS.filter((s) => inSection(s.id).length).map((s) => ({ href: `${home}#${s.anchor}`, label: tr(s.title, lang) })),
+  { href: `${home}#excursions`, label: t.nav.excursions },
+  { href: `${home}#services`, label: t.nav.services },
+  { href: `${home}#about`, label: t.nav.about },
+];
+const wa = waLink(t.contact.hello);
+---
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand brand-footer">
+        <span class="brand-name">{lang === 'ar' ? 'لاكشري ترافل' : 'Luxury Travel'}</span>
+        <span class="brand-tag">{lang === 'ar' ? 'سيرفيس' : 'Service'}</span>
+      </p>
+      <p class="footer-tagline">{t.footer.tagline}</p>
+      {socials.length > 0 && (
+        <ul class="socials" aria-label={t.footer.follow}>
+          {socials.map(([k, v]) => (
+            <li><a href={v} target="_blank" rel="noopener" aria-label={k}><Icon name={k} size={18} /></a></li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    <nav aria-label={t.footer.links}>
+      <h2 class="footer-heading">{t.footer.links}</h2>
+      <ul class="footer-list">
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="footer-heading">{t.footer.contact}</h2>
+      <ul class="footer-list footer-contact">
+        {c.email && <li><Icon name="mail" size={16} /><a href={`mailto:${c.email}`} dir="ltr">{c.email}</a></li>}
+        {c.phone && <li><Icon name="phone" size={16} /><a href={`tel:${c.phone.replace(/[^\d+]/g, '')}`} dir="ltr">{c.phone}</a></li>}
+        {wa && <li><Icon name="whatsapp" size={16} /><a href={wa} target="_blank" rel="noopener" dir="ltr">{c.whatsapp}</a></li>}
+        {tr(c.address1, lang) && <li><Icon name="pin" size={16} /><span>{tr(c.address1, lang)}</span></li>}
+        {tr(c.address2, lang) && <li><Icon name="pin" size={16} /><span>{tr(c.address2, lang)}</span></li>}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {new Date().getFullYear()} {SITE_NAME[lang]}. {t.footer.rights}</p>
+    <a class="dev-credit" href="https://www.zero--nine.online/" target="_blank" rel="noopener">
+      <img src="/media/site/zero-nine.webp" alt="" width="22" height="22" loading="lazy" />
+      <span>{t.footer.dev} <b dir="ltr">Zero-Nine</b></span>
+    </a>
+  </div>
+</footer>

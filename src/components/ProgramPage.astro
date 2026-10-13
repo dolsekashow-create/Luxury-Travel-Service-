@@ -1,0 +1,108 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './Icon.astro';
+import ProgramCard from './ProgramCard.astro';
+import { ui, tr, sm, base, programs, waLink, SECTIONS, LOCATIONS, SITE_NAME, type Lang, type Program } from '../lib/i18n';
+
+const { lang, program: p } = Astro.props as { lang: Lang; program: Program };
+const t = ui[lang];
+const title = tr(p.title, lang);
+const section = SECTIONS.find((s) => s.id === p.section);
+const loc = LOCATIONS.find((l) => l.id === p.location);
+const crumb = section
+  ? { href: `${base(lang)}#${section.anchor}`, label: tr(section.title, lang) }
+  : { href: `${base(lang)}#exc-${p.location}`, label: t.nav.excursions };
+const related = programs.filter((x) => x.section === p.section && x.location === p.location && x.slug !== p.slug).slice(0, 3);
+// Arabic body is optional: fall back to the English text, kept left-to-right.
+const hasAr = lang === 'ar' && !!p.content.ar;
+// headings are stored as h4 by the editor; on the page they sit directly under the h1
+const content = (hasAr ? p.content.ar : p.content.en).replace(/<(\/?)h[34]>/g, '<$1h2>');
+const contentDir = lang === 'ar' && !hasAr ? 'ltr' : undefined;
+const wa = waLink(t.program.interest + title);
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'TouristTrip', name: title, description: tr(p.excerpt, lang),
+  image: p.images.map((i) => new URL(i, Astro.site).href),
+  provider: { '@type': 'TravelAgency', name: SITE_NAME.en, url: Astro.site!.href },
+  ...(p.price && /\d/.test(p.price)
+    ? { offers: { '@type': 'Offer', price: p.price.replace(/[^\d.]/g, ''), priceCurrency: 'USD', availability: 'https://schema.org/InStock' } }
+    : {}),
+};
+---
+<Base lang={lang} title={`${title} | ${SITE_NAME[lang]}`} description={tr(p.excerpt, lang)} path={`/programs/${p.slug}/`} image={p.images[0]} jsonLd={jsonLd}>
+  <article class="program">
+    <header class="program-head">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={base(lang)}>{t.nav.home}</a><span aria-hidden="true">/</span><a href={crumb.href}>{crumb.label}</a>
+        </nav>
+        <h1>{title}</h1>
+        <ul class="meta">
+          {tr(p.duration, lang) && <li><Icon name="clock" size={16} /> {tr(p.duration, lang)}</li>}
+          {loc && <li><Icon name="pin" size={16} /> {tr(loc.title, lang)}</li>}
+        </ul>
+      </div>
+    </header>
+
+    <div class="container program-grid">
+      <div class="program-main">
+        {p.images.length > 0 && (
+          <div class="gallery" aria-label={t.program.gallery}>
+            <div class="gallery-track" tabindex="0">
+              {p.images.map((img, i) => (
+                <img src={img} srcset={`${sm(img)} 640w, ${img} 1600w`} sizes="(min-width: 1000px) 760px, 100vw" alt={i === 0 ? title : ''}
+                  width="1600" height="1067" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" />
+              ))}
+            </div>
+            {p.images.length > 1 && (
+              <>
+                <button class="gallery-btn prev" type="button" data-dir="-1" aria-label={t.program.prev}><Icon name="chevron-left" size={22} /></button>
+                <button class="gallery-btn next" type="button" data-dir="1" aria-label={t.program.next}><Icon name="chevron-right" size={22} /></button>
+                <p class="gallery-count" aria-hidden="true"><span>1</span> / {p.images.length}</p>
+              </>
+            )}
+          </div>
+        )}
+        <p class="lead">{tr(p.excerpt, lang)}</p>
+        <div class="prose" dir={contentDir} lang={contentDir ? 'en' : undefined} set:html={content} />
+      </div>
+
+      <aside class="program-side">
+        <div class="book-card">
+          {p.price
+            ? <p class="book-price"><small>{t.program.startingFrom}</small><b dir="ltr">{p.price}</b><small>{t.program.perPerson}</small></p>
+            : <p class="book-price"><b class="on-request">{t.program.onRequest}</b></p>}
+          {tr(p.duration, lang) && <p class="book-row"><span>{t.program.duration}</span><b>{tr(p.duration, lang)}</b></p>}
+          {loc && <p class="book-row"><span>{t.program.departs}</span><b>{tr(loc.city, lang)}</b></p>}
+          <a class="btn btn-primary btn-block" href={wa || '#contact'} data-book="program" data-title={title}>{t.program.book}</a>
+          {wa && <a class="btn btn-whatsapp btn-block" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> {t.program.ask}</a>}
+        </div>
+      </aside>
+    </div>
+
+    {related.length > 0 && (
+      <section class="section section-alt">
+        <div class="container">
+          <header class="section-head"><h2 class="section-title">{t.program.related}</h2></header>
+          <div class="grid">{related.map((r) => <ProgramCard program={r} lang={lang} />)}</div>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<script>
+  const gallery = document.querySelector<HTMLElement>('.gallery');
+  const track = gallery?.querySelector<HTMLElement>('.gallery-track');
+  if (gallery && track) {
+    const count = gallery.querySelector('.gallery-count span');
+    const index = () => Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
+    gallery.querySelectorAll<HTMLButtonElement>('.gallery-btn').forEach((b) =>
+      b.addEventListener('click', () => {
+        const n = track.children.length;
+        const next = (index() + Number(b.dataset.dir) + n) % n;
+        (track.children[next] as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }),
+    );
+    track.addEventListener('scroll', () => count && (count.textContent = String(index() + 1)), { passive: true });
+  }
+</script>

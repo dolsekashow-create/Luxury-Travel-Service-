@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "tag": {
+      "en": "Premium Travel Experiences",
+      "ar": "تجارب سفر فاخرة"
+    },
+    "title": {
+      "en": "Luxury Travel Service",
+      "ar": "لاكشري ترافل سيرفيس"
+    },
+    "subtitle": {
+      "en": "Beyond Borders — LTS offers an impressive range of tours around the world, carefully organized to balance comfortable travel with getting the most out of your holiday.",
+      "ar": "بلا حدود — تقدم لك LTS مجموعة مميزة من الجولات حول العالم، منظمة بعناية لتجمع بين راحة السفر والاستمتاع بعطلتك إلى أقصى حد."
+    },
+    "highlight": {
+      "en": "Looking for a dependable partner and incoming tour operator in Egypt? Contact us 24/7.",
+      "ar": "تبحث عن شريك موثوق ومنظم رحلات وافدة في مصر؟ تواصل معنا على مدار الساعة طوال أيام الأسبوع."
+    },
+    "image": "/media/site/hero-poster.webp",
+    "video": "/media/site/hero.mp4"
+  },
+  "about": {
+    "title": {
+      "en": "About LTS",
+      "ar": "عن LTS"
+    },
+    "text": {
+      "en": "With a team that has over 20 years of experience in tourism and travel, LTS is your partner in Egypt — decades of expertise that deliver a highly competent service.",
+      "ar": "بفريق تتجاوز خبرته 20 عاماً في السياحة والسفر، LTS شريكك في مصر؛ عقود من الخبرة تضمن لك خدمة على أعلى مستوى من الكفاءة."
+    },
+    "long": {
+      "en": "If you are looking for a dependable partner and incoming tour operator in Egypt, do not hesitate to contact us 24/7. Our priority is to make sure that your holiday with LTS is a truly exciting, enjoyable and memorable experience.",
+      "ar": "إذا كنت تبحث عن شريك موثوق ومنظم رحلات وافدة في مصر، فلا تتردد في التواصل معنا على مدار الساعة. أولويتنا أن تكون عطلتك مع LTS تجربة ممتعة ومشوقة لا تُنسى."
+    },
+    "mission": {
+      "en": "To facilitate travel and deliver leading service standards through an efficient operating model that delights our customers.",
+      "ar": "تيسير السفر وتقديم خدمات بمعايير رائدة من خلال نموذج تشغيل كفء يهدف إلى إسعاد عملائنا."
+    },
+    "vision": {
+      "en": "A well-recognized and honourable brand in the travel and tourism industry — value-driven, customer-oriented and innovative in service.",
+      "ar": "علامة تجارية مرموقة ومعروفة في صناعة السياحة والسفر، تقودها القيم وتضع العميل أولاً وتبتكر في خدماتها."
+    },
+    "image": "/media/site/about/01.webp"
+  },
+  "contact": {
+    "email": "info@luxurytravelservice.com",
+    "phone": "",
+    "whatsapp": "+20 1094477753",
+    "address1": {
+      "en": "",
+      "ar": ""
+    },
+    "address2": {
+      "en": "",
+      "ar": ""
+    }
+  },
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "youtube": "",
+    "linkedin": "",
+    "tripadvisor": ""
+  }
+}

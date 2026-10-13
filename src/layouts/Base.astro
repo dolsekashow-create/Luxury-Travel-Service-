@@ -1,0 +1,65 @@
+---
+import '@fontsource-variable/outfit/wght.css';
+import '@fontsource-variable/playfair-display/wght.css';
+import '@fontsource-variable/cairo/wght.css';
+import '@fontsource/amiri/arabic-700.css';
+import '../styles/global.css';
+import outfit from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
+import playfair from '@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2?url';
+import cairo from '@fontsource-variable/cairo/files/cairo-arabic-wght-normal.woff2?url';
+import amiri from '@fontsource/amiri/files/amiri-arabic-700-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BookingDialog from '../components/BookingDialog.astro';
+import { SITE_NAME, settings, type Lang } from '../lib/i18n';
+
+interface Props { lang: Lang; title: string; description: string; path: string; image?: string; jsonLd?: object; home?: boolean }
+const { lang, title, description, path, jsonLd, home = false } = Astro.props;
+const image = Astro.props.image || settings.hero.image || settings.about.image;
+const site = Astro.site!;
+const url = (l: Lang) => new URL((l === 'ar' ? '/ar' : '') + path, site).href;
+const org = {
+  '@context': 'https://schema.org', '@type': 'TravelAgency',
+  name: SITE_NAME.en, alternateName: ['LTS', SITE_NAME.ar], url: site.href,
+  image: image ? new URL(image, site).href : undefined,
+  email: settings.contact.email || undefined,
+  telephone: settings.contact.phone || settings.contact.whatsapp || undefined,
+  areaServed: 'Egypt',
+  sameAs: Object.values(settings.social).filter(Boolean),
+};
+---
+<!doctype html>
+<html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url(lang)} />
+    <link rel="alternate" hreflang="en" href={url('en')} />
+    <link rel="alternate" hreflang="ar" href={url('ar')} />
+    <link rel="alternate" hreflang="x-default" href={url('en')} />
+    {(lang === 'ar' ? [cairo, amiri] : [outfit, playfair]).map((f) => (
+      <link rel="preload" as="font" type="font/woff2" href={f} crossorigin />
+    ))}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#1a1410" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME[lang]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url(lang)} />
+    {image && <meta property="og:image" content={new URL(image, site).href} />}
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_EG' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body class:list={{ 'is-home': home }}>
+    <a class="skip" href="#main">{lang === 'ar' ? 'انتقل إلى المحتوى' : 'Skip to content'}</a>
+    <Header lang={lang} path={path} />
+    <main id="main"><slot /></main>
+    <Footer lang={lang} />
+    <BookingDialog lang={lang} />
+  </body>
+</html>

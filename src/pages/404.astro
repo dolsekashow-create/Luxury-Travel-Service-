@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { ui } from '../lib/i18n';
+const t = ui.en.notFound;
+---
+<Base lang="en" title={`${t.title} | Luxury Travel Service`} description={t.text} path="/">
+  <section class="section notfound">
+    <div class="container">
+      <p class="eyebrow">404</p>
+      <h1 class="section-title">{t.title}</h1>
+      <p class="section-sub">{t.text}</p>
+      <p><a class="btn btn-primary" href="/">{t.home}</a> <a class="btn btn-outline" href="/ar/" lang="ar">الصفحة الرئيسية</a></p>
+    </div>
+  </section>
+</Base>

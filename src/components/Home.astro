@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './Icon.astro';
+import ProgramCard from './ProgramCard.astro';
+import { ui, tr, sm, settings, services, SECTIONS, LOCATIONS, SITE_NAME, inSection, excursions, waLink, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const t = ui[lang];
+const { hero, about, contact } = settings;
+const sections = SECTIONS.map((s) => ({ ...s, items: inSection(s.id) })).filter((s) => s.items.length);
+const locations = LOCATIONS.map((l) => ({ ...l, items: excursions(l.id) })).filter((l) => l.items.length);
+const wa = waLink(t.contact.hello);
+const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخرة في مصر` : `${SITE_NAME.en} | Private Luxury Egypt Tours`;
+---
+<Base lang={lang} title={title} description={tr(hero.subtitle, lang)} path="/" home>
+  <section class="hero">
+    {hero.image && <img class="hero-media" src={hero.image} srcset={`${sm(hero.image)} 640w, ${hero.image} 1280w`} sizes="100vw"
+      alt="" width="1280" height="720" fetchpriority="high" decoding="async" />}
+    {hero.video && <video class="hero-media hero-video" data-src={hero.video} muted loop playsinline preload="none" aria-hidden="true"></video>}
+    <div class="container hero-content">
+      <p class="eyebrow hero-tag">{tr(hero.tag, lang)}</p>
+      <h1>{tr(hero.title, lang)}</h1>
+      <p class="hero-sub">{tr(hero.subtitle, lang)}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href={`#${sections[0]?.anchor ?? 'excursions'}`}>{t.hero.explore} <Icon name="arrow" size={18} /></a>
+        {wa && <a class="btn btn-ghost" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> {t.hero.whatsapp}</a>}
+      </div>
+      <p class="hero-highlight">{tr(hero.highlight, lang)}</p>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="container about-grid">
+      <div>
+        <p class="eyebrow">{t.about.eyebrow}</p>
+        <h2 class="section-title">{tr(about.title, lang)}</h2>
+        <p class="lead">{tr(about.text, lang)}</p>
+        {tr(about.long, lang) && <p>{tr(about.long, lang)}</p>}
+        <ul class="features">
+          {t.about.features.map((f) => (
+            <li><span class="feature-icon"><Icon name={f.icon} size={22} /></span><div><h3>{f.title}</h3><p>{f.desc}</p></div></li>
+          ))}
+        </ul>
+      </div>
+      <div class="about-side">
+        {about.image && <img class="about-img" src={about.image} srcset={`${sm(about.image)} 640w, ${about.image} 1400w`}
+          sizes="(min-width: 900px) 480px, 90vw" alt="" width="1402" height="1122" loading="lazy" decoding="async" />}
+        <div class="mv">
+          {tr(about.mission, lang) && <div class="mv-card"><Icon name="target" size={22} /><h3>{t.about.mission}</h3><p>{tr(about.mission, lang)}</p></div>}
+          {tr(about.vision, lang) && <div class="mv-card"><Icon name="eye" size={22} /><h3>{t.about.vision}</h3><p>{tr(about.vision, lang)}</p></div>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {services.length > 0 && (
+    <section class="section section-alt" id="services">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">{t.services.eyebrow}</p>
+          <h2 class="section-title">{t.services.title}</h2>
+        </header>
+        <div class="grid">
+          {services.map((s) => (
+            <article class="card service reveal">
+              <div class="card-media">
+                {s.images[0]
+                  ? <img src={sm(s.images[0])} srcset={`${sm(s.images[0])} 640w, ${s.images[0]} 1600w`} sizes="(min-width: 1000px) 380px, (min-width: 640px) 50vw, 100vw"
+                      alt="" width="640" height="480" loading="lazy" decoding="async" />
+                  : <span class="card-noimg"></span>}
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">{tr(s.title, lang)}</h3>
+                <p class="card-text full">{tr(s.description, lang)}</p>
+                <a class="btn btn-outline btn-sm" href={waLink(`${t.booking.subject}${tr(s.title, lang)}`) || `mailto:${contact.email}`}
+                  data-book={s.form} data-title={tr(s.title, lang)}>{t.services.book} <Icon name="arrow" size={16} /></a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {sections.map((s, i) => (
+    <section class:list={['section', { 'section-alt': i % 2 === 1 }]} id={s.anchor}>
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">{t.programs.eyebrow}</p>
+          <h2 class="section-title">{tr(s.title, lang)}</h2>
+          <p class="section-sub">{tr(s.sub, lang)}</p>
+        </header>
+        <div class="grid">
+          {s.items.map((p) => <ProgramCard program={p} lang={lang} />)}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  {locations.length > 0 && (
+    <section class:list={['section', { 'section-alt': sections.length % 2 === 1 }]} id="excursions">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">{t.excursions.eyebrow}</p>
+          <h2 class="section-title">{t.excursions.title}</h2>
+          <p class="section-sub">{t.excursions.sub}</p>
+        </header>
+        <div class="tabs">
+          <div class="tab-list" role="group" aria-label={t.excursions.title}>
+            {locations.map((l, i) => (
+              <label class="tab"><input type="radio" name="exc" value={l.id} checked={i === 0} /><span>{tr(l.title, lang)}</span></label>
+            ))}
+          </div>
+          {locations.map((l) => (
+            <div class="tab-panel" id={`exc-${l.id}`} data-loc={l.id}>
+              <h3 class="tab-heading">{tr(l.title, lang)}</h3>
+              <div class="grid">
+                {l.items.map((p) => <ProgramCard program={p} lang={lang} />)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section cta" id="contact">
+    <div class="container cta-inner">
+      <div>
+        <p class="eyebrow">{t.contact.eyebrow}</p>
+        <h2 class="section-title">{t.contact.title}</h2>
+        <p class="section-sub">{t.contact.sub}</p>
+      </div>
+      <ul class="cta-list">
+        {wa && <li><a class="cta-item" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={24} /><span><small>{t.contact.whatsapp}</small><b dir="ltr">{contact.whatsapp}</b></span></a></li>}
+        {contact.email && <li><a class="cta-item" href={`mailto:${contact.email}`}><Icon name="mail" size={24} /><span><small>{t.contact.email}</small><b dir="ltr">{contact.email}</b></span></a></li>}
+        {contact.phone && <li><a class="cta-item" href={`tel:${contact.phone.replace(/[^\d+]/g, '')}`}><Icon name="phone" size={24} /><span><small>{t.contact.phone}</small><b dir="ltr">{contact.phone}</b></span></a></li>}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Hero video: only after the page has loaded, and never on data-saver or reduced motion.
+  const video = document.querySelector<HTMLVideoElement>('.hero-video');
+  const net = (navigator as any).connection;
+  const slow = net?.saveData || /2g|3g/.test(net?.effectiveType || '');
+  if (video && !slow && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const start = () => {
+      video.muted = true;
+      video.src = video.dataset.src!;
+      video.addEventListener('playing', () => video.classList.add('on'), { once: true });
+      video.play().catch(() => {});
+    };
+    if (document.readyState === 'complete') start();
+    else addEventListener('load', start, { once: true });
+  }
+
+  // Menu links like #exc-hrg switch the excursions tab before scrolling to it.
+  const openTab = () => {
+    const m = location.hash.match(/^#exc-(\w+)$/);
+    const radio = m && document.querySelector<HTMLInputElement>(`input[name="exc"][value="${m[1]}"]`);
+    if (radio) {
+      radio.checked = true;
+      document.getElementById('excursions')?.scrollIntoView();
+    }
+  };
+  addEventListener('hashchange', openTab);
+  openTab();
+</script>

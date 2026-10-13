@@ -1,0 +1,110 @@
+---
+import Icon from './Icon.astro';
+import { ui, settings, waNumber, type Lang } from '../lib/i18n';
+import { common, notes, forms } from '../lib/forms';
+const { lang } = Astro.props as { lang: Lang };
+const t = ui[lang].booking;
+// Only ship the labels for this page's language.
+const loc = (fields: typeof common) =>
+  fields.map((f) => ({
+    ...f, label: f.label[lang], placeholder: f.placeholder?.[lang],
+    options: f.options?.map((o) => ({ v: o.v, t: o.t[lang] })),
+  }));
+const data = {
+  email: settings.contact.email, wa: waNumber, subject: t.subject, sent: t.sent,
+  common: loc(common), notes: loc([notes])[0],
+  forms: Object.fromEntries(Object.entries(forms).map(([k, v]) => [k, loc(v)])),
+};
+---
+<dialog class="booking" id="booking" aria-labelledby="booking-title">
+  <div class="booking-head">
+    <div>
+      <p class="eyebrow">{t.request}</p>
+      <h2 id="booking-title"></h2>
+    </div>
+    <form method="dialog"><button class="icon-btn" aria-label={t.close}><Icon name="x" size={20} /></button></form>
+  </div>
+  <form class="booking-form" id="booking-form">
+    <p class="booking-intro">{t.intro}</p>
+    <div class="booking-fields" id="booking-fields"></div>
+    <div class="booking-actions">
+      <button class="btn btn-primary" type="submit"><Icon name="mail" size={18} /> {t.email}</button>
+      {waNumber && <button class="btn btn-whatsapp" type="button" id="booking-wa"><Icon name="whatsapp" size={18} /> {t.whatsapp}</button>}
+    </div>
+    <p class="booking-note">{t.note}</p>
+    <p class="booking-done" id="booking-done" role="status" hidden>{t.done}</p>
+  </form>
+</dialog>
+<script type="application/json" id="booking-data" set:html={JSON.stringify(data)} />
+
+<script>
+  type Field = { name: string; type: string; label: string; required?: boolean; placeholder?: string; min?: number; value?: number; full?: boolean; options?: { v: string; t: string }[] };
+  const cfg = JSON.parse(document.getElementById('booking-data')!.textContent!);
+  const dialog = document.getElementById('booking') as HTMLDialogElement;
+  const form = document.getElementById('booking-form') as HTMLFormElement;
+  const fieldsEl = document.getElementById('booking-fields')!;
+  const titleEl = document.getElementById('booking-title')!;
+  const done = document.getElementById('booking-done')!;
+  let current = '';
+
+  const el = (tag: string, attrs: Record<string, unknown> = {}, text?: string) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) if (v !== undefined && v !== false) n.setAttribute(k, v === true ? '' : String(v));
+    if (text) n.textContent = text;
+    return n;
+  };
+
+  function render(kind: string) {
+    const list: Field[] = [...cfg.common, ...(cfg.forms[kind] || cfg.forms.generic), cfg.notes];
+    fieldsEl.replaceChildren(
+      ...list.map((f) => {
+        const wrap = el('label', { class: 'field' + (f.full ? ' full' : '') });
+        wrap.append(el('span', {}, f.label + (f.required ? ' *' : '')));
+        const base = { name: f.name, required: f.required, placeholder: f.placeholder, 'data-label': f.label };
+        let input: HTMLElement;
+        if (f.type === 'select') {
+          input = el('select', base);
+          for (const o of f.options || []) input.append(el('option', { value: o.v }, o.t));
+        } else if (f.type === 'textarea') {
+          input = el('textarea', { ...base, rows: 3 });
+        } else {
+          input = el('input', { ...base, type: f.type, min: f.min, value: f.value, inputmode: f.type === 'number' ? 'numeric' : undefined });
+        }
+        wrap.append(input);
+        return wrap;
+      }),
+    );
+  }
+
+  function summary() {
+    const lines = [cfg.subject + current, '────────────'];
+    for (const input of form.querySelectorAll<HTMLInputElement>('[name]')) {
+      if (input.value.trim()) lines.push(`${input.dataset.label}: ${input.value.trim()}`);
+    }
+    lines.push('────────────', cfg.sent, location.href);
+    return lines.join('\n');
+  }
+
+  document.addEventListener('click', (e) => {
+    const trigger = (e.target as HTMLElement).closest<HTMLElement>('[data-book]');
+    if (!trigger) return;
+    e.preventDefault();
+    current = trigger.dataset.title || '';
+    titleEl.textContent = current;
+    done.hidden = true;
+    render(trigger.dataset.book || 'generic');
+    dialog.showModal();
+  });
+  // click on the backdrop closes the dialog
+  dialog.addEventListener('click', (e) => e.target === dialog && dialog.close());
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    location.href = `mailto:${cfg.email}?subject=${encodeURIComponent(cfg.subject + current)}&body=${encodeURIComponent(summary())}`;
+    done.hidden = false;
+  });
+  document.getElementById('booking-wa')?.addEventListener('click', () => {
+    if (!form.reportValidity()) return;
+    window.open(`https://wa.me/${cfg.wa}?text=${encodeURIComponent(summary())}`, '_blank', 'noopener');
+  });
+</script>

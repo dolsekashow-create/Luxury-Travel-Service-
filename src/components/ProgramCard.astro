@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import { ui, tr, sm, programUrl, type Lang, type Program } from '../lib/i18n';
+const { program: p, lang } = Astro.props as { program: Program; lang: Lang };
+const t = ui[lang].programs;
+const title = tr(p.title, lang);
+const img = p.images[0];
+---
+<article class="card reveal">
+  <a class="card-media" href={programUrl(p.slug, lang)} tabindex="-1" aria-hidden="true">
+    {img
+      ? <img src={sm(img)} srcset={`${sm(img)} 640w, ${img} 1600w`} sizes="(min-width: 1000px) 380px, (min-width: 640px) 50vw, 100vw"
+          alt="" width="640" height="480" loading="lazy" decoding="async" />
+      : <span class="card-noimg"></span>}
+    {tr(p.duration, lang) && <span class="chip"><Icon name="clock" size={14} /> {tr(p.duration, lang)}</span>}
+  </a>
+  <div class="card-body">
+    <h3 class="card-title"><a href={programUrl(p.slug, lang)}>{title}</a></h3>
+    <p class="card-text">{tr(p.excerpt, lang)}</p>
+    <p class="card-foot">
+      {p.price ? <span class="price">{t.from} <b dir="ltr">{p.price}</b></span> : <span></span>}
+      <span class="card-more">{t.details} <Icon name="arrow" size={16} /></span>
+    </p>
+  </div>
+</article>

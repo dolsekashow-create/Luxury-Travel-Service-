@@ -1,0 +1,6 @@
+---
+import ProgramPage from '../../../components/ProgramPage.astro';
+import { programs } from '../../../lib/i18n';
+export const getStaticPaths = () => programs.map((program) => ({ params: { slug: program.slug }, props: { program } }));
+---
+<ProgramPage lang="ar" program={Astro.props.program} />
