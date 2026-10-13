@@ -190,6 +190,61 @@ main > .section:not(#about) { content-visibility: auto; contain-intrinsic-size: 
 .card-more { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--gold-dark); font-weight: 600; }
 .service .btn { margin-top: auto; align-self: flex-start; }
 
+/* Program bubbles: circular section title with oval cards around it */
+/* default: wrapping rows, centred, so a short last row never hangs to one side */
+.encircle { --gap: 1.5rem; --cols: 2; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem var(--gap); max-width: 1180px; margin-inline: auto; }
+.encircle > .bubble { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); }
+@media (min-width: 700px) { .encircle { --cols: 3; } }
+@media (min-width: 1000px) { .encircle { --cols: 4; } }
+.encircle-center {
+  --size: min(100%, 280px); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: none; width: var(--size); margin-inline: calc((100% - var(--size)) / 2); aspect-ratio: 1; padding: 1.75rem; text-align: center; border-radius: 50%;
+  background: radial-gradient(ellipse at center, #fefaf2 0%, #f6ecd5 55%, #efe1bd 100%);
+  box-shadow: 0 12px 50px -20px rgb(196 159 90 / 0.35); color: var(--gold-dark);
+}
+.encircle-center::before { content: ''; position: absolute; inset: 4%; border: 1px dashed rgb(196 159 90 / 0.3); border-radius: 50%; pointer-events: none; }
+.encircle-pill { margin: 0.4rem 0 0.6rem; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; }
+.encircle-title { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 500; color: var(--ink); }
+.encircle-title::after { content: ''; display: block; width: 36px; height: 1px; margin: 0.7rem auto; background: var(--gold); }
+.encircle-sub { margin: 0; max-width: 210px; font-size: 0.8rem; line-height: 1.5; color: var(--ink-muted); }
+:root[lang='ar'] .encircle-pill { letter-spacing: 0; font-size: 0.85rem; }
+:root[lang='ar'] .encircle-sub { line-height: 1.7; }
+.encircle[data-count='1'] { --cols: 1; max-width: 340px; }
+.encircle[data-count='2'] { --cols: 2; max-width: 700px; }
+@media (min-width: 820px) {
+  /* 3–8 programs: the title circle sits among the cards */
+  .encircle:is([data-count='3'], [data-count='4'], [data-count='5'], [data-count='6'], [data-count='7'], [data-count='8']) { display: grid; align-items: center; max-width: 980px; }
+  .encircle:is([data-count='3'], [data-count='4'], [data-count='5'], [data-count='6'], [data-count='7'], [data-count='8']) > .encircle-center { margin-inline: 0; justify-self: center; }
+  .encircle:is([data-count='3'], [data-count='5'], [data-count='6'], [data-count='7'], [data-count='8']) { grid-template-columns: repeat(3, 1fr); }
+  .encircle[data-count='4'] { grid-template-columns: 1fr 0.75fr 1fr; }
+  .encircle[data-count='3'] { grid-template-areas: '. title .' 'c1 c2 c3'; }
+  .encircle[data-count='4'] { grid-template-areas: 'c1 title c2' 'c3 title c4'; }
+  .encircle[data-count='5'] { grid-template-areas: 'c1 title c2' 'c3 c4 c5'; }
+  .encircle[data-count='6'] { grid-template-areas: 'c1 c2 c3' 'c4 title c5' '. c6 .'; }
+  .encircle[data-count='7'] { grid-template-areas: 'c1 c2 c3' 'c4 title c5' 'c6 c7 .'; }
+  .encircle[data-count='8'] { grid-template-areas: 'c1 c2 c3' 'c4 title c5' 'c6 c7 c8'; }
+  .encircle:is([data-count='3'], [data-count='4'], [data-count='5'], [data-count='6'], [data-count='7'], [data-count='8']) > .encircle-center { grid-area: title; }
+  .encircle:is([data-count='3'], [data-count='4'], [data-count='5'], [data-count='6'], [data-count='7'], [data-count='8']) > .bubble { grid-area: var(--area); }
+}
+.bubbles { --gap: 1.5rem; --cols: 2; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem var(--gap); }
+.bubbles > .bubble { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); }
+@media (min-width: 700px) { .bubbles { --cols: 3; } }
+@media (min-width: 1000px) { .bubbles { --cols: 4; } }
+
+.bubble { display: flex; flex-direction: column; align-items: center; min-width: 0; transition: translate 0.4s; }
+.bubble:hover { translate: 0 -6px; }
+.bubble-img { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1.22; border-radius: 50% / 38%; overflow: hidden; background: linear-gradient(135deg, #f5ead0, #e5d4a8); box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.3); }
+.bubble-img img { width: 100%; height: 100%; object-fit: cover; transition: scale 0.7s; }
+.bubble:hover .bubble-img img { scale: 1.08; }
+/* centred so the oval never clips it */
+.bubble-chip { position: absolute; top: 9%; left: 50%; translate: -50% 0; padding: 0.3rem 0.8rem; border-radius: 99px; background: rgb(255 255 255 / 0.95); color: var(--ink); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 2px 8px rgb(0 0 0 / 0.1); }
+:root[lang='ar'] .bubble-chip { letter-spacing: 0; font-size: 0.78rem; }
+.bubble-title { position: relative; z-index: 1; margin-top: -22px; max-width: 94%; padding: 0.55rem 1.3rem; border-radius: 22px; background: var(--white); box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.22); font-family: var(--font-display); font-size: 0.98rem; line-height: 1.25; text-align: center; text-wrap: balance; transition: color 0.3s; }
+:root[lang='ar'] .bubble-title { font-size: 1.1rem; line-height: 1.5; }
+.bubble:hover .bubble-title { color: var(--gold-dark); }
+.bubble-meta { margin-top: 0.6rem; font-size: 0.82rem; color: var(--ink-muted); }
+.bubble-meta b { color: var(--gold-dark); font-weight: 600; font-size: 0.95rem; }
+
 /* Scroll reveal: pure CSS, only where supported and motion is welcome */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
@@ -295,6 +350,7 @@ main > .section:not(#about) { content-visibility: auto; contain-intrinsic-size: 
 
 .book-card { background: var(--white); border: 1px solid var(--sand-200); border-radius: var(--radius); padding: 1.5rem; display: grid; gap: 0.75rem; box-shadow: var(--shadow); }
 @media (min-width: 1000px) { .program-side { position: sticky; top: calc(var(--header-h) + 1.5rem); } }
+@media (max-width: 520px) { .encircle, .bubbles { --gap: 0.9rem; } .bubble-title { font-size: 0.86rem; padding: 0.45rem 0.8rem; } }
 @media (max-width: 999px) {
   /* phones: the booking card becomes a compact bar pinned to the bottom while reading */
   .program-side { position: sticky; bottom: 0.5rem; z-index: 5; }

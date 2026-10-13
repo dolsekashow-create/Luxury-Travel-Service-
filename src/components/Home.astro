@@ -85,13 +85,14 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
   {sections.map((s, i) => (
     <section class:list={['section', { 'section-alt': i % 2 === 1 }]} id={s.anchor}>
       <div class="container">
-        <header class="section-head">
-          <p class="eyebrow">{t.programs.eyebrow}</p>
-          <h2 class="section-title">{tr(s.title, lang)}</h2>
-          <p class="section-sub">{tr(s.sub, lang)}</p>
-        </header>
-        <div class="grid">
-          {s.items.map((p) => <ProgramCard program={p} lang={lang} />)}
+        <div class="encircle" data-count={s.items.length}>
+          <header class="encircle-center">
+            <Icon name="ornament" size={24} />
+            <p class="encircle-pill">{t.programs.eyebrow}</p>
+            <h2 class="encircle-title">{tr(s.title, lang)}</h2>
+            <p class="encircle-sub">{tr(s.sub, lang)}</p>
+          </header>
+          {s.items.map((p, n) => <ProgramCard program={p} lang={lang} area={s.items.length <= 8 ? `c${n + 1}` : undefined} />)}
         </div>
       </div>
     </section>
@@ -114,7 +115,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
           {locations.map((l) => (
             <div class="tab-panel" id={`exc-${l.id}`} data-loc={l.id}>
               <h3 class="tab-heading">{tr(l.title, lang)}</h3>
-              <div class="grid">
+              <div class="bubbles">
                 {l.items.map((p) => <ProgramCard program={p} lang={lang} />)}
               </div>
             </div>
