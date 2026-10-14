@@ -162,7 +162,7 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
 </Base>
 
 <script>
-  // Hero video: starts after the page has loaded; skipped only when the visitor has turned on data saver.
+  // Hero video: starts right after the hero picture; skipped only when the visitor has turned on data saver.
   // Phones often report a "3g" estimate on good 4G, so the connection type is not used to decide.
   const video = document.querySelector<HTMLVideoElement>('.hero-video');
   const toggle = document.querySelector<HTMLButtonElement>('.hero-toggle');
@@ -185,8 +185,14 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
       sync();
     };
     toggle?.addEventListener('click', () => (video.paused ? video.play().catch(() => {}) : video.pause()));
-    if (document.readyState === 'complete') start();
-    else addEventListener('load', start, { once: true });
+    // Start as soon as the hero picture is on screen (not on window load, which waits for every
+    // image further down and can take many seconds on mobile data), with a time-out as a backstop.
+    let started = false;
+    const go = () => { if (!started) { started = true; start(); } };
+    const poster = document.querySelector<HTMLImageElement>('.hero img.hero-media');
+    if (poster && !poster.complete) poster.addEventListener('load', () => setTimeout(go, 300), { once: true });
+    else setTimeout(go, 300);
+    setTimeout(go, 2500);
   }
 
   // Menu links like #exc-hrg switch the excursions tab before scrolling to it.
