@@ -317,10 +317,28 @@ main > .section:not(#about) { content-visibility: auto; contain-intrinsic-size: 
   }
 }
 
+/* Phones with "reduce motion" / "remove animations" switched on still get calm fades and the
+   line drawing, just no sliding, zooming or spinning. */
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  .js .reveal { opacity: 0; }
+  .js .reveal.is-in { animation: fade 0.8s ease-out calc(var(--i, 0) * 60ms) both; }
+  .js :is(.hero-tag, .hero h1, .hero-sub, .hero-cta, .hero-highlight, .program-head h1, .program-head .meta) { animation: fade 0.9s ease-out both; }
+  .js .lineart :is(path, circle) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .js .is-in > .lineart :is(path, circle) { animation: draw 2.2s ease-out calc(var(--i) * 220ms) forwards; }
+  .marquee-track { animation: marquee 90s linear infinite; }
+  :root[dir='rtl'] .marquee-track { animation-name: marquee-rtl; }
+  .marquee.is-paused .marquee-track, .marquee:hover .marquee-track { animation-play-state: paused; }
 }
+
+/* play / pause for the hero video (also the way to start it where autoplay is blocked) */
+.hero-toggle { position: absolute; z-index: 2; inset-block-end: 1.25rem; inset-inline-end: 1.25rem; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgb(255 255 255 / 0.45); border-radius: 50%; background: rgb(26 20 16 / 0.45); color: var(--white); cursor: pointer; backdrop-filter: blur(4px); }
+.hero-toggle:hover { background: rgb(26 20 16 / 0.7); }
+.hero-toggle .i-play, .hero-toggle.is-paused .i-pause { display: none; }
+.hero-toggle.is-paused .i-play { display: contents; }
+.hero-toggle .i-pause { display: contents; }
 
 /* Tabs (radio inputs + :has, no JavaScript needed) */
 .tab-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }

@@ -17,6 +17,11 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
     {hero.image && <img class="hero-media" src={hero.image} srcset={`${sm(hero.image)} 800w, ${hero.image} 1600w`} sizes="100vw"
       alt="" width="1600" height="900" fetchpriority="high" decoding="async" />}
     {hero.video && <video class="hero-media hero-video" data-src={hero.video} data-src-small={hero.videoSmall || undefined} muted loop playsinline preload="none" aria-hidden="true"></video>}
+    {hero.video && (
+      <button class="hero-toggle" type="button" hidden data-play={t.hero.play} data-pause={t.hero.pause} aria-label={t.hero.pause}>
+        <span class="i-pause"><Icon name="pause" size={18} /></span><span class="i-play"><Icon name="play" size={18} /></span>
+      </button>
+    )}
     <div class="container hero-content">
       <p class="eyebrow hero-tag">{tr(hero.tag, lang)}</p>
       <h1>{tr(hero.title, lang).split(" ").map((w, i) => <><span class="w"><span style={`--i:${i}`}>{w}</span></span>{" "}</>)}</h1>
@@ -157,18 +162,29 @@ const title = lang === 'ar' ? `${SITE_NAME.ar} | جولات سياحية فاخ�
 </Base>
 
 <script>
-  // Hero video: only after the page has loaded, and never on data-saver or reduced motion.
+  // Hero video: starts after the page has loaded; skipped only when the visitor has turned on data saver.
+  // Phones often report a "3g" estimate on good 4G, so the connection type is not used to decide.
   const video = document.querySelector<HTMLVideoElement>('.hero-video');
-  const net = (navigator as any).connection;
-  const slow = net?.saveData || /2g|3g/.test(net?.effectiveType || '');
-  if (video && !slow && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const toggle = document.querySelector<HTMLButtonElement>('.hero-toggle');
+  if (video && !(navigator as any).connection?.saveData) {
+    const sync = () => {
+      if (!toggle) return;
+      toggle.hidden = false;
+      toggle.classList.toggle('is-paused', video.paused);
+      toggle.setAttribute('aria-label', (video.paused ? toggle.dataset.play : toggle.dataset.pause) || '');
+    };
     const start = () => {
       video.muted = true;
       // phones get the lighter 720p file when there is one
       video.src = (innerWidth < 900 && video.dataset.srcSmall) || video.dataset.src!;
       video.addEventListener('playing', () => video.classList.add('on'), { once: true });
-      video.play().catch(() => {});
+      video.addEventListener('play', sync);
+      video.addEventListener('pause', sync);
+      // iPhones in Low Power Mode refuse autoplay: the button then offers to start it by hand
+      video.play().catch(sync);
+      sync();
     };
+    toggle?.addEventListener('click', () => (video.paused ? video.play().catch(() => {}) : video.pause()));
     if (document.readyState === 'complete') start();
     else addEventListener('load', start, { once: true });
   }
